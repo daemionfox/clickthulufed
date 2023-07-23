@@ -1,6 +1,8 @@
 twig:
     default_path: '%kernel.project_dir%/templates'
-
+    globals:
+        settings: '@App\Service\Settings'
+        adminalerts: '@App\Service\AdminAlerts'
 when@test:
     twig:
         strict_variables: true

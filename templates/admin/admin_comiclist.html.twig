@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create a Comic{% endblock %}
+
+{% block body %}
+    {% for flash_error in app.flashes('error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+
+
+
+
+<div class="container">
+    <div class="card col-8 offset-2 p-3 mt-5 panel" id="c4-comic-admin">
+        <h1>Comic Administration</h1>
+        {% for comic in comics %}
+            <div class="row c4-comic-admin-row mb-3 p-3">
+                <div class="col">
+                    <div class="row">
+                        <div class="col"><h4>{{ comic.name }}</h4></div>
+                    </div>
+                    <div class="row">
+                        <div class="col">@{{ comic.owner.username }}</div>
+                    </div>
+                </div>
+                <div class="col">
+
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "user-sidebar.html.twig" %}
+{% endblock %}

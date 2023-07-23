@@ -1,0 +1,68 @@
+:root {
+    --background-color-dark: #19221b;
+    --panel-color-dark: #546958;
+    --grey-inactive: #879486;
+    --bright-active: #27b927;
+}
+
+
+body {
+    background-color: var(--background-color-dark);
+    color: #ffffff;
+}
+
+.panel {
+    background-color: var(--panel-color-dark);
+    border: 1px solid #ffffff;
+    border-radius: 16px;
+    color: #ffffff;
+}
+
+.panel a {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.profile-comic-row:not(:last-child) {
+    border-bottom: 1px solid #ffffff;
+
+}
+
+.schedule-icon {
+    background-color: var(--grey-inactive);
+    margin: 0;
+}
+
+.schedule-endcap {
+    height: 24px !important;
+    width: 40px;
+    padding-top: calc(.375rem + 4px);
+    padding-bottom: calc(.375rem + 4px);
+}
+
+.schedule-icon:first-child {
+    border-top-left-radius: 100px;
+    border-bottom-left-radius: 100px;
+}
+.schedule-icon:last-child {
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+}
+
+.schedule-checkbox:checked + .schedule-icon {
+    background-color: var(--bright-active);
+    font-weight: bold;
+}
+
+.time-drop {
+    width:unset !important;
+}
+
+
+.allbord div {
+    border: 1px solid red;
+}
+
+.c4-comic-admin-row:nth-child(odd) {
+    background-color: rgba(0,0,0,10%);
+}

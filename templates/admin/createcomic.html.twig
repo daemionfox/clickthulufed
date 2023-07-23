@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create a Comic{% endblock %}
+
+{% block body %}
+    {% for flash_error in app.flashes('error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+
+
+
+    <div class="container">
+        <div class="card col-8 offset-2 p-3 mt-5 panel">
+            <h1>Create Comic</h1>
+
+            {{ form_errors(createcomicForm) }}
+
+            {{ form_start(createcomicForm) }}
+            <div class="row mb-3">
+                {{ form_label(createcomicForm.name) }}
+                <div class="col">
+                        {{ form_widget(createcomicForm.name) }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="row">
+                    {{ form_label(createcomicForm.slug) }}
+                    <div class="col">
+                        <div class="input-group">
+                            <span class="input-group-text text-default" id="comic-slug-alert">
+                                <i class="fas fa-at" id="comic-slug-alert-icon"></i>
+                            </span>
+                            {{ form_widget(createcomicForm.slug) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col offset-3 text-small text-white" id="comic-slug-errors"></div>
+                </div>
+            </div>
+
+
+            <div class="row mb-3">
+                {{ form_label(createcomicForm.description) }}
+                <div class="col">
+                    {{ form_widget(createcomicForm.description) }}
+
+                </div>
+            </div>
+            {% if settings.get.require_comic_approval is defined and settings.get.require_comic_approval == true %}
+                <div class="row mb-3">
+                    <small><strong>Notice:</strong> This server requires administrator approval before new comics can be created.</small>
+                </div>
+            {% endif %}
+
+            <div class="row mb-3">
+                <div class="col-4 offset-4">
+                    <button type="submit" class="btn btn-light btn-block"><i class="fas fa-book"></i> Create</button>
+                </div>
+            </div>
+            {{ form_end(createcomicForm) }}
+        </div>
+
+    </div>
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "user-sidebar.html.twig" %}
+{% endblock %}
