@@ -12,8 +12,10 @@
                 </div>
                 <div class="row border-bottom mb-3 pb-2">
                     <div class="col-3 text-center">
-                        {% if app.user.image is defined %}
+                        {% if app.user.image is not empty %}
                             <img src="{{ app.user.image }}" alt="{{ app.user.username }}" class="img-fluid"/><br/>
+                        {% else %}
+                            <img src="https://gravatar.com/avatar/{{ app.user.username|md5 }}?s=256&d=robohash" alt="{{ app.user.username }}" class="img-fluid"/><br/>
                         {% endif %}
                         {% if app.user.name %}
                             <strong>{{ app.user.name }}</strong><br/>
@@ -34,11 +36,22 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-2">
-                        <a href="/profile/edit" type="button" class="btn-light btn"><i class="fas fa-edit"></i> Edit Profile</a>
+                    <div class="col-3">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <a href="/profile/edit" type="button" class="btn-light btn btn-block"><i class="fas fa-edit"></i> Edit Profile</a>
+                            </div>
+                        </div>
+                        {% if not is_granted('ROLE_OWNER')  or not is_granted("ROLE_CREATOR")  %}
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <a href="/profile/requestrole/creator" type="button" class="btn-outline-light btn  btn-block"><i class="fas fa-clipboard-question"></i> Request Creator Status</a>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
-
+                {% if "ROLE_CREATOR" in app.user.roles %}
                 <div class="row">
                     <div class="col panel p-3">
                         <div class="row mb-3">
@@ -59,6 +72,7 @@
                         {% endif %}
                     </div>
                 </div>
+                {% endif %}
             </div>
 
         </div>

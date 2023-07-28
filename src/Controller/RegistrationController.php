@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Helpers\SettingsHelper;
 use App\Security\EmailVerifier;
 use App\Security\LoginAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,6 +44,13 @@ class RegistrationController extends AbstractController
                 )
             );
 
+            $settings = SettingsHelper::init($entityManager);
+            $autoActivate = $settings->get('allow_user_signup');
+            $autoActivate = $autoActivate > 0;
+
+            $user->setRoles(['ROLE_USER']);
+            $user->setActive($autoActivate);
+            $user->setDeleted(false);
             $entityManager->persist($user);
             $entityManager->flush();
 

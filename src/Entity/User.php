@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enumerations\RoleEnumeration;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -52,13 +53,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $comics;
 
     #[ORM\Column]
-    private ?bool $active = null;
+    private ?bool $active = false;
 
     #[ORM\Column]
-    private ?bool $deleted = null;
+    private ?bool $deleted = false;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $status = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $requestRole = null;
 
     public function __construct()
     {
@@ -187,32 +191,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Permissions>
-     */
-    public function getPermissions(): Collection
-    {
-        return $this->permissions;
-    }
-
-    public function addPermission(Permissions $permission): static
-    {
-        if (!$this->permissions->contains($permission)) {
-            $this->permissions->add($permission);
-            $permission->addUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removePermission(Permissions $permission): static
-    {
-        if ($this->permissions->removeElement($permission)) {
-            $permission->removeUser($this);
-        }
-
-        return $this;
-    }
 
     public function getBiography(): ?string
     {
@@ -267,13 +245,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getOwnedComics(): Collection
     {
-        return $this->ownedComics;
+        return $this->comics;
     }
 
     public function addOwnedComic(Comic $ownedComic): static
     {
-        if (!$this->ownedComics->contains($ownedComic)) {
-            $this->ownedComics->add($ownedComic);
+        if (!$this->comics->contains($ownedComic)) {
+            $this->comics->add($ownedComic);
             $ownedComic->setOwner($this);
         }
 
@@ -282,7 +260,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeOwnedComic(Comic $ownedComic): static
     {
-        if ($this->ownedComics->removeElement($ownedComic)) {
+        if ($this->comics->removeElement($ownedComic)) {
             // set the owning side to null (unless already changed)
             if ($ownedComic->getOwner() === $this) {
                 $ownedComic->setOwner(null);
@@ -290,6 +268,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function getIcon(): string
+    {
+        if (in_array('ROLE_OWNER', $this->roles)) {
+            return 'fa-crown';
+        } elseif (in_array('ROLE_ADMIN', $this->roles)) {
+            return 'fa-screwdriver-wrench';
+        } elseif (in_array('ROLE_CREATOR', $this->roles)) {
+            return 'fa-palette';
+        }
+        return 'fa-user';
     }
 
     public function isActive(): ?bool
@@ -324,6 +314,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setStatus(?string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getRequestRole(): ?string
+    {
+        return $this->requestRole;
+    }
+
+    public function setRequestRole(?string $requestRole): static
+    {
+        $this->requestRole = $requestRole;
 
         return $this;
     }

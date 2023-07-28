@@ -18,12 +18,21 @@
             <hr/>
             <h5>Administration</h5>
             <li class="nav-item"><a href="/admin/comics" class="nav-link">
-                        <span class="fa-layers fa-fw">
-                            <i class="fas fa-stamp"></i>
-                            <span class="bg-danger fa-layers-text badge" data-fa-transform="shrink-4 up-6 left-12">{{ adminalerts.getComicAlert }}</span>
-                        </span>
-                    Comics</a> </li>
-            <li class="nav-item"><a href="/admin/users" class="nav-link"><i class="fas fa-users"></i> Users</a> </li>
+                <span class="fa-layers fa-fw">
+                    <i class="fas fa-stamp"></i>
+                    {% if adminalerts.getComicAlertCount > 0 %}
+                        <span class="bg-danger fa-layers-text badge" data-fa-transform="shrink-4 up-6 left-12">{{ adminalerts.getComicAlertCount }}</span>
+                    {% endif %}
+                </span>
+                Comics</a> </li>
+            <li class="nav-item"><a href="/admin/users" class="nav-link">
+                <span class="fa-layers fa-fw">
+                    <i class="fas fa-users"></i>
+                    {% if adminalerts.getUserAlertCount > 0 %}
+                        <span class="bg-danger fa-layers-text badge" data-fa-transform="shrink-4 up-6 left-12">{{ adminalerts.getUserAlertCount }}</span>
+                    {% endif %}
+                </span>
+                    Users</a> </li>
         {% endif %}
 
 

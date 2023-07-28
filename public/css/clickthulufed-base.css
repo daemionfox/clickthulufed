@@ -66,3 +66,7 @@ body {
 .c4-comic-admin-row:nth-child(odd) {
     background-color: rgba(0,0,0,10%);
 }
+
+a.btn.btn-link:hover {
+    color: #ffffff;
+}

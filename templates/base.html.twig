@@ -38,5 +38,9 @@
     {% for error in app.flashes('error') %}
         {% include 'common/error_pop.html.twig' with {error: error} %}
     {% endfor %}
+
+    {% for info in app.flashes('info') %}
+        {% include 'common/info_pop.html.twig' with {info: info} %}
+    {% endfor %}
     </body>
 </html>

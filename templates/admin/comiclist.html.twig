@@ -1,17 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Create a Comic{% endblock %}
+{% block title %}Hosted Comics{% endblock %}
 
 {% block body %}
-    {% for flash_error in app.flashes('error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
-
-
-
 
 <div class="container">
-    <div class="card col-8 offset-2 p-3 mt-5 panel" id="c4-comic-admin">
+    <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
         <h1>Comic Administration</h1>
         {% for comic in comics %}
             <div class="row c4-comic-admin-row mb-3 p-3">

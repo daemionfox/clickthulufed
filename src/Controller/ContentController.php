@@ -55,12 +55,4 @@ class ContentController extends AbstractController
         ]);
     }
 
-    #[Route('/profile', name: 'app_profile')]
-    public function profile(EntityManagerInterface $entityManager): Response
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-        return $this->render('content/profile.html.twig', []);
-
-    }
 }
