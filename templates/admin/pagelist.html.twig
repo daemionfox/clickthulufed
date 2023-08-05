@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comic.name }} Page Management{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+        <div class="row mb-3">
+            <div class="col">
+                <h1>{{ comic.name }}: Page Management</h1>
+            </div>
+        </div>
+        <div class="row mb-3 border-bottom">
+            {% include "admin/addedit_page.html.twig" %}
+        </div>
+
+        {% for page in comic.pages %}
+            <div class="row mb-3 comic-page">
+                Comic page
+            </div>
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "user-sidebar.html.twig" %}
+{% endblock %}

@@ -3,19 +3,20 @@
     --panel-color-dark: #546958;
     --grey-inactive: #879486;
     --bright-active: #27b927;
+    --white: #ffffff;
 }
 
 
 body {
     background-color: var(--background-color-dark);
-    color: #ffffff;
+    color: var(--white);
 }
 
 .panel {
     background-color: var(--panel-color-dark);
-    border: 1px solid #ffffff;
+    border: 1px solid var(--white);
     border-radius: 16px;
-    color: #ffffff;
+    color: var(--white);
 }
 
 .panel a {
@@ -24,7 +25,7 @@ body {
 }
 
 .profile-comic-row:not(:last-child) {
-    border-bottom: 1px solid #ffffff;
+    border-bottom: 1px solid var(--white);
 
 }
 
@@ -68,5 +69,18 @@ body {
 }
 
 a.btn.btn-link:hover {
-    color: #ffffff;
+    color: var(--white);
+}
+
+#page_upload_dropzone {
+    border: 2px solid var(--white);
+    border-radius: 16px;
+    aspect-ratio: .67;
+}
+
+.dropzone {
+    background-color: unset !important;
+    border: 2px solid var(--white);
+    border-radius: 16px;
+    max-height: 60px;
 }

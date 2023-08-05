@@ -3,16 +3,21 @@
 namespace App\Controller;
 
 use App\Entity\Comic;
+use App\Entity\Page;
 use App\Entity\User;
 use App\Exceptions\SettingNotFoundException;
+use App\Form\AddPageType;
 use App\Form\CreateComicType;
 use App\Form\EditComicType;
+use App\Helpers\SettingsHelper;
 use App\Service\Settings;
 use App\Traits\BooleanTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\PersistentCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -103,12 +108,105 @@ class AdminController extends AbstractController
     }
 
 
+    // TODO - Remove in final
+    #[Route('/info', name: 'app_info')]
+    public function info(): void
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $user = $this->getUser();
+        if (!in_array("ROLE_OWNER", $user->getRoles())) {
+            echo "No";
+        } else {
+            phpinfo();
+        }
+        exit;
+
+    }
+
+    #[Route('/comic/uploadpage/{slug}', name: 'app_uploadcomicpages')]
+    public function uploadComicPages(string $slug, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        /**
+         * @var Comic $comic;
+         */
+        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
+
+        $settings = SettingsHelper::init($entityManager);
+
+        $currentMax = ini_get('upload_max_filesize');
+        $maxUpload = $settings->get('upload_max_filesize', $currentMax);
+        ini_set('upload_max_filesize', $maxUpload);
+
+        $startpath = $settings->get('comic_page_path', 'comicpages');
+        if (substr($startpath,0,1) !== '/') {
+            // Path is a relative path from the /app directory, prepend the app path to it
+            $startpath = __DIR__ . "/../../{$startpath}";
+            $startpath = realpath($startpath);
+        }
+
+        $pagepath = "{$startpath}/{$user->getUsername()}/{$comic->getSlug()}";
+        if (!is_dir($pagepath)) {
+            @mkdir($pagepath, 0775, true);
+        }
+
+        $files = array_pop($_FILES);
+        if (empty($files)) {
+            throw new FileNotFoundException("No file was uploaded.");
+        }
+
+        move_uploaded_file($files['tmp_name'], "{$pagepath}/{$files['name']}");
+
+
+        return new JsonResponse(['status' => 'uploaded', 'file' => $files['name']]);
+
+
+    }
+
+
+    #[Route('/comic/manage/{slug}', name: 'app_managecomicpages')]
+    public function manageComicPages(string $slug, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        /**
+         * @var Comic $comic
+         */
+        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
+
+        if (!$this->comicUserMatch($user, $comic)) {
+            $this->addFlash("error", "You do not have permission to manage this comic");
+        }
+
+        $page = new Page();
+        $page->setComic($comic);
+        $page->setPublishdate($page->calculateNextPublishDate());
+
+        $form = $this->createForm(AddPageType::class, $page);
+        $form->handleRequest($request);
+
+        return $this->render('admin/pagelist.html.twig', [
+            'comic' => $comic,
+            'addPageForm' => $form->createView()
+        ]);
+    }
+
+
+
     #[Route('/comic/activate/{slug}', name: 'app_activatecomic')]
     public function activateComic(string $slug, Request $request, EntityManagerInterface $entityManager, Settings $settings): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $comicid = $request->query->get('comic');
         /**
          * @var User $user
          */
@@ -321,16 +419,32 @@ class AdminController extends AbstractController
         if (in_array('ROLE_ADMIN', $user->getRoles())) {
             return true;
         }
+        return $this->comicUserMatch($user, $comic);
+    }
 
-        $admins = $comic->getAdmin();
+    public function comicUserMatch(User $user, Comic $comic): bool
+    {
+
+//        $admins = $comic->getAdmin();
+        $owner = $comic->getOwner();
         /**
-         * @var User $admin
+         * @var User $owner
          */
-        foreach($admins as $admin) {
-            if ($admin->getUserIdentifier() === $user->getUserIdentifier()) {
-                return true;
-            }
+        if($owner->getUserIdentifier() === $user->getUserIdentifier()) {
+            return true;
         }
+
+//
+//        /**
+//         * @var User $admin
+//         */
+//        foreach($admins as $admin) {
+//            if ($admin->getUserIdentifier() === $user->getUserIdentifier()) {
+//                return true;
+//            }
+//        }
+
+
         return false;
     }
 

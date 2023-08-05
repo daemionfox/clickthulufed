@@ -78,30 +78,6 @@ class Comic
     }
 
     /**
-     * @return Collection<int, User>
-     */
-    public function getAdmin(): Collection
-    {
-        return $this->admin;
-    }
-
-    public function addAdmin(User $admin): static
-    {
-        if (!$this->admin->contains($admin)) {
-            $this->admin->add($admin);
-        }
-
-        return $this;
-    }
-
-    public function removeAdmin(User $admin): static
-    {
-        $this->admin->removeElement($admin);
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Chapter>
      */
     public function getChapters(): Collection

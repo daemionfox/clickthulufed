@@ -64,9 +64,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $requestRole = null;
 
+    #[ORM\OneToMany(mappedBy: 'uploadedby', targetEntity: Page::class, orphanRemoval: true)]
+    private Collection $pages;
+
     public function __construct()
     {
         $this->comics = new ArrayCollection();
+        $this->pages = new ArrayCollection();
     }
 
 
@@ -326,6 +330,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRequestRole(?string $requestRole): static
     {
         $this->requestRole = $requestRole;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Page>
+     */
+    public function getPages(): Collection
+    {
+        return $this->pages;
+    }
+
+    public function addPage(Page $page): static
+    {
+        if (!$this->pages->contains($page)) {
+            $this->pages->add($page);
+            $page->setUploadedby($this);
+        }
+
+        return $this;
+    }
+
+    public function removePage(Page $page): static
+    {
+        if ($this->pages->removeElement($page)) {
+            // set the owning side to null (unless already changed)
+            if ($page->getUploadedby() === $this) {
+                $page->setUploadedby(null);
+            }
+        }
 
         return $this;
     }

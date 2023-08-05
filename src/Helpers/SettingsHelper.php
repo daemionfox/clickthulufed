@@ -40,14 +40,18 @@ class SettingsHelper
 
     /**
      * @param string $key
-     * @return mixed
+     * @return string
      * @throws SettingNotFoundException
      */
-    public function get(string $key): mixed
+    public function get(string $key, ?string $default = null): string
     {
 
         if (isset($this->settings[$key])) {
             return $this->settings[$key];
+        }
+
+        if (!empty($default)){
+            return $default;
         }
 
         throw new SettingNotFoundException("Could not find {$key}");
