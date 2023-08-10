@@ -31,7 +31,7 @@ class ContentController extends AbstractController
         ]);
     }
 
-    #[Route('/@{ident}/{slug}', name: 'app_naviation')]
+    #[Route('/@{ident}/{slug}', name: 'app_contentnaviation')]
     public function navigation($ident, $slug): Response
     {
         // Determines whether or not it's a comic or a user and either presents the appropriate comic page, or the user profile

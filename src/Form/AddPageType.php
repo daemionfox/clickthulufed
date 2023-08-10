@@ -3,9 +3,11 @@
 namespace App\Form;
 
 use App\Entity\Page;
+use Eckinox\TinymceBundle\Form\Type\TinymceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -24,7 +26,8 @@ class AddPageType extends AbstractType
                     'label' => 'Page Title:',
                     'required' => true,
                     'attr' => [
-                        'class' => 'form-control'
+                        'class' => 'form-control',
+                        'required' => true
                     ],
                     'label_attr' => [
                         'class' => 'col-form-label col-3 text-right'
@@ -39,6 +42,8 @@ class AddPageType extends AbstractType
                     'required' => true,
                     'attr' => [
                         'class' => 'form-control',
+                        'required' => true,
+                        'readonly' => true
                     ],
                     'label_attr' => [
                         'class' => 'col-form-label col-3 text-right'
@@ -48,12 +53,12 @@ class AddPageType extends AbstractType
             )
             ->add(
                 'info',
-                TextareaType::class,
+                TinymceType::class,
                 [
                     'label' => 'Update Info:',
                     'required' => false,
                     'attr' => [
-                        'class' => 'form-control',
+                        'class' => 'col',
                     ],
                     'label_attr' => [
                         'class' => 'col-form-label col-3 text-right'
@@ -69,6 +74,7 @@ class AddPageType extends AbstractType
                     'required' => false,
                     'attr' => [
                         'class' => 'form-control col',
+                        'required' => true
                     ],
                     'label_attr' => [
                         'class' => 'col-form-label col-3 text-right'
@@ -78,15 +84,24 @@ class AddPageType extends AbstractType
             )
             ->add(
             'transcript',
-            TextareaType::class,
+            TinymceType::class,
                 [
                     'label' => 'Transcript:',
                     'required' => false,
                     'attr' => [
-                        'class' => 'form-control',
+                        'class' => 'col',
                     ],
                     'label_attr' => [
                         'class' => 'col-form-label col-3 text-right'
+                    ]
+                ]
+            )
+            ->add(
+                'submit',
+                SubmitType::class,
+                [
+                    'attr' => [
+                        'class' => 'btn btn-success btn-block',
                     ]
                 ]
             )

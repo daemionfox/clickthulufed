@@ -9,6 +9,12 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: SettingsRepository::class)]
 class Settings
 {
+    const TYPE_BOOL = 'bool';
+    const TYPE_BOOLEAN = 'boolean';
+    const TYPE_STRING = 'string';
+    const TYPE_INT = 'int';
+    const TYPE_INTEGER = 'int';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -25,6 +31,9 @@ class Settings
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $defaultvalue = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $type = 'string';
 
     public function getId(): ?int
     {
@@ -43,9 +52,9 @@ class Settings
         return $this;
     }
 
-    public function getValue(): ?string
+    public function getValue(): mixed
     {
-        return $this->value;
+        return $this->convertValue($this->value);
     }
 
     public function setValue(?string $value): static
@@ -69,7 +78,7 @@ class Settings
 
     public function getDefaultvalue(): ?string
     {
-        return $this->defaultvalue;
+        return $this->convertValue($this->defaultvalue);
     }
 
     public function setDefaultvalue(?string $defaultvalue): static
@@ -78,4 +87,60 @@ class Settings
 
         return $this;
     }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+
+    protected function convertValue($value): mixed
+    {
+        switch(strtolower($this->type)) {
+            case self::TYPE_BOOL:
+            case self::TYPE_BOOLEAN:
+                return $this->toBoolean($value);
+            case self::TYPE_INT:
+            case self::TYPE_INTEGER:
+                return $this->toInteger($value);
+            case self::TYPE_STRING:
+            default:
+                return $value;
+        }
+    }
+
+    protected function toBoolean($value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        } elseif (is_int($value)) {
+            return $value > 0;
+        } elseif (is_string($value)) {
+            if ($value === '1' || strtolower($value) === 'true' || strtolower($value) === 't') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    protected function toInteger($value): int
+    {
+        if (is_bool($value)) {
+            return $value ? 1 : 0;
+        } elseif (is_int($value)) {
+            return $value;
+        } elseif (is_string($value)) {
+            return (int)$value;
+        }
+        return 0;
+    }
+
 }

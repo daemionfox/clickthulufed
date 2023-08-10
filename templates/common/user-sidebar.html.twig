@@ -5,7 +5,7 @@
         <li class="nav-item"><a href="/profile" class="nav-link"><i class="fas fa-user"></i> Profile</a></li>
         <li class="nav-item"><a href="/feed" class="nav-link"><i class="fas fa-book-bookmark"></i> Feed</a></li>
         {% if is_granted('ROLE_CREATOR') %}
-            <li class="nav-item"><a href="/create" class="nav-link"><i class="fas fa-book"></i> Create New Comic</a></li>
+            <li class="nav-item"><a href="{{ url('app_comiccreate') }}" class="nav-link"><i class="fas fa-book"></i> Create New Comic</a></li>
         {% endif %}
 
         {% if is_granted('ROLE_OWNER') %}
@@ -40,7 +40,7 @@
             <hr/>
             <h5>Comic Management</h5>
             {% for comic in app.user.comics %}
-                <li class="nav-item"><a href="/comic/manage/{{ comic.slug }}" class="nav-link"><i class="fas fa-toolbox"></i> Manage {{ comic.name }}</a></li>
+                <li class="nav-item"><a href="/comic/{{ comic.slug }}/pages" class="nav-link"><i class="fas fa-toolbox"></i> Manage {{ comic.name }}</a></li>
             {% endfor %}
         {% endif %}
 

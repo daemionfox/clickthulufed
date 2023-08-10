@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comic.name }} Page Management{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+        <div class="row mb-3">
+            <div class="col">
+                <h1>{{ comic.name }}: Page Management</h1>
+            </div>
+        </div>
+        <div class="row mb-3">
+                {% include "common/comicmanagementnav.html.twig" with { "active": "pages"}%}
+        </div>
+
+        {% for page in comic.pages| sort((a,b) => b.publishdate <=> a.publishdate) %}
+            <div class="row mb-3 comic-page">
+                <div class="col-1">
+                    <div class="page-list-image">
+                        <span class="fa-stack">
+                            <i class="fas fa-circle fa-stack-2x text-white"></i>
+                            {% if page.deleted %}
+                                <i class="fas fa-ban fa-stack-1x text-danger"></i>
+                            {% elseif page.ispublished %}
+                                <i class="fas fa-check fa-stack-1x text-success"></i>
+                            {% else %}]
+                                <i class="fas fa-calendar fa-stack-1x text-secondary"></i>
+                            {% endif %}
+
+                        </span>
+                    </div>
+                </div>
+                <div class="col">{{ page.title }}</div>
+                <div class="col"><i class="fas fa-calendar"></i> {{ page.publishdate|date('Y-m-d H:i') }}</div>
+                <div class="col">
+                    <div class="btn-group" role="group" aria-label="Page Buttons">
+                        <a href="/@{{ comic.slug }}/{{ page.getslug }}" class="btn btn-outline-light" {% if page.deleted or page.ispublished != 'true' %} disabled{% endif %}><i class="fas fa-eye {% if page.info|length == 0 %}text-secondary{% endif %}"></i></a>
+                        <button type="button" class="btn btn-outline-light"><i class="fas fa-comments text-secondary"></i></button>
+                        <a href="/comic/{{ comic.slug }}/editpage/{{ page.id }}" type="button" class="btn btn-info"><i class="fas fa-edit"></i></a>
+                        <button type="button" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "common/user-sidebar.html.twig" %}
+{% endblock %}

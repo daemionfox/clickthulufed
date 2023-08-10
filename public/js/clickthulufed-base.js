@@ -23,7 +23,7 @@ $(document).ready(function(){
         icon.removeClass('text-white').removeClass('fa-at').addClass('fa-spinner').addClass('fa-spin');
         errors.html('');
         $.get(
-            "/create/checkslug/" + text,
+            "/comic/checkslug/" + text,
             {
             }
         ).done(function(data){

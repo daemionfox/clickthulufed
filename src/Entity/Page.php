@@ -46,7 +46,12 @@ class Page
     private ?User $uploadedby = null;
 
     #[ORM\Column]
-    private ?bool $deleted = null;
+    private ?bool $deleted = false;
+
+    public function __construct()
+    {
+        $this->createdon = new \DateTime();
+    }
 
     public function getId(): ?int
     {
@@ -187,6 +192,20 @@ class Page
         return $this;
     }
 
+    public function  isPublished(): bool
+    {
+        $now = new \DateTime();
+        if ($this->deleted === true) {
+            return false;
+        }
+        return $now >= $this->publishdate;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->publishdate->format("Y-m-d");
+    }
+
     public function calculateNextPublishDate(): \DateTime
     {
         $schedule = $this->comic->getSchedule();
@@ -205,12 +224,15 @@ class Page
              * @var Page $a
              * @var Page $b
              */
-            return strtotime($a->getPublishdate()) - strtotime($b->getPublishdate()) > 0;
+            if ($a->getPublishdate() === $b->getPublishdate()) {
+                return 0;
+            }
+            return $a->getPublishdate() < $b->getPublishdate() ? -1 : 1;
         });
-        $lastDate = time();
+        $lastDate = new \DateTime();
         $lastPage = $pageIterator->current();
-        if (!empty($lastPage) && strtotime($lastPage->getPublishdate()) >= $lastDate) {
-            $lastDate = strtotime($lastPage->getPublishdate());
+        if (!empty($lastPage) && $lastPage->getPublishdate() >= $lastDate) {
+            $lastDate = $lastPage->getPublishdate();
         }
 
         $dayBool = [
@@ -227,7 +249,10 @@ class Page
 
         foreach ($dayBool as $day => $bool) {
             if ($bool) {
-                $next[] = strtotime("next {$day}", $lastDate);
+                /**
+                 * TODO - Untangle this kludge
+                 */
+                $next[] = strtotime("next {$day}", strtotime($lastDate->format('Y-m-d H:i')));
             }
         }
         sort($next);

@@ -12,8 +12,11 @@ use App\Form\EditComicType;
 use App\Helpers\SettingsHelper;
 use App\Service\Settings;
 use App\Traits\BooleanTrait;
+use App\Traits\ComicOwnerTrait;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\PersistentCollection;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
@@ -26,6 +29,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class AdminController extends AbstractController
 {
     use BooleanTrait;
+    use ComicOwnerTrait;
 
     /**
      * @return Response
@@ -85,212 +89,8 @@ class AdminController extends AbstractController
         ]);
     }
 
-    /**
-     * Checks the current comic and user database to see if an identifier is already in use.  If the id already exists, it throws an error
-     *
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @return Response
-     */
-    #[Route('/create/checkslug/{slug}', name: 'app_admin')]
-    public function checkComicSlugForUniqueness($slug, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-        $users = $entityManager->getRepository(User::class)->findBy(['username' => $slug]);
-        $comics = $entityManager->getRepository(Comic::class)->findBy(['slug'=> $slug]);
-        $passfail = (count($users) + count($comics));
-
-        if ($passfail === 0) {
-            return new Response("Unique Identifier is available");
-        }
-        return new Response("Unique Identifier is currently in use", 400);
-    }
 
 
-    // TODO - Remove in final
-    #[Route('/info', name: 'app_info')]
-    public function info(): void
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        $user = $this->getUser();
-        if (!in_array("ROLE_OWNER", $user->getRoles())) {
-            echo "No";
-        } else {
-            phpinfo();
-        }
-        exit;
-
-    }
-
-    #[Route('/comic/uploadpage/{slug}', name: 'app_uploadcomicpages')]
-    public function uploadComicPages(string $slug, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-        /**
-         * @var User $user
-         */
-        $user = $this->getUser();
-        /**
-         * @var Comic $comic;
-         */
-        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
-
-        $settings = SettingsHelper::init($entityManager);
-
-        $currentMax = ini_get('upload_max_filesize');
-        $maxUpload = $settings->get('upload_max_filesize', $currentMax);
-        ini_set('upload_max_filesize', $maxUpload);
-
-        $startpath = $settings->get('comic_page_path', 'comicpages');
-        if (substr($startpath,0,1) !== '/') {
-            // Path is a relative path from the /app directory, prepend the app path to it
-            $startpath = __DIR__ . "/../../{$startpath}";
-            $startpath = realpath($startpath);
-        }
-
-        $pagepath = "{$startpath}/{$user->getUsername()}/{$comic->getSlug()}";
-        if (!is_dir($pagepath)) {
-            @mkdir($pagepath, 0775, true);
-        }
-
-        $files = array_pop($_FILES);
-        if (empty($files)) {
-            throw new FileNotFoundException("No file was uploaded.");
-        }
-
-        move_uploaded_file($files['tmp_name'], "{$pagepath}/{$files['name']}");
-
-
-        return new JsonResponse(['status' => 'uploaded', 'file' => $files['name']]);
-
-
-    }
-
-
-    #[Route('/comic/manage/{slug}', name: 'app_managecomicpages')]
-    public function manageComicPages(string $slug, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-        /**
-         * @var User $user
-         */
-        $user = $this->getUser();
-        /**
-         * @var Comic $comic
-         */
-        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
-
-        if (!$this->comicUserMatch($user, $comic)) {
-            $this->addFlash("error", "You do not have permission to manage this comic");
-        }
-
-        $page = new Page();
-        $page->setComic($comic);
-        $page->setPublishdate($page->calculateNextPublishDate());
-
-        $form = $this->createForm(AddPageType::class, $page);
-        $form->handleRequest($request);
-
-        return $this->render('admin/pagelist.html.twig', [
-            'comic' => $comic,
-            'addPageForm' => $form->createView()
-        ]);
-    }
-
-
-
-    #[Route('/comic/activate/{slug}', name: 'app_activatecomic')]
-    public function activateComic(string $slug, Request $request, EntityManagerInterface $entityManager, Settings $settings): Response
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-        /**
-         * @var User $user
-         */
-        $user = $this->getUser();
-        /**
-         * @var Comic $comic
-         */
-        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
-        $hasPerm = $this->hasPermissions($user, $comic);
-        $needsApproval = $settings->get()['require_comic_approval'];
-        $canActivate = false;
-        if (in_array("ROLE_OWNER", $user->getRoles()) || in_array("ROLE_ADMIN", $user->getRoles())) {
-            $canActivate = true;
-        } elseif ($hasPerm && !$this->toBool($needsApproval)) {
-            $canActivate = true;
-        }
-
-        if ($canActivate) {
-            $comic->setIsactive(true);
-            $comic->setActivatedon(new \DateTime());
-            $entityManager->persist($comic);
-            $entityManager->flush();
-            return new RedirectResponse($this->generateUrl("app_profile"));
-        }
-
-        $this->addFlash('error', 'You do not have the permission to activate this comic.  Please see an administrator.');
-        return new RedirectResponse($this->generateUrl("app_profile"), 400);
-
-    }
-
-    #[Route('/comic/deactivate/{slug}', name: 'app_deactivatecomic')]
-    public function deactivateComic(string $slug, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        /**
-         * @var User $user
-         */
-        $user = $this->getUser();
-        /**
-         * @var Comic $comic
-         */
-        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
-        $hasPerm = $this->hasPermissions($user, $comic);
-
-        if ($hasPerm) {
-            $comic->setIsactive(false);
-            $entityManager->persist($comic);
-            $entityManager->flush();
-            return new RedirectResponse($this->generateUrl("app_profile"));
-        }
-
-        $this->addFlash('error', 'You do not have the permission to deactivate this comic.  Please see an administrator.');
-        return new RedirectResponse($this->generateUrl("app_profile"), 400);
-
-    }
-
-
-
-    #[Route('/comic/delete/{slug}', name: 'app_deletecomic')]
-    public function deleteComic(string $slug, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        /**
-         * @var User $user
-         */
-        $user = $this->getUser();
-        /**
-         * @var Comic $comic
-         */
-        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
-        $canDelete = $this->hasPermissions($user, $comic);
-
-        if (!$canDelete) {
-            $this->addFlash('error', "You do not have permission to delete {$comic->getName()}");
-            return new RedirectResponse($this->generateUrl("app_profile"), 400);
-        }
-
-        $comic->setIsdeleted(true);
-        $comic->setDeletedon(new \DateTime());
-        $entityManager->persist($comic);
-        $entityManager->flush();
-        return new RedirectResponse($this->generateUrl("app_profile"));
-
-    }
 
     #[Route('/admin/addrole/{username}/{role}', name: 'app_addrole')]
     public function addRoleToUser(string $username, string $role, EntityManagerInterface $entityManager): Response
@@ -315,7 +115,7 @@ class AdminController extends AbstractController
             $addto->setRequestRole(null);
             $entityManager->persist($addto);
             $entityManager->flush();
-        } catch (\Exception) {
+        } catch (Exception) {
             $this->addFlash('error', "Could not add role: {$role} to {$username}");
         }
         return new RedirectResponse($this->generateUrl("app_adminusers"));
@@ -352,7 +152,7 @@ class AdminController extends AbstractController
             $remfrom->setRequestRole(null);
             $entityManager->persist($remfrom);
             $entityManager->flush();
-        } catch (\Exception) {
+        } catch (Exception) {
             $this->addFlash('error', "Could not remove role: {$role} from {$username}");
         }
         return new RedirectResponse($this->generateUrl("app_adminusers"));
@@ -396,56 +196,17 @@ class AdminController extends AbstractController
     /**
      * @param string $string
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getRole(string $string): string
     {
         switch(strtoupper($string)) {
             case "CREATOR":
                 return "ROLE_CREATOR";
-                break;
             case "ADMIN":
                 return "ROLE_ADMIN";
         }
-        throw new \Exception("Role not found");
-    }
-
-    protected function hasPermissions(User $user, Comic $comic)
-    {
-
-        if (in_array('ROLE_OWNER', $user->getRoles())) {
-            return true;
-        }
-        if (in_array('ROLE_ADMIN', $user->getRoles())) {
-            return true;
-        }
-        return $this->comicUserMatch($user, $comic);
-    }
-
-    public function comicUserMatch(User $user, Comic $comic): bool
-    {
-
-//        $admins = $comic->getAdmin();
-        $owner = $comic->getOwner();
-        /**
-         * @var User $owner
-         */
-        if($owner->getUserIdentifier() === $user->getUserIdentifier()) {
-            return true;
-        }
-
-//
-//        /**
-//         * @var User $admin
-//         */
-//        foreach($admins as $admin) {
-//            if ($admin->getUserIdentifier() === $user->getUserIdentifier()) {
-//                return true;
-//            }
-//        }
-
-
-        return false;
+        throw new Exception("Role not found");
     }
 
 }

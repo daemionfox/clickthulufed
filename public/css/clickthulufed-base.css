@@ -78,6 +78,18 @@ a.btn.btn-link:hover {
     aspect-ratio: .67;
 }
 
+#page_upload_dropzone img {
+    border-radius: 16px;
+}
+
+#page_upload_spinner {
+    position: relative;
+    top: 128px;
+
+}
+
+
+
 .dropzone {
     background-color: unset !important;
     border: 2px solid var(--white);

@@ -1,0 +1,22 @@
+<ul class="nav nav-tabs text-right">
+    <li class="nav-item">
+        <a class="nav-link {% if active == 'edit' %}active{% endif %}" href="/comic/{{ comic.slug }}/edit"><i class="fas fa-edit"></i> Edit</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if active == 'pages' %}active{% endif %}" href="/comic/{{ comic.slug }}/pages"><i class="fas fa-file"></i> Pages</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link  {% if active == 'cast' %}active{% endif %} disabled" href="/comic/{{ comic.slug }}/cast"><i class="fas fa-users"></i> Cast</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if active == 'chapters' %}active{% endif %} disabled" href="/comic/{{ comic.slug }}/chapters"><i class="fas fa-book"></i> Chapters</a>
+    </li>
+    <li class="nav-item col-1">&nbsp;</li>
+    {% if active == 'pages' %}
+        <li class="nav-item ms-auto active">
+            <a class="nav-link bg-white text-success" href="/comic/{{ comic.slug }}/addpage"><i class="fas fa-file-circle-plus"></i> Add New Page</a>
+        </li>
+    {% elseif active == 'cast' %}
+    {% elseif active == 'chapters' %}
+    {% endif %}
+</ul>

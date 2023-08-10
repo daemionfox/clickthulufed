@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comic.name }} Page Management{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+        <div class="row mb-3">
+            <div class="col">
+                <h1>{{ comic.name }}: Page Management</h1>
+            </div>
+        </div>
+
+
+            <div class="row mb-3">
+
+            <div class="col m-2 ">
+                {{ form_errors(addPageForm) }}
+
+                <div class="row mb-3">
+                    <div class="col">
+                        {{ form_start(addPageForm) }}
+
+                        <div class="row mb-3">
+                            {{ form_label(addPageForm.title) }}
+                            <div class="col">
+                                {{ form_widget(addPageForm.title) }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            {{ form_label(addPageForm.image) }}
+                            <div class="col">
+                                {{ form_widget(addPageForm.image) }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            {{ form_label(addPageForm.info) }}
+                            <div class="col">
+                                {{ form_widget(addPageForm.info) }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            {{ form_label(addPageForm.publishdate) }}
+                            <div class="col">
+                                {{ form_widget(addPageForm.publishdate, {
+                                    attr: {
+                                        'data-format': 'yyyy-MM-dd hh:mm'
+                                    }
+                                }) }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            {{ form_label(addPageForm.transcript) }}
+                            <div class="col">
+                                {{ form_widget(addPageForm.transcript) }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col offset-3">
+                                {{ form_widget(addPageForm.submit) }}
+                            </div>
+                        </div>
+
+
+                    {{ form_end(addPageForm) }}
+                    </div>
+                    <div class="col-3">
+                        <div class="row mb-2 " id="page_upload_dropzone">
+                            <div  id="page_upload_spinner" class="col text-center d-none">
+                                <i class="fas fa-spinner fa-spin fa-4x"></i>
+                            </div>
+                            <img src="/image/{{ comic.slug }}/{{ page.image }}" class="{% if page.image is empty %}d-none{% endif%} img-fluid" id="page_upload_image"  alt=""/>
+                        </div>
+                        <div class="row">
+                            <form method="POST" action="/comic/{{ comic.slug }}/uploadpage" enctype="multipart/form-data" class="dropzone layerfont-upload-dz" id="page_upload_dropzone_form"></form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "common/user-sidebar.html.twig" %}
+{% endblock %}

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "55d2a4aa440874cebdb70219d6562b86",
+    "content-hash": "2d608e9faa5b7df09dde0c16becab708",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -1318,6 +1318,52 @@
                 "source": "https://github.com/doctrine/sql-formatter/tree/1.1.3"
             },
             "time": "2022-05-23T21:33:49+00:00"
+        },
+        {
+            "name": "eckinox/tinymce-bundle",
+            "version": "v0.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/eckinox/tinymce-bundle.git",
+                "reference": "85efd8e09e30277c7e3f1e400c4a547292eafb9b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/eckinox/tinymce-bundle/zipball/85efd8e09e30277c7e3f1e400c4a547292eafb9b",
+                "reference": "85efd8e09e30277c7e3f1e400c4a547292eafb9b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0",
+                "symfony/dependency-injection": "^4.0|^5.0|^6.0",
+                "symfony/form": "^4.0|^5.0|^6.0",
+                "symfony/http-foundation": "^4.0|^5.0|^6.0",
+                "symfony/http-kernel": "^4.0|^5.0|^6.0",
+                "symfony/routing": "^4.0|^5.0|^6.0",
+                "twig/twig": "^3.3"
+            },
+            "require-dev": {
+                "eckinox/eckinox-cs": ">=1.2.1"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Eckinox\\TinymceBundle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Émile Perron",
+                    "email": "contact@emileperron.com"
+                }
+            ],
+            "description": "A Symfony bundle to add TinyMCE in your apps and forms.",
+            "support": {
+                "issues": "https://github.com/eckinox/tinymce-bundle/issues",
+                "source": "https://github.com/eckinox/tinymce-bundle/tree/v0.1.5"
+            },
+            "time": "2022-05-11T19:17:31+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -3266,16 +3312,16 @@
         },
         {
             "name": "symfony/flex",
-            "version": "v2.3.2",
+            "version": "v2.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/flex.git",
-                "reference": "b31c58d7aaf1a16dd7bd302dfb386f95ae8cda12"
+                "reference": "9c402af768c6c9f8126a9ffa192ecf7c16581e35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/flex/zipball/b31c58d7aaf1a16dd7bd302dfb386f95ae8cda12",
-                "reference": "b31c58d7aaf1a16dd7bd302dfb386f95ae8cda12",
+                "url": "https://api.github.com/repos/symfony/flex/zipball/9c402af768c6c9f8126a9ffa192ecf7c16581e35",
+                "reference": "9c402af768c6c9f8126a9ffa192ecf7c16581e35",
                 "shasum": ""
             },
             "require": {
@@ -3311,7 +3357,7 @@
             "description": "Composer plugin for Symfony",
             "support": {
                 "issues": "https://github.com/symfony/flex/issues",
-                "source": "https://github.com/symfony/flex/tree/v2.3.2"
+                "source": "https://github.com/symfony/flex/tree/v2.3.3"
             },
             "funding": [
                 {
@@ -3327,7 +3373,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-08-02T08:51:22+00:00"
+            "time": "2023-08-04T09:02:35+00:00"
         },
         {
             "name": "symfony/form",
@@ -9552,7 +9598,7 @@
     "platform": {
         "php": ">=8.1",
         "ext-ctype": "*",
-        "ext-http": "*",
+        "ext-gd": "*",
         "ext-iconv": "*"
     },
     "platform-dev": [],

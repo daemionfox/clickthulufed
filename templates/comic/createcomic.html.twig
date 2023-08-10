@@ -10,8 +10,16 @@
 
 
     <div class="container">
-        <div class="card col-8 offset-2 p-3 mt-5 panel">
-            <h1>Create Comic</h1>
+        <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-create">
+            <div class="row mb-3">
+                <div class="col">
+                    <h1>Create Comic</h1>
+                </div>
+            </div>
+            <div class="row mb-3">
+                {% include "common/comicmanagementnav.html.twig" with { "active": "edit"}%}
+            </div>
+
 
             {{ form_errors(createcomicForm) }}
 
@@ -68,5 +76,5 @@
 
 
 {% block sidebar %}
-    {% include "user-sidebar.html.twig" %}
+    {% include "common/user-sidebar.html.twig" %}
 {% endblock %}
