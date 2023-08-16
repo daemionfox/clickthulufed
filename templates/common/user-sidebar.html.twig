@@ -11,7 +11,7 @@
         {% if is_granted('ROLE_OWNER') %}
             <hr/>
             <h5>Server Management</h5>
-            <li class="nav-item"><a href="/server/manage" class="nav-link"><i class="fas fa-gear"></i> Server Settings</a> </li>
+            <li class="nav-item"><a href="/admin/settings" class="nav-link"><i class="fas fa-gear"></i> Server Settings</a> </li>
         {% endif %}
 
         {% if is_granted('ROLE_OWNER') or is_granted('ROLE_ADMIN') %}
@@ -40,7 +40,7 @@
             <hr/>
             <h5>Comic Management</h5>
             {% for comic in app.user.comics %}
-                <li class="nav-item"><a href="/comic/{{ comic.slug }}/pages" class="nav-link"><i class="fas fa-toolbox"></i> Manage {{ comic.name }}</a></li>
+                <li class="nav-item"><a href="/page/{{ comic.slug }}" class="nav-link"><i class="fas fa-toolbox"></i> Manage {{ comic.name }}</a></li>
             {% endfor %}
         {% endif %}
 

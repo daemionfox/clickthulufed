@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comic.name }} Page Management{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+            <div class="row mb-3">
+                <div class="col">
+                    <h1>{{ comic.name }}: Cast Management</h1>
+                </div>
+            </div>
+            <div class="row mb-3">
+                {% include "common/comicmanagementnav.html.twig" with { "active": "cast"} %}
+            </div>
+
+            {% for c in comic.casts| sort((a,b) => a.name <=> b.name) %}
+                <div class="row mb-3 pb-3 cast-info border-bottom">
+                    <div class="col-2">
+                        <img src="/castimage/{{ comic.slug }}/{{ c.image }}" class="img-fluid cast-list-image" alt="c.name" />
+                    </div>
+                    <div class="col">
+                        <h4>{{ c.name }}</h4>
+                        {{ c.description|raw }}
+                    </div>
+                    <div class="col-3">
+                        <div class="btn-group" role="group" aria-label="Cast Buttons">
+                            <a href="/@{{ comic.slug }}/cast/{{ c.name }}" class="btn btn-outline-light" {% if c.deleted %} disabled{% endif %}><i class="fas {% if c.deleted %}fa-eye-slash text-secondary{% else %}fa-eye{% endif %}"></i></a>
+                            <button type="button" class="btn btn-outline-light"><i class="fas fa-comments text-secondary"></i></button>
+                            <a href="/cast/{{ comic.slug }}/edit/{{ c.id }}" type="button" class="btn btn-info"><i class="fas fa-edit"></i></a>
+                            <a href="/cast/{{ comic.slug }}/delete/{{ c.id }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "common/user-sidebar.html.twig" %}
+{% endblock %}

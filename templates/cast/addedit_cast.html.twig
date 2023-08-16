@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comic.name }} Cast Management{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+        <div class="row mb-3">
+            <div class="col">
+                <h1>{{ comic.name }}: Cast Management</h1>
+            </div>
+        </div>
+
+
+            <div class="row mb-3">
+
+            <div class="col m-2 ">
+                {{ form_errors(addCastForm) }}
+
+                <div class="row mb-3">
+                    <div class="col">
+                        {{ form_start(addCastForm) }}
+
+                        <div class="row mb-3">
+                            {{ form_label(addCastForm.name) }}
+                            <div class="col">
+                                {{ form_widget(addCastForm.name) }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            {{ form_label(addCastForm.image) }}
+                            <div class="col">
+                                {{ form_widget(addCastForm.image) }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            {{ form_label(addCastForm.description) }}
+                            <div class="col">
+                                {{ form_widget(addCastForm.description) }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col offset-3">
+                                {{ form_widget(addCastForm.submit) }}
+                            </div>
+                        </div>
+
+
+                    {{ form_end(addCastForm) }}
+                    </div>
+                    <div class="col-3">
+                        <div class="row mb-2 dropzone-target" id="cast_upload_dropzone">
+                            <div  id="image_upload_spinner" class="col text-center d-none">
+                                <i class="fas fa-spinner fa-spin fa-4x"></i>
+                            </div>
+                            <img src="/castimage/{{ comic.slug }}/{{ cast.image }}" class="{% if cast.image is empty %}d-none{% endif%} img-fluid" id="cast_upload_image"  alt=""/>
+                        </div>
+                        <div class="row">
+                            <form method="POST" action="/cast/{{ comic.slug }}/uploadimage" enctype="multipart/form-data" class="dropzone layerfont-upload-dz" id="cast_upload_dropzone_form"></form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "common/user-sidebar.html.twig" %}
+{% endblock %}

@@ -3,24 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\Comic;
-use App\Entity\Page;
+use App\Entity\Settings;
+use App\Entity\SettingsCollection;
 use App\Entity\User;
-use App\Exceptions\SettingNotFoundException;
-use App\Form\AddPageType;
-use App\Form\CreateComicType;
-use App\Form\EditComicType;
-use App\Helpers\SettingsHelper;
-use App\Service\Settings;
+use App\Form\SettingsType;
 use App\Traits\BooleanTrait;
 use App\Traits\ComicOwnerTrait;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\PersistentCollection;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -171,7 +163,7 @@ class AdminController extends AbstractController
         $user = $this->getUser();
         if (!in_array("ROLE_OWNER", $user->getRoles()) && !in_array("ROLE_ADMIN", $user->getRoles())) {
             $this->addFlash('error', 'You do not have permission to perform this action');
-            return new RedirectResponse($this->generateUrl("/profile"), 400);
+            return new RedirectResponse($this->generateUrl("/profile"), 403);
         }
 
         /**
@@ -180,7 +172,7 @@ class AdminController extends AbstractController
         $delUser = $entityManager->getRepository(User::class)->findOneBy(['username' => $username]);
         if (in_array('ROLE_OWNER', $delUser->getRoles())) {
             $this->addFlash('error', 'Server Owner cannot be deleted');
-            return new RedirectResponse($this->generateUrl('app_adminusers'), 400);
+            return new RedirectResponse($this->generateUrl('app_adminusers'), 403);
         }
 
         $delUser->setDeleted(true);
@@ -189,6 +181,59 @@ class AdminController extends AbstractController
         $entityManager->flush();;
 
         return new RedirectResponse($this->generateUrl('app_adminusers'));
+    }
+
+
+    #[Route('/admin/settings', name: 'app_settings')]
+    public function getSettings(EntityManagerInterface $entityManager, Request $request): Response
+    {
+
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        if (!in_array("ROLE_OWNER", $user->getRoles()) && !in_array("ROLE_ADMIN", $user->getRoles())) {
+            $this->addFlash('error', 'You do not have permission to perform this action');
+            return new RedirectResponse($this->generateUrl("/profile"), 403);
+        }
+
+        $items = $entityManager->getRepository(\App\Entity\Settings::class)->findAll();
+        $settingsCollection = new SettingsCollection();
+        /**
+         * @var Settings $item
+         */
+        foreach ($items as $item) {
+            $settingsCollection->addItem($item);
+        }
+        $form = $this->createForm(SettingsType::class, $settingsCollection);
+        $form->handleRequest($request);
+
+        try {
+            if ($form->isSubmitted() && $form->isValid()) {
+                /**
+                 * @var Settings $item
+                 */
+                foreach ($settingsCollection->getItems() as $item) {
+                    $entityManager->persist($item);
+                }
+                $entityManager->flush();
+                $this->addFlash('message', 'Settings have been updated');
+                return new RedirectResponse($this->generateUrl('app_settings'));
+            }
+        } catch (\Exception $e){
+            $err = new FormError($e->getMessage());
+            $form->addError($err);
+        }
+
+
+
+        return $this->render(
+            'admin/settings.html.twig',
+            [
+                'settingsForm' => $form->createView()
+            ]
+        );
     }
 
 

@@ -53,11 +53,15 @@ class Comic
     #[ORM\JoinColumn(nullable: false)]
     private ?User $Owner = null;
 
+    #[ORM\OneToMany(mappedBy: 'Comic', targetEntity: Cast::class, orphanRemoval: true)]
+    private Collection $casts;
+
     public function __construct()
     {
         $this->admin = new ArrayCollection();
         $this->chapters = new ArrayCollection();
         $this->pages = new ArrayCollection();
+        $this->casts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -256,6 +260,36 @@ class Comic
     public function setOwner(?User $Owner): static
     {
         $this->Owner = $Owner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Cast>
+     */
+    public function getCasts(): Collection
+    {
+        return $this->casts;
+    }
+
+    public function addCast(Cast $cast): static
+    {
+        if (!$this->casts->contains($cast)) {
+            $this->casts->add($cast);
+            $cast->setComic($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCast(Cast $cast): static
+    {
+        if ($this->casts->removeElement($cast)) {
+            // set the owning side to null (unless already changed)
+            if ($cast->getComic() === $this) {
+                $cast->setComic(null);
+            }
+        }
 
         return $this;
     }

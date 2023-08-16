@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\PageRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\PersistentCollection;
@@ -48,9 +49,13 @@ class Page
     #[ORM\Column]
     private ?bool $deleted = false;
 
+    #[ORM\ManyToMany(targetEntity: Cast::class, mappedBy: 'pages')]
+    private Collection $casts;
+
     public function __construct()
     {
         $this->createdon = new \DateTime();
+        $this->casts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -265,5 +270,32 @@ class Page
         $nextDT->setTime($time->format('H'), $time->format('i'), 00);
         $nextDT->setTimezone(new \DateTimeZone($schedule->getTimezone()));
         return $nextDT;
+    }
+
+    /**
+     * @return Collection<int, Cast>
+     */
+    public function getCasts(): Collection
+    {
+        return $this->casts;
+    }
+
+    public function addCast(Cast $cast): static
+    {
+        if (!$this->casts->contains($cast)) {
+            $this->casts->add($cast);
+            $cast->addPage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCast(Cast $cast): static
+    {
+        if ($this->casts->removeElement($cast)) {
+            $cast->removePage($this);
+        }
+
+        return $this;
     }
 }

@@ -67,7 +67,7 @@
                             </div>
                         {% else %}
                             {% for comic in app.user.comics %}
-                                {% include "content/profile_comic_block.html.twig" with { comic: comic, settings:settings } %}
+                                {% include "profile/profile_comic_block.html.twig" with { comic: comic, settings:settings } %}
                             {% endfor %}
                         {% endif %}
                     </div>

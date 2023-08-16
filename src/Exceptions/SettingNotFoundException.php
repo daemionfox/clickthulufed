@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-class SettingNotFoundException extends \Exception
+class SettingNotFoundException extends ClickthuluException
 {
 
 }

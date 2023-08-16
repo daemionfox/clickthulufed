@@ -72,17 +72,17 @@ a.btn.btn-link:hover {
     color: var(--white);
 }
 
-#page_upload_dropzone {
+.dropzone-target {
     border: 2px solid var(--white);
     border-radius: 16px;
-    aspect-ratio: .67;
+    min-height: 200px;
 }
 
-#page_upload_dropzone img {
+.dropzone-target img {
     border-radius: 16px;
 }
 
-#page_upload_spinner {
+#image_upload_spinner {
     position: relative;
     top: 128px;
 
@@ -95,4 +95,21 @@ a.btn.btn-link:hover {
     border: 2px solid var(--white);
     border-radius: 16px;
     max-height: 60px;
+}
+
+.img-icon {
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    height: auto;
+    border-radius: 16px;
+}
+
+
+.cast-select:checked + label.cast-select-label {
+    background-color: var(--white);
+    border: 2px solid var(--background-color-dark);
+    color: var(--background-color-dark);
+    border-radius: 8px;
+
 }

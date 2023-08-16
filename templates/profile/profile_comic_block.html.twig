@@ -22,7 +22,7 @@
     <div class="col-3">
         <div class="row mb-1">
             <div class="col">
-                <a href="/comic/{{ comic.slug }}/pages" class="btn btn-block btn-success"><i class="fas fa-toolbox"></i> Manage</a>
+                <a href="/page/{{ comic.slug }}" class="btn btn-block btn-success"><i class="fas fa-toolbox"></i> Manage</a>
             </div>
         </div>
         <div class="row mb-1">
@@ -41,6 +41,11 @@
                 <div class="row mb-1">
                     <div class="col">
                         <a class="btn btn-block btn-outline-success" href="/comic/{{ comic.slug }}/activate"><i class="fas fa-lock-open"></i> Activate</a>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col">
+                        <a class="btn btn-block btn-outline-danger" href="/comic/{{ comic.slug }}/delete"><i class="fas fa-trash"></i> Delete</a>
                     </div>
                 </div>
             {% else %}

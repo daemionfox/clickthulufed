@@ -1,0 +1,97 @@
+<?php
+
+namespace App\Form;
+
+use App\Entity\Settings;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+class SettingsItemType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->addEventListener(
+                FormEvents::POST_SET_DATA,
+                [$this, 'onPostSetData']
+            )
+        ;
+
+    }
+
+    public function onPostSetData(FormEvent $event): void
+    {
+        $form = $event->getForm();
+        /**
+         * @var Settings $data
+         */
+        $data = $event->getData();
+        $options = $this->getOptions($data);
+        switch($data->getType()) {
+            case Settings::TYPE_INT:
+            case Settings::TYPE_INTEGER:
+                $options['attr']['class'] = 'form-control';
+                $form->add(
+                    'value',
+                    NumberType::class,
+                    $options
+                );
+                break;
+            case Settings::TYPE_BOOL:
+            case Settings::TYPE_BOOLEAN:
+                $options['multiple'] = false;
+                $options['expanded'] = false;
+                $options['choices'] = [
+                    'Yes' => 1,
+                    'No' => 0
+                ];
+                $options['choice_attr'] = [
+                    'class' => 'col'
+                ];
+                $form->add(
+                    'value',
+                    ChoiceType::class,
+                    $options
+                );
+                break;
+            case Settings::TYPE_STRING:
+            default:
+                $form->add(
+                    'value',
+                    TextType::class,
+                    $options
+                );
+                break;
+        }
+
+
+
+        $foo = 'bar';
+    }
+
+    protected function getOptions(Settings $settings)
+    {
+        return [
+            'label' => $settings->getDisplayName() . ":",
+            'attr' => ['class' => 'form-control'],
+            'label_attr' => [
+                'class' => 'col-4 text-end text-bold'
+            ],
+            'help' => $settings->getHelp()
+        ];
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class' => Settings::class
+        ]);
+    }
+
+}

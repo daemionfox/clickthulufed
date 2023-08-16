@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comic.name }} Page Management{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+        <div class="row mb-3">
+            <div class="col">
+                <h1>{{ comic.name }}: Page Management</h1>
+            </div>
+        </div>
+        <div class="row mb-3">
+            {% include "common/comicmanagementnav.html.twig" with { "active": "pages"} %}
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col m-2 ">
+                {{ form_errors(addPageForm) }}
+                {{ form_start(addPageForm) }}
+                <div class="row mb-3">
+                    <div class="col">
+                        <h3>Details</h3>
+                    </div>
+                    <div class="col-1">
+                        <button class="accordian-button btn btn-outline-light btn-sm pull-end" type="button" data-bs-toggle="collapse" data-bs-target="#page-details" aria-controls="page-details" aria-expanded="true"><i class="fas fa-caret-down"></i></button>
+                    </div>
+                </div>
+                <div class="accordian open" id="page-details">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <div class="row mb-3">
+                                {{ form_label(addPageForm.title) }}
+                                <div class="col">
+                                    {{ form_widget(addPageForm.title) }}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                {{ form_label(addPageForm.image) }}
+                                <div class="col">
+                                    {{ form_widget(addPageForm.image) }}
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                {{ form_label(addPageForm.info) }}
+                                <div class="col">
+                                    {{ form_widget(addPageForm.info) }}
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                {{ form_label(addPageForm.publishdate) }}
+                                <div class="col">
+                                    {{ form_widget(addPageForm.publishdate, {
+                                        attr: {
+                                            'data-format': 'yyyy-MM-dd hh:mm'
+                                        }
+                                    }) }}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                {{ form_label(addPageForm.transcript) }}
+                                <div class="col">
+                                    {{ form_widget(addPageForm.transcript) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if addPageForm.casts|length > 0 %}
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h3>Cast</h3>
+                        </div>
+                        <div class="col-1">
+                            <button class="accordian-button btn btn-outline-light btn-sm pull-end" type="button" data-bs-toggle="collapse" data-bs-target="#cast-details" aria-controls="cast-details" aria-expanded="false"><i class="fas fa-caret-down"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="accordian" id="cast-details">
+                        <div class="row mb-3">
+                            <div class="col-3">Select Page Cast:</div>
+                            <div class="col">
+                                <div class="row">
+                                    {% for cast in addPageForm.casts %}
+                                        <div class="col-6">
+                                            {{ form_widget(cast, { attr: {"class": "cast-select d-none" } }) }}
+                                            {{ form_label(cast, cast.vars.label, { label_html: true, label_attr: { "class": "col cast-select-label p-2" } }) }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% do addPageForm.casts.setRendered() %}
+
+
+
+
+
+                <div class="row mb-3">
+                        <div class="col offset-3">
+                            {{ form_widget(addPageForm.submit) }}
+                        </div>
+                </div>
+
+                {{ form_end(addPageForm) }}
+
+
+            </div>
+            <div class="col-3">
+                <div class="row mb-2  dropzone-target" id="page_upload_dropzone">
+                    <div  id="image_upload_spinner" class="col text-center d-none">
+                        <i class="fas fa-spinner fa-spin fa-4x"></i>
+                    </div>
+                    <img src="/image/{{ comic.slug }}/{{ page.image }}" class="{% if page.image is empty %}d-none{% endif%} img-fluid" id="page_upload_image"  alt=""/>
+                </div>
+                <div class="row">
+                    <form method="POST" action="/page/{{ comic.slug }}/upload" enctype="multipart/form-data" class="dropzone layerfont-upload-dz" id="page_upload_dropzone_form"></form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "common/user-sidebar.html.twig" %}
+{% endblock %}

@@ -13,7 +13,7 @@ class Settings
     const TYPE_BOOLEAN = 'boolean';
     const TYPE_STRING = 'string';
     const TYPE_INT = 'int';
-    const TYPE_INTEGER = 'int';
+    const TYPE_INTEGER = 'integer';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -34,6 +34,12 @@ class Settings
 
     #[ORM\Column(length: 255)]
     private ?string $type = 'string';
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $help = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $displayName = null;
 
     public function getId(): ?int
     {
@@ -141,6 +147,30 @@ class Settings
             return (int)$value;
         }
         return 0;
+    }
+
+    public function getHelp(): ?string
+    {
+        return $this->help;
+    }
+
+    public function setHelp(?string $help): static
+    {
+        $this->help = $help;
+
+        return $this;
+    }
+
+    public function getDisplayName(): ?string
+    {
+        return $this->displayName;
+    }
+
+    public function setDisplayName(?string $displayName): static
+    {
+        $this->displayName = $displayName;
+
+        return $this;
     }
 
 }

@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-class NameInUseException extends \Exception
+class NameInUseException extends ClickthuluException
 {
 
 }

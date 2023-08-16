@@ -24,7 +24,7 @@
                                 <i class="fas fa-ban fa-stack-1x text-danger"></i>
                             {% elseif page.ispublished %}
                                 <i class="fas fa-check fa-stack-1x text-success"></i>
-                            {% else %}]
+                            {% else %}
                                 <i class="fas fa-calendar fa-stack-1x text-secondary"></i>
                             {% endif %}
 
@@ -35,9 +35,9 @@
                 <div class="col"><i class="fas fa-calendar"></i> {{ page.publishdate|date('Y-m-d H:i') }}</div>
                 <div class="col">
                     <div class="btn-group" role="group" aria-label="Page Buttons">
-                        <a href="/@{{ comic.slug }}/{{ page.getslug }}" class="btn btn-outline-light" {% if page.deleted or page.ispublished != 'true' %} disabled{% endif %}><i class="fas fa-eye {% if page.info|length == 0 %}text-secondary{% endif %}"></i></a>
+                        <a href="/@{{ comic.slug }}/{{ page.getslug }}" class="btn btn-outline-light" {% if page.deleted or page.ispublished != 'true' %} disabled{% endif %}><i class="fas {% if page.deleted or page.ispublished != 'true' %}fa-eye-slash text-secondary{% else %}fa-eye{% endif %}"></i></a>
                         <button type="button" class="btn btn-outline-light"><i class="fas fa-comments text-secondary"></i></button>
-                        <a href="/comic/{{ comic.slug }}/editpage/{{ page.id }}" type="button" class="btn btn-info"><i class="fas fa-edit"></i></a>
+                        <a href="/page/{{ comic.slug }}/edit/{{ page.id }}" type="button" class="btn btn-info"><i class="fas fa-edit"></i></a>
                         <button type="button" class="btn btn-danger"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>

@@ -6,6 +6,7 @@ use App\Entity\Comic;
 use App\Entity\Page;
 use App\Entity\User;
 use App\Enumerations\MediaPathEnumeration;
+use App\Exceptions\ImageException;
 use App\Helpers\SettingsHelper;
 use App\Traits\ComicOwnerTrait;
 use App\Traits\MediaPathTrait;
@@ -25,55 +26,38 @@ class ImageController extends AbstractController
     #[Route('/image/{slug}/{file}', name: 'app_image')]
     public function getPage(string $slug, string $file, EntityManagerInterface $entityManager) : Response
     {
-        /**
-         * @var User $user
-         */
-        $user = $this->getUser();
-        /**
-         * @var Comic $comic
-         */
-        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
-        $settings = SettingsHelper::init($entityManager);
-        $canView = false;
-
-        /**
-         * @var Page $page
-         */
-        $page = $entityManager->getRepository(Page::class)->findOneBy(
-            [
-                'comic' => $comic,
-                'image' => $file
-            ]
-        );
-
-        $now = new \DateTime();
-
-        if (!empty($page) && $page->getPublishdate() <= $now) {
-            $canView = true;
-        }
-
-        if ($this->comicUserMatch($user, $comic)) {
-            $canView = true;
-        }
-
-        if (!$canView) {
+        try {
+            return $this->getImage($slug, $file, MediaPathEnumeration::PATH_COMIC, $entityManager);
+        } catch (ImageException) {
             return $this->getFileNotFound($entityManager);
         }
+    }
 
-        $pagepath = $this->getMediaPath($settings, $user, $comic, MediaPathEnumeration::PATH_COMIC);
-        $filepath = "{$pagepath}/{$file}";
+    #[Route('/thumbnail/{slug}/{file}', name: 'app_thumbnail')]
+    public function getThumbnail(string $slug, string $file, EntityManagerInterface $entityManager) : Response
+    {
+        try {
+            return $this->getImage($slug, $file, MediaPathEnumeration::PATH_THUMBNAIL, $entityManager);
+        } catch (ImageException) {
+        }
+        return $this->getPage($slug, $file, $entityManager);
 
-        if (!is_file($filepath)) {
+    }
+
+    #[Route('/castimage/{slug}/{file}', name: 'app_thumbnail')]
+    public function getCast(string $slug, string $file, EntityManagerInterface $entityManager) : Response
+    {
+        try {
+            return $this->getImage($slug, $file, MediaPathEnumeration::PATH_CAST, $entityManager);
+        } catch (ImageException) {
             return $this->getFileNotFound($entityManager);
         }
-        return new BinaryFileResponse($pagepath);
 
     }
 
 
 
-    #[Route('/thumbnail/{slug}/{file}', name: 'app_thumbnail')]
-    public function getThumbnail(string $slug, string $file, EntityManagerInterface $entityManager) : Response
+    protected function getImage(string $slug, string $file, string $type, EntityManagerInterface $entityManager)
     {
         /**
          * @var User $user
@@ -110,14 +94,14 @@ class ImageController extends AbstractController
             return $this->getFileNotFound($entityManager);
         }
 
-        $thumbpath = $this->getMediaPath($settings, $user, $comic, MediaPathEnumeration::PATH_THUMBNAIL);
-        $filepath = "{$thumbpath}/{$file}";
+        $path = $this->getMediaPath($settings, $user, $comic, $type);
+        $filepath = "{$path}/{$file}";
         if (!is_file($filepath)) {
-            return $this->getPage($slug, $file, $entityManager);
+            throw new ImageException("File not found");
         }
         return new BinaryFileResponse($filepath);
-
     }
+
 
     #[Route('/admin/ocrpage/{slug}/{file}', name: 'app_ocrpage')]
     public function ocrTranscript(string $slug, string $file, EntityManagerInterface $entityManager)
