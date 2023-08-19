@@ -27,7 +27,7 @@ class EditComicType extends AbstractType
                         'readonly' => true
                     ],
                     'label_attr' => [
-                        'class' => 'col-form-label col-3 text-right'
+                        'class' => 'col-form-label col-3 text-end'
                     ]
                 ]
 
@@ -43,7 +43,7 @@ class EditComicType extends AbstractType
                         'readonly' => true
                     ],
                     'label_attr' => [
-                        'class' => 'col-form-label col-3 text-right'
+                        'class' => 'col-form-label col-3 text-end'
                     ]
                 ]
             )
@@ -57,7 +57,7 @@ class EditComicType extends AbstractType
                         'class' => 'form-control'
                     ],
                     'label_attr' => [
-                        'class' => 'col-form-label col-3 text-right'
+                        'class' => 'col-form-label col-3 text-end'
                     ]
                 ]
             )

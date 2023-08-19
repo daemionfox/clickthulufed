@@ -9,7 +9,7 @@ use App\Helpers\SettingsHelper;
 trait MediaPathTrait
 {
 
-    protected function getMediaPath(SettingsHelper $settingsHelper, User $user, Comic $comic, ?string $type): string
+    protected function getMediaPath(SettingsHelper $settingsHelper, string $user, string $comic, ?string $type): string
     {
         $start = $settingsHelper->get('comic_page_path', 'comicpages');
         if (!str_starts_with($start, '/')) {
@@ -17,7 +17,7 @@ trait MediaPathTrait
             $startpath = __DIR__ . "/../../{$start}";
             $startpath = realpath($startpath);
         }
-        $base = "{$startpath}/{$user->getUsername()}/{$comic->getSlug()}";
+        $base = "{$startpath}/{$user}/{$comic}";
         $final = "{$base}/{$type}";
         if (!is_dir($final)) {
             @mkdir($final, 0775, true);

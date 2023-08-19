@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Comic;
+use App\Entity\Page;
 use App\Entity\Settings;
 use App\Entity\User;
+use App\Exceptions\ClickthuluException;
 use App\Exceptions\SettingNotFoundException;
 use App\Helpers\SettingsHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,23 +18,73 @@ use Symfony\Component\Routing\Annotation\Route;
 class ContentController extends AbstractController
 {
     #[Route('/@{ident}', name: 'app_content')]
-    public function index(EntityManagerInterface $entityManager, $ident): Response
+    #[Route('/@{ident}/{?page}', name: 'app_comicpage')]
+    public function index(EntityManagerInterface $entityManager, string $ident, ?string $page): Response
     {
         // TODO - Remove once we build the feed
         // Determines whether or not it's a comic or a user and either presents the appropriate comic page, or the user profile
 
-        $comiccontent = $entityManager->getRepository(Comic::class)->findBy(['name' => $ident]);
-        $usercontent = $entityManager->getRepository(User::class)->findBy(['username' => $ident]);
+        /**
+         * @var Comic $comic
+         */
+        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $ident]);
+        /**
+         * @var User $user
+         */
+        $user = $entityManager->getRepository(User::class)->findOneBy(['username' => $ident]);
+
+        if (!empty($comic)) {
+            return $this->comicPage($entityManager, $comic, $page);
+        }
+
+        if (!empty($user)) {
+            return $this->userIndex($user);
+        }
 
 
-
-        return $this->render('content/index.html.twig', [
-            'controller_name' => 'ContentController - Content',
-        ]);
+        return $this->render('content/not_found.html.twig', []);
     }
 
-    #[Route('/@{ident}/{slug}', name: 'app_contentnaviation')]
-    public function navigation($ident, $slug): Response
+
+    protected function comicPage(EntityManagerInterface $entityManager, Comic $comic, ?string $pageslug = null)
+    {
+        if(empty($pageslug)) {
+            $sql = "SELECT p.id FROM AppBundle:page p WHERE p.comic_id = :cid AND p.publishdate < NOW() ORDER BY p.publishdate DESC LIMIT 1";
+            $result = $entityManager->createQuery($sql)->setParameter(':cid', $comic->getId())->getResult();
+            $page = $entityManager->getRepository(Page::class)->find($result['id']);
+            $comic->setActivePage($page);
+        }
+
+        return $this->render('content/page.html.twig', ['comic' => $comic]);
+    }
+
+
+
+    #[Route('/@{slug}/css/style.css', name: 'app_customcomiccss')]
+    public function customStyle(string $slug, EntityManagerInterface $entityManager):Response
+    {
+        /**
+         * @var Comic $comic
+         */
+        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
+        if (empty($comic)) {
+            throw new ClickthuluException("No such comic");
+        }
+
+
+
+
+        $output = $this->render('content/components/comic.css.twig', ['comic' => $comic]);
+        $output->headers->set('Content-type', 'text/css');
+
+        return $output;
+
+
+    }
+
+
+    #[Route('/@{slug}/{page}', name: 'app_contentnaviation')]
+    public function navigation(string $slug, string $page): Response
     {
         // Determines whether or not it's a comic or a user and either presents the appropriate comic page, or the user profile
 

@@ -17,6 +17,9 @@ class SecurityController extends AbstractController
          * @var User $user
          */
         $user = $this->getUser();
+        if ($user && !$this->isGranted("IS_AUTHENTICATED_FULLY")) {
+            return $this->redirectToRoute("app_logout");
+        }
         if ($user) {
              return $this->redirectToRoute("app_profile");
         }

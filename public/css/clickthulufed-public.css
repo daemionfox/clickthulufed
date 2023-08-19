@@ -1,0 +1,30 @@
+:root {
+    --background-color-dark: #5d5d5d;
+    --panel-color-dark: #d7d7d7;
+    --grey-inactive: #989898;
+    --bright-active: #ffffff;
+    --white: #ffffff;
+}
+
+
+body {
+    background-color: var(--background-color-dark);
+    color: var(--white);
+}
+
+.panel {
+    background-color: var(--panel-color-dark);
+    border: 1px solid var(--white);
+    border-radius: 16px;
+    color: var(--white);
+}
+
+.panel a {
+    color: var(--white);
+    font-weight: bold;
+}
+
+.bord {
+    border: 2px solid var(--panel-color-dark);
+    border-radius: 16px;
+}

@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comic.name }} Chapter Management{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+        <div class="row mb-3">
+            <div class="col">
+                <h1>{{ comic.name }}: Chapter Management</h1>
+            </div>
+        </div>
+        <div class="row mb-3">
+            {% include "common/comicmanagementnav.html.twig" with { "active": "chapters"} %}
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col m-2 ">
+                {{ form_errors(addChapterForm) }}
+                {{ form_start(addChapterForm) }}
+                <div class="row mb-3">
+                    {{ form_label(addChapterForm.title) }}
+                    <div class="col">
+                        {{ form_widget(addChapterForm.title) }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    {{ form_label(addChapterForm.description) }}
+                    <div class="col">
+                        {{ form_widget(addChapterForm.description) }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col offset-3">
+                        {{ form_widget(addChapterForm.submit) }}
+                    </div>
+                </div>
+                {{ form_end(addChapterForm) }}
+
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "common/user-sidebar.html.twig" %}
+{% endblock %}

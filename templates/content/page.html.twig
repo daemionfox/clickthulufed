@@ -1,0 +1,55 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}{{ comic.name }}{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        {% if comic.layout.headerimage is not empty %}
+        <div class="row">
+            <div class="col text-center">
+                <a href="/@{{ comic.slug }}"><img src="/media/{{ comic.slug }}/{{ comic.layout.headerimage }}" alt="{{ comic.name }}"></a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col">
+                <div class="row mb-3">
+                    <div class="col text-center bord">
+                        <img src="/pageimage/{{ comic.slug }}/{{ comic.currentpage.image }}" alt="{{ page.title }}" />
+                        Latest Page goes here
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col text-center bord">
+                        Navigation goes here
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col me-3">
+                        <div class="row mb-3">
+                            <div class="col bord">
+                                News goes here
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col bord">
+                                Transcript goes here
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3 bord">
+                        Cast goes here
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col bord">
+                        Comments go here
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

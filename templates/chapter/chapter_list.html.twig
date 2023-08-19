@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comic.name }} Chapter Management{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+            <div class="row mb-3">
+                <div class="col">
+                    <h1>{{ comic.name }}: Chapter Management</h1>
+                </div>
+            </div>
+            <div class="row mb-3">
+                {% include "common/comicmanagementnav.html.twig" with { "active": "chapters"}%}
+            </div>
+
+            {% for chapter in comic.chapters| sort((a,b) => b.getfirstpublishdate <=> a.getfirstpublishdate) %}
+                <div class="row mb-3 comic-page">
+                    <div class="col-1">
+                        <div class="page-list-image">
+                        <span class="fa-stack">
+                            <i class="fas fa-circle fa-stack-2x text-white"></i>
+                            {% if chapter.getisvisible %}
+                                <i class="fas fa-check fa-stack-1x text-success"></i>
+                            {% else %}
+                                <i class="fas fa-calendar fa-stack-1x text-secondary"></i>
+                            {% endif %}
+
+                        </span>
+                        </div>
+                    </div>
+                    <div class="col">{{ chapter.title }}</div>
+                    <div class="col"><i class="fas fa-calendar"></i> {% if chapter.pages|length > 0 %} {{ chapter.getfirstpublishdate|date('Y-m-d H:i') }}{% else %}No Pages in Chapter{% endif %}</div>
+                    <div class="col">
+                        <div class="btn-group" role="group" aria-label="Page Buttons">
+                            {% if chapter.pages|length > 0 %}
+                                <a href="/@{{ comic.slug }}/{{ chapter.getfirstpage.getslug }}" class="btn btn-outline-light" {% if chapter.getfirstpage.deleted or chapter.getfirstpage.ispublished != 'true' %} disabled{% endif %}><i class="fas {% if chapter.getfirstpage.deleted or chapter.getfirstpage.ispublished != 'true' %}fa-eye-slash text-secondary{% else %}fa-eye{% endif %}"></i></a>
+                            {% else %}
+                                <button class="btn btn-outline-secondary" disabled><i class="fas fa-eye-slash text-secondary"></i></button>
+                            {% endif %}
+                            <a href="/chapter/{{ comic.slug }}/edit/{{ chapter.id }}" type="button" class="btn btn-info"><i class="fas fa-edit"></i></a>
+                            <a href="/chapter/{{ comic.slug }}/delete/{{ chapter.id }}" type="button" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "common/user-sidebar.html.twig" %}
+{% endblock %}

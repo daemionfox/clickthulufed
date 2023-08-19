@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comic.name }} Layout{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+        <div class="row mb-3">
+            <div class="col">
+                <h1>{{ comic.name }}: Layout</h1>
+            </div>
+        </div>
+        <div class="row mb-3">
+            {% include "common/comicmanagementnav.html.twig" with { "active": "layout"} %}
+        </div>
+
+        <div class="row mb-3">
+            <div class="col m-2 ">
+                <div class="row mb-1">
+                    <div class="col-3 text-end">
+                        Header Image:
+                    </div>
+                    <div class="col">
+                        <div class="row">
+
+                            <div class="col-3">
+                                <form method="POST" action="/layout/{{ comic.slug }}/upload" enctype="multipart/form-data" class="dropzone layerfont-upload-dz" id="headerimage_upload_dropzone_form"></form>
+                            </div>
+                            <div class="col">
+                                <div class=" dropzone-target" id="page_upload_dropzone">
+                                    <div  id="image_upload_spinner" class="col text-center d-none">
+                                        <i class="fas fa-spinner fa-spin fa-4x"></i>
+                                    </div>
+                                    <img src="/media/{{ comic.slug }}/{{ comic.layout.headerimage }}" class="{% if comic.layout.headerimage is empty %}d-none{% endif%} img-fluid" id="headerimage_upload_image"  alt="Header Image"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{ form_errors(layoutForm) }}
+                {{ form_start(layoutForm) }}
+                <div class="row mb-3">
+                    <div class="col offset-3">
+                        {{ form_widget(layoutForm.headerimage) }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    {{ form_label(layoutForm.sidebarposition) }}
+                    <div class="col">
+                        {{ form_widget(layoutForm.sidebarposition) }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-3 text-end">
+                        Show Info Box:
+                    </div>
+                    {{ form_widget(layoutForm.showinfo) }}
+                    {{ form_label(layoutForm.showinfo) }}
+
+                </div>
+
+
+                <div class="row mb-3">
+                    <div class="col-3 text-end">
+                        Show Transcript:
+                    </div>
+                    {{ form_widget(layoutForm.showtranscript) }}
+                    {{ form_label(layoutForm.showtranscript) }}
+
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-3 text-end">
+                        Show Cast:
+                    </div>
+                    {{ form_widget(layoutForm.showcast) }}
+                    {{ form_label(layoutForm.showcast) }}
+
+                </div>
+
+
+                <div class="row mb-3">
+                    {{ form_label(layoutForm.css) }}
+                    <div class="col">
+                        {{ form_widget(layoutForm.css) }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col offset-3">
+                        {{ form_widget(layoutForm.submit) }}
+                    </div>
+                </div>
+                {{ form_end(layoutForm) }}
+
+        </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "common/user-sidebar.html.twig" %}
+{% endblock %}

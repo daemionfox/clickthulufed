@@ -28,7 +28,7 @@ class RegistrationFormType extends AbstractType
                         'class' => 'form-control col'
                     ],
                     'label_attr' => [
-                        'class' => 'col-form-label col-3 text-right'
+                        'class' => 'col-form-label col-3 text-end'
                     ]
                 ]
             )
@@ -40,7 +40,7 @@ class RegistrationFormType extends AbstractType
                         'class' => 'col form-control'
                     ],
                     'label_attr' => [
-                        'class' => 'col-form-label col-3 text-right'
+                        'class' => 'col-form-label col-3 text-end'
                     ]
                 ]
             )
@@ -61,7 +61,7 @@ class RegistrationFormType extends AbstractType
                 ],
                 'mapped' => false,
                 'label_attr' => [
-                    'class' => 'col-form-label col-3 text-right'
+                    'class' => 'col-form-label col-3 text-end'
                 ],
                 'required' => true,
                 'first_options'=> ['label' => 'Password'],

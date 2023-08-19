@@ -32,7 +32,7 @@ class AddPageType extends AbstractType
                         'required' => true
                     ],
                     'label_attr' => [
-                        'class' => 'col-form-label col-3 text-right'
+                        'class' => 'col-form-label col-3 text-end'
                     ]
                 ]
             )
@@ -48,7 +48,7 @@ class AddPageType extends AbstractType
                         'readonly' => true
                     ],
                     'label_attr' => [
-                        'class' => 'col-form-label col-3 text-right'
+                        'class' => 'col-form-label col-3 text-end'
                     ]
                 ]
 
@@ -63,7 +63,7 @@ class AddPageType extends AbstractType
                         'class' => 'col',
                     ],
                     'label_attr' => [
-                        'class' => 'col-form-label col-3 text-right'
+                        'class' => 'col-form-label col-3 text-end'
                     ]
                 ]
             )
@@ -79,7 +79,7 @@ class AddPageType extends AbstractType
                         'required' => true
                     ],
                     'label_attr' => [
-                        'class' => 'col-form-label col-3 text-right'
+                        'class' => 'col-form-label col-3 text-end'
                     ]
                 ]
 
@@ -94,7 +94,7 @@ class AddPageType extends AbstractType
                         'class' => 'col',
                     ],
                     'label_attr' => [
-                        'class' => 'col-form-label col-3 text-right'
+                        'class' => 'col-form-label col-3 text-end'
                     ]
                 ]
             )
@@ -114,6 +114,24 @@ class AddPageType extends AbstractType
                     ]
                 ]
             )
+            ->add(
+                'chapter',
+                EntityType::class,
+                [
+                    'class' => 'App\Entity\Chapter',
+                    'choice_label' => 'getChoiceLabel',
+                    'multiple' => false,
+                    'expanded' => false,
+                    'required' => false,
+                    'attr' => [
+                        'class' => 'col form-control',
+                    ],
+                    'choice_attr' => [
+                        'class' => 'row'
+                    ]
+                ]
+            )
+
 
 
 

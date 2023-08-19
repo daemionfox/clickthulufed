@@ -62,7 +62,7 @@ class ScheduleType extends AbstractType
                     'input_format' => 'H:i',
                     'widget' => 'choice',
                     'label_attr' => [
-                        'class' => 'col-form-label col-3 text-right'
+                        'class' => 'col-form-label col-3 text-end'
                     ],
                     'attr' => [
 
@@ -78,7 +78,7 @@ class ScheduleType extends AbstractType
                     ],
                     'label' => 'Timezone:',
                     'label_attr' => [
-                        'class' => 'col-form-label col-3 text-right'
+                        'class' => 'col-form-label col-3 text-end'
                     ],
                     'attr' => [
                         'class' => 'form-control'

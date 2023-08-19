@@ -113,3 +113,32 @@ a.btn.btn-link:hover {
     border-radius: 8px;
 
 }
+
+#c4-comic-management-tabs a:not(.active):hover {
+    color: var(--white);
+}
+
+.checkbox-toggle-icon::before {
+    position: relative;
+    top: -.75rem;
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    font: var(--fa-font-solid);
+    font-size: 2rem;
+    background-color: var(--bs-white);
+    padding: .25rem 1rem .25rem 1rem ;
+    border-radius: 16px;
+}
+
+
+.checkbox-toggle ~ label.checkbox-toggle-icon::before {
+    content: '\f204';
+    color: var(--bs-gray-300);
+}
+
+
+.checkbox-toggle:checked ~ label.checkbox-toggle-icon::before {
+    content: '\f205';
+    color: var(--bs-green);
+}

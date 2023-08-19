@@ -56,6 +56,8 @@ class Comic
     #[ORM\OneToMany(mappedBy: 'Comic', targetEntity: Cast::class, orphanRemoval: true)]
     private Collection $casts;
 
+    private ?Page $activePage;
+
     public function __construct()
     {
         $this->admin = new ArrayCollection();
@@ -293,4 +295,23 @@ class Comic
 
         return $this;
     }
+
+
+    /**
+     * @return ?Page
+     */
+    public function getActivePage(): ?Page
+    {
+        return $this->activePage;
+    }
+
+    public function setActivePage(?Page $page)
+    {
+        $this->activePage = $page;
+        return $this;
+    }
+
+
+
+
 }

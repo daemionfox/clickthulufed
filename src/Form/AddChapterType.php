@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Cast;
+use App\Entity\Chapter;
 use Eckinox\TinymceBundle\Form\Type\TinymceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -10,13 +10,13 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class AddCastType extends AbstractType
+class AddChapterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add(
-                'name',
+                'title',
                 TextType::class,
                 [
                     'label' => 'Name:',
@@ -24,22 +24,6 @@ class AddCastType extends AbstractType
                     'attr' => [
                         'class' => 'form-control',
                         'required' => true
-                    ],
-                    'label_attr' => [
-                        'class' => 'col-form-label col-3 text-end'
-                    ]
-                ]
-            )
-            ->add(
-                'image',
-                TextType::class,
-                [
-                    'label' => 'Image:',
-                    'required' => true,
-                    'attr' => [
-                        'class' => 'form-control',
-                        'required' => true,
-                        'readonly' => true
                     ],
                     'label_attr' => [
                         'class' => 'col-form-label col-3 text-end'
@@ -59,6 +43,7 @@ class AddCastType extends AbstractType
                         'class' => 'col-form-label col-3 text-end'
                     ]
                 ]
+
             )
             ->add(
                 'submit',
@@ -75,7 +60,8 @@ class AddCastType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Cast::class,
+            'data_class' => Chapter::class,
         ]);
     }
+
 }

@@ -52,6 +52,9 @@ class Page
     #[ORM\ManyToMany(targetEntity: Cast::class, mappedBy: 'pages')]
     private Collection $casts;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $slug = null;
+
     public function __construct()
     {
         $this->createdon = new \DateTime();
@@ -295,6 +298,13 @@ class Page
         if ($this->casts->removeElement($cast)) {
             $cast->removePage($this);
         }
+
+        return $this;
+    }
+
+    public function setSlug(?string $slug): static
+    {
+        $this->slug = $slug;
 
         return $this;
     }
