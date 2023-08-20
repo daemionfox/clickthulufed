@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Exceptions\SettingNotFoundException;
 use App\Form\CreateComicType;
 use App\Form\EditComicType;
+use App\Helpers\SettingsHelper;
 use App\Service\Settings;
 use App\Traits\BooleanTrait;
 use App\Traits\ComicOwnerTrait;
@@ -25,52 +26,53 @@ class ComicController extends AbstractController
     use ComicOwnerTrait;
     use BooleanTrait;
     use MediaPathTrait;
-
-    /**
-     * Generates a form for creating comics
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param Request $request
-     * @param Settings $settings
-     * @return Response
-     */
-    #[Route('/comic/create', name: 'app_comiccreate')]
-    public function createComicForm(EntityManagerInterface $entityManager, Request $request, Settings $settings): Response
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-        $comic = new Comic();
-        $form = $this->createForm(CreateComicType::class, $comic);
-        $form->handleRequest($request);
-        /**
-         * @var User $user;
-         */
-        $user = $this->getUser();
-        try {
-            $requireApproval = $settings->get()['require_comic_approval'];
-        } catch (SettingNotFoundException) {
-            $requireApproval = false;
-        }
-        try {
-            if ($form->isSubmitted() && $form->isValid()) {
-
-                $comic
-                    ->setIsactive(!$requireApproval)
-                    ->setOwner($user);
-
-                $entityManager->persist($comic);
-                $entityManager->flush();
-                return new RedirectResponse($this->generateUrl('app_profile'));
-            }
-        } catch (\Exception $e){
-            $err = new FormError($e->getMessage());
-            $form->addError($err);
-        }
-
-        return $this->render('comic/createcomic.html.twig', [
-            'createcomicForm' => $form->createView()
-        ]);
-    }
+//
+//    /**
+//     * Generates a form for creating comics
+//     *
+//     * @param EntityManagerInterface $entityManager
+//     * @param Request $request
+//     * @param Settings $settings
+//     * @return Response
+//     */
+//    #[Route('/comic/create', name: 'app_comiccreate')]
+//    public function createComicForm(EntityManagerInterface $entityManager, Request $request, Settings $settings): Response
+//    {
+//        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+//
+//        $comic = new Comic();
+//        $form = $this->createForm(CreateComicType::class, $comic);
+//        $form->handleRequest($request);
+//        /**
+//         * @var User $user;
+//         */
+//        $user = $this->getUser();
+//        try {
+//            $requireApproval = $settings->get()['require_comic_approval'];
+//        } catch (SettingNotFoundException) {
+//            $requireApproval = false;
+//        }
+//        try {
+//            if ($form->isSubmitted() && $form->isValid()) {
+//
+//                $comic
+//                    ->setIsactive(!$requireApproval)
+//                    ->setOwner($user);
+//
+//                $entityManager->persist($comic);
+//                $entityManager->flush();
+//                return new RedirectResponse($this->generateUrl('app_profile'));
+//            }
+//        } catch (\Exception $e){
+//            $err = new FormError($e->getMessage());
+//            $form->addError($err);
+//        }
+//
+//        return $this->render('comic/createcomic.html.twig', [
+//            'comic' => $comic,
+//            'createcomicForm' => $form->createView()
+//        ]);
+//    }
 
 
     /**
@@ -186,10 +188,11 @@ class ComicController extends AbstractController
 
 
 
-
     #[Route('/comic/{slug}/edit', name: 'app_editcomic')]
-    public function editComic(string $slug, Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/create/comic', name: 'app_comiccreate')]
+    public function editComic(?string $slug, Request $request, EntityManagerInterface $entityManager): Response
     {
+        $settings = SettingsHelper::init($entityManager);
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         /**
          * @var User $user
@@ -199,6 +202,16 @@ class ComicController extends AbstractController
          * @var Comic $comic
          */
         $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
+        if (empty($comic)) {
+            try {
+                $requireApproval = $settings->get('require_comic_approval');
+            } catch (SettingNotFoundException) {
+                $requireApproval = false;
+            }
+            $comic = new Comic();
+            $comic->setOwner($user)->setIsactive($requireApproval);
+        }
+
         $hasPerm = $this->hasPermissions($user, $comic);
 
         if (!$hasPerm) {

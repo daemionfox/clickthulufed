@@ -49,9 +49,8 @@ class ContentController extends AbstractController
     protected function comicPage(EntityManagerInterface $entityManager, Comic $comic, ?string $pageslug = null)
     {
         if(empty($pageslug)) {
-            $sql = "SELECT p.id FROM AppBundle:page p WHERE p.comic_id = :cid AND p.publishdate < NOW() ORDER BY p.publishdate DESC LIMIT 1";
-            $result = $entityManager->createQuery($sql)->setParameter(':cid', $comic->getId())->getResult();
-            $page = $entityManager->getRepository(Page::class)->find($result['id']);
+            $arr = (array) $comic->getPages()->getIterator();
+            $page = array_pop($arr);
             $comic->setActivePage($page);
         }
 

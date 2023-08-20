@@ -4,11 +4,15 @@ namespace App\Form;
 
 use App\Entity\Comic;
 use App\Entity\User;
+use App\Enumerations\NavigationTypeEnumeration;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EditComicType extends AbstractType
@@ -32,21 +36,7 @@ class EditComicType extends AbstractType
                 ]
 
             )
-            ->add(
-                'slug',
-                TextType::class,
-                [
-                    'label' => 'Unique Identifier:',
-                    'required' => true,
-                    'attr' => [
-                        'class' => 'form-control',
-                        'readonly' => true
-                    ],
-                    'label_attr' => [
-                        'class' => 'col-form-label col-3 text-end'
-                    ]
-                ]
-            )
+
             ->add(
                 'description',
                 TextareaType::class,
@@ -62,9 +52,28 @@ class EditComicType extends AbstractType
                 ]
             )
             ->add(
+                'navigationtype',
+                ChoiceType::class,
+                [
+                    'choices' => NavigationTypeEnumeration::getChoices(),
+                    'label' => 'Nav Type:',
+                    'label_attr' => [
+                        'class' => 'col-3 col-form-label text-end'
+                    ],
+                    'attr' => [
+                        'class' => 'form-control'
+                    ],
+                    'required' => true,
+                    'multiple' => false,
+                ]
+            )
+            ->add(
                 'schedule',
                 ScheduleType::class
 
+            ) ->addEventListener(
+                FormEvents::POST_SET_DATA,
+                [$this, 'onPostSetData']
             )
 //            ->add(
 //                'admin',
@@ -81,6 +90,32 @@ class EditComicType extends AbstractType
 //                ]
 //            )
         ;
+    }
+
+    public function onPostSetData(FormEvent $event): void
+    {
+        $form = $event->getForm();
+        /**
+         * @var Comic $data
+         */
+        $data = $event->getData();
+        $readonly = !empty($data->getId());
+        $form->add(
+        'slug',
+        TextType::class,
+        [
+            'label' => 'Unique Identifier:',
+            'required' => true,
+            'attr' => [
+                'class' => 'form-control',
+                'readonly' => $readonly
+            ],
+            'label_attr' => [
+                'class' => 'col-form-label col-3 text-end'
+            ]
+        ]
+    );
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void

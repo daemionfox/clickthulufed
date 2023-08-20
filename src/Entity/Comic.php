@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enumerations\NavigationTypeEnumeration;
 use App\Repository\ComicRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -57,6 +58,9 @@ class Comic
     private Collection $casts;
 
     private ?Page $activePage;
+
+    #[ORM\Column(length: 255)]
+    private ?string $navigationtype = NavigationTypeEnumeration::NAV_DATE;
 
     public function __construct()
     {
@@ -308,6 +312,18 @@ class Comic
     public function setActivePage(?Page $page)
     {
         $this->activePage = $page;
+        return $this;
+    }
+
+    public function getNavigationtype(): ?string
+    {
+        return $this->navigationtype;
+    }
+
+    public function setNavigationtype(string $navigationtype): static
+    {
+        $this->navigationtype = $navigationtype;
+
         return $this;
     }
 
