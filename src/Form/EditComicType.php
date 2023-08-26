@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Comic;
+use App\Entity\Tag;
 use App\Entity\User;
 use App\Enumerations\NavigationTypeEnumeration;
 use Symfony\Component\Form\AbstractType;
@@ -71,10 +72,15 @@ class EditComicType extends AbstractType
                 'schedule',
                 ScheduleType::class
 
-            ) ->addEventListener(
-                FormEvents::POST_SET_DATA,
-                [$this, 'onPostSetData']
             )
+            ->addEventListener(FormEvents::POST_SET_DATA,
+                [$this, 'postSetTagsField']
+            )
+            ->addEventListener(
+                FormEvents::POST_SET_DATA,
+                [$this, 'postSetSlugField']
+            )
+
 //            ->add(
 //                'admin',
 //                CollectionType::class,
@@ -92,7 +98,51 @@ class EditComicType extends AbstractType
         ;
     }
 
-    public function onPostSetData(FormEvent $event): void
+    public function preSubmitTags(FormEvent $event): void
+    {
+        $form = $event->getForm();
+        $data = $event->getData();
+        $tags = explode(",", $data['tags']);
+        $tags = array_map("trim", $tags);
+        $data['tags'] = $tags;
+        $event->setData($data);
+    }
+
+    public function postSetTagsField(FormEvent $event): void
+    {
+        $form = $event->getForm();
+        /**
+         * @var Comic $data
+         */
+        $data = $event->getData();
+        $tags = $data->getTags();
+        $taglist = [];
+        /**
+         * @var Tag $tag
+         */
+        foreach ($tags as $tag) {
+            $taglist[] = $tag->getTag();
+        }
+
+        $tagdata = join(", ", $taglist);
+
+        $form->add(
+            'tags',
+            TextType::class,
+            [
+                'label' => 'Tags:',
+                'label_attr' => [
+                    'class' => 'col-3 col-form-label text-end'
+                ],
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'mapped' => false,
+                'data' => $tagdata
+            ]
+        );
+    }
+    public function postSetSlugField(FormEvent $event): void
     {
         $form = $event->getForm();
         /**

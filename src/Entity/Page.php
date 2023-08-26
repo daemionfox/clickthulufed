@@ -2,7 +2,11 @@
 
 namespace App\Entity;
 
+use App\Enumerations\NavigationTypeEnumeration;
+use App\Exceptions\ClickthuluException;
 use App\Repository\PageRepository;
+use App\Traits\SlugTrait;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -12,6 +16,8 @@ use Doctrine\ORM\PersistentCollection;
 #[ORM\Entity(repositoryClass: PageRepository::class)]
 class Page
 {
+    use SlugTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -34,13 +40,13 @@ class Page
     private ?string $info = null;
 
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
-    private ?\DateTimeInterface $publishdate = null;
+    private ?DateTimeInterface $publishdate = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $transcript = null;
 
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
-    private ?\DateTimeInterface $createdon = null;
+    private ?DateTimeInterface $createdon = null;
 
     #[ORM\ManyToOne(inversedBy: 'pages')]
     #[ORM\JoinColumn(nullable: false)]
@@ -53,7 +59,7 @@ class Page
     private Collection $casts;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $slug = null;
+    private ?string $titleslug = null;
 
     public function __construct()
     {
@@ -114,24 +120,12 @@ class Page
         return $this;
     }
 
-    public function getBlog(): ?string
-    {
-        return $this->blog;
-    }
-
-    public function setBlog(?string $blog): static
-    {
-        $this->blog = $blog;
-
-        return $this;
-    }
-
-    public function getPublishdate(): ?\DateTimeInterface
+    public function getPublishdate(): ?DateTimeInterface
     {
         return $this->publishdate;
     }
 
-    public function setPublishdate(\DateTimeInterface $publishdate): static
+    public function setPublishdate(DateTimeInterface $publishdate): static
     {
         $this->publishdate = $publishdate;
 
@@ -145,6 +139,7 @@ class Page
 
     /**
      * @param ?string $info
+     * @return Page
      */
     public function setInfo(?string $info): static
     {
@@ -164,12 +159,12 @@ class Page
         return $this;
     }
 
-    public function getCreatedon(): ?\DateTimeInterface
+    public function getCreatedon(): ?DateTimeInterface
     {
         return $this->createdon;
     }
 
-    public function setCreatedon(\DateTimeInterface $createdon): static
+    public function setCreatedon(DateTimeInterface $createdon): static
     {
         $this->createdon = $createdon;
 
@@ -209,10 +204,21 @@ class Page
         return $now >= $this->publishdate;
     }
 
-    public function getSlug(): string
+    public function slug(): string
     {
-        return $this->publishdate->format("Y-m-d");
+        switch($this->comic->getNavigationtype()) {
+            case NavigationTypeEnumeration::NAV_ID:
+                return $this->getId();
+            case NavigationTypeEnumeration::NAV_TITLE:
+                return $this->titleSlug($this->title);
+            case NavigationTypeEnumeration::NAV_DATE:
+            default:
+                return $this->publishdate->format('Y-m-d');
+        }
+
     }
+
+
 
     public function calculateNextPublishDate(): \DateTime
     {
@@ -305,6 +311,18 @@ class Page
     public function setSlug(?string $slug): static
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getTitleslug(): ?string
+    {
+        return $this->titleslug;
+    }
+
+    public function setTitleslug(?string $titleslug): static
+    {
+        $this->titleslug = $titleslug;
 
         return $this;
     }

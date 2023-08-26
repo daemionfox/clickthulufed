@@ -62,12 +62,21 @@ class Comic
     #[ORM\Column(length: 255)]
     private ?string $navigationtype = NavigationTypeEnumeration::NAV_DATE;
 
+    #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'comic')]
+    private Collection $tags;
+
+    private ?Page $firstpage;
+    private ?Page $latestpage;
+    private ?Page $currentpage;
+
+
     public function __construct()
     {
         $this->admin = new ArrayCollection();
         $this->chapters = new ArrayCollection();
         $this->pages = new ArrayCollection();
         $this->casts = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -324,6 +333,84 @@ class Comic
     {
         $this->navigationtype = $navigationtype;
 
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tag>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): static
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->addComic($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): static
+    {
+        if ($this->tags->removeElement($tag)) {
+            $tag->removeComic($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Page|null
+     */
+    public function getFirstpage(): ?Page
+    {
+        return $this->firstpage;
+    }
+
+    /**
+     * @param Page|null $firstpage
+     */
+    public function setFirstpage(?Page $firstpage): Comic
+    {
+        $this->firstpage = $firstpage;
+        return $this;
+    }
+
+    /**
+     * @return Page|null
+     */
+    public function getLatestpage(): ?Page
+    {
+        return $this->latestpage;
+    }
+
+    /**
+     * @param Page|null $latestpage
+     */
+    public function setLatestpage(?Page $latestpage): Comic
+    {
+        $this->latestpage = $latestpage;
+        return $this;
+    }
+
+    /**
+     * @return Page|null
+     */
+    public function getCurrentpage(): ?Page
+    {
+        return $this->currentpage;
+    }
+
+    /**
+     * @param Page|null $currentpage
+     */
+    public function setCurrentpage(?Page $currentpage): Comic
+    {
+        $this->currentpage = $currentpage;
         return $this;
     }
 

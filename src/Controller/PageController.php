@@ -11,6 +11,7 @@ use App\Form\AddPageType;
 use App\Helpers\SettingsHelper;
 use App\Traits\ComicOwnerTrait;
 use App\Traits\MediaPathTrait;
+use App\Traits\SlugTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -25,7 +26,7 @@ class PageController extends AbstractController
 {
     use ComicOwnerTrait;
     use MediaPathTrait;
-
+    use SlugTrait;
 
     #[Route('/page/{slug}', name: 'app_comicmanagepages')]
     public function manageComicPages(string $slug, Request $request, EntityManagerInterface $entityManager): Response
@@ -94,7 +95,8 @@ class PageController extends AbstractController
                     $cast->addPage($page);
                     $entityManager->persist($cast);
                 }
-
+                $slug = $this->titleSlug($page->getTitle());
+                $page->setTitleslug($slug);
 
                 $entityManager->persist($page);
                 $entityManager->flush();
@@ -142,7 +144,7 @@ class PageController extends AbstractController
         $maxUpload = $settings->get('upload_max_filesize', $currentMax);
         ini_set('upload_max_filesize', $maxUpload);
 
-        $comicpath = $this->getMediaPath($settings, $user, $comic, MediaPathEnumeration::PATH_COMIC);
+        $comicpath = $this->getMediaPath($settings, $user->getUsername(), $comic->getSlug(), MediaPathEnumeration::PATH_COMIC);
 
 
 
@@ -156,7 +158,7 @@ class PageController extends AbstractController
         $generateThumbnails = $settings->get('generate_thumbnails', true);
 
         if ($generateThumbnails) {
-            $thumbpath = $this->getMediaPath($settings, $user, $comic, MediaPathEnumeration::PATH_THUMBNAIL);
+            $thumbpath = $this->getMediaPath($settings, $user->getUsername(), $comic->getSlug(), MediaPathEnumeration::PATH_THUMBNAIL);
 
             $source = imagecreatefromstring(file_get_contents("{$comicpath}/{$files['name']}"));
             $sourcesize = getimagesize("{$comicpath}/{$files['name']}");

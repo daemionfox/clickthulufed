@@ -30,4 +30,5 @@ yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 
 comicpages/*
+storage/*
 /src/Controller/PrivateController.php

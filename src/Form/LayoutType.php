@@ -43,6 +43,7 @@ class LayoutType extends AbstractType
                 'showinfo',
                 CheckboxType::class,
                 [
+                    'required' => false,
                     'attr' => [
                        'class' => 'checkbox-toggle d-none'
                     ],
@@ -56,6 +57,7 @@ class LayoutType extends AbstractType
                 'showtranscript',
                 CheckboxType::class,
                 [
+                    'required' => false,
                     'attr' => [
                         'class' => 'checkbox-toggle d-none'
                     ],
@@ -69,6 +71,21 @@ class LayoutType extends AbstractType
                 'showcast',
                 CheckboxType::class,
                 [
+                    'required' => false,
+                    'attr' => [
+                        'class' => 'checkbox-toggle d-none'
+                    ],
+                    'label_attr' => [
+                        'class' => 'col-form-label checkbox-toggle-icon col'
+                    ],
+                    'label' => " ",
+                ]
+            )
+            ->add(
+                'showcomments',
+                CheckboxType::class,
+                [
+                    'required' => false,
                     'attr' => [
                         'class' => 'checkbox-toggle d-none'
                     ],

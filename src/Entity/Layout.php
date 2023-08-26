@@ -36,6 +36,12 @@ class Layout
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $headerimage = null;
 
+    #[ORM\Column]
+    private ?bool $showComments = true;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $theme = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -121,6 +127,30 @@ class Layout
     public function setHeaderimage(?string $headerimage): static
     {
         $this->headerimage = $headerimage;
+
+        return $this;
+    }
+
+    public function isShowComments(): ?bool
+    {
+        return $this->showComments;
+    }
+
+    public function setShowComments(bool $showComments): static
+    {
+        $this->showComments = $showComments;
+
+        return $this;
+    }
+
+    public function getTheme(): ?string
+    {
+        return $this->theme;
+    }
+
+    public function setTheme(?string $theme): static
+    {
+        $this->theme = $theme;
 
         return $this;
     }

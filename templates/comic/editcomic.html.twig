@@ -131,7 +131,48 @@
                 </div>
             </div>
 
+
+
+
             <div class="row mb-3">
+                <div class="col">
+                    <h3>Tags</h3>
+                </div>
+                <div class="col-1">
+                    <button class="accordian-button btn btn-outline-light btn-sm pull-end" type="button" data-bs-toggle="collapse" data-bs-target="#comic-tags" aria-controls="comic-tags" aria-expanded="false"><i class="fas fa-caret-down"></i></button>
+                </div>
+            </div>
+
+            <div id="comic-tags">
+{#                <div class="row mb-3">#}
+{#                    <div class="col" id="comic-tag-list">#}
+{#                        {% for tag in comic.tags %}#}
+{#                            <div class="comic-tag input-group">#}
+{#                                <span class="input-group-text">{{ tag.tag }}</span>#}
+{#                                <button class="btn"><i class="fas fa-trash"></i></button>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{#                    </div>#}
+{#                </div>#}
+                {% set taglist = [] %}
+                {% for tag in comic.tags %}
+                    {% set taglist = taglist|merge([tag.tag]) %}
+                {% endfor %}
+                {% set tagstring = taglist|join(", ") %}
+                <div class="row mb-3">
+                    {{ form_label(editcomicForm.tags) }}
+                    <div class="col">
+                        {{ form_widget(editcomicForm.tags, { 'data': tagstring} ) }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col" id="comic-tag-suggestions"></div>
+                </div>
+
+            </div>
+
+
+            <div class="row mb-2">
                 <div class="col-4 offset-3">
                     <button type="submit" class="btn btn-success btn-block"><i class="fas fa-book"></i> Update</button>
                 </div>

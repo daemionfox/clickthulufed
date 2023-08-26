@@ -11,7 +11,7 @@ trait MediaPathTrait
 
     protected function getMediaPath(SettingsHelper $settingsHelper, string $user, string $comic, ?string $type): string
     {
-        $start = $settingsHelper->get('comic_page_path', 'comicpages');
+        $start = $settingsHelper->get('comic_page_path', 'storageIt');
         if (!str_starts_with($start, '/')) {
             // Path is a relative path from the /app directory, prepend the app path to it
             $startpath = __DIR__ . "/../../{$start}";

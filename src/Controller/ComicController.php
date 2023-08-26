@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Comic;
+use App\Entity\Tag;
 use App\Entity\User;
 use App\Exceptions\SettingNotFoundException;
+use App\Exceptions\TagException;
 use App\Form\CreateComicType;
 use App\Form\EditComicType;
 use App\Helpers\SettingsHelper;
@@ -13,6 +15,7 @@ use App\Traits\BooleanTrait;
 use App\Traits\ComicOwnerTrait;
 use App\Traits\MediaPathTrait;
 use DateTime;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -202,6 +205,8 @@ class ComicController extends AbstractController
          * @var Comic $comic
          */
         $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
+        $tags = $entityManager->getRepository(Tag::class)->findAll();
+
         if (empty($comic)) {
             try {
                 $requireApproval = $settings->get('require_comic_approval');
@@ -221,9 +226,29 @@ class ComicController extends AbstractController
 
         $form = $this->createForm(EditComicType::class, $comic);
         $form->handleRequest($request);
-
         try {
             if ($form->isSubmitted() && $form->isValid()) {
+                $taglist = $form->get('tags')->getData();
+                $taglist = explode( ",", $taglist);
+                $taglist = array_map('trim', $taglist);
+                $comicTags = $comic->getTags();
+                foreach($taglist as $tagstring) {
+                    try {
+                        $tag = $this->getTag($tagstring, $tags);
+                        if (!$this->hasTag($comicTags, $tag)) {
+                            $tag->addComic($comic);
+                            $entityManager->persist($tag);
+                        }
+                    } catch (TagException){
+                        $tag = new Tag();
+                        $tag->setTag($tagstring);
+                        $tag->addComic($comic);
+                        $entityManager->persist($tag);
+                    }
+                }
+
+
+
 
                 $entityManager->persist($comic);
                 $entityManager->flush();
@@ -240,6 +265,30 @@ class ComicController extends AbstractController
         ]);
     }
 
+    protected function hasTag(Collection $taglist, Tag $tag): bool
+    {
+        /**
+         * @var Tag $t
+         */
+        foreach ($taglist as $t) {
+            if ($t === $tag) {
+                return true;
+            }
+        }
+        return false;
+    }
 
+    protected function getTag(string $input, array $tags)
+    {
+        /**
+         * @var Tag $tag
+         */
+        foreach ($tags as $tag) {
+            if ($input === $tag->getTag()) {
+                return $tag;
+            }
+        }
+        throw new TagException("Tag {$input} not found");
+    }
 
 }

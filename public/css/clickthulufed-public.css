@@ -28,3 +28,13 @@ body {
     border: 2px solid var(--panel-color-dark);
     border-radius: 16px;
 }
+
+
+#c4-header-image {
+    width: 100%;
+}
+#c4-header-image img {
+    border-radius: 16px 16px 0  0 ;
+}
+
+
