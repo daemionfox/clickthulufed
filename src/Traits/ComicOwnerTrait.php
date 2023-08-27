@@ -8,9 +8,11 @@ use App\Entity\User;
 trait ComicOwnerTrait
 {
 
-    public function comicUserMatch(User $user, Comic $comic): bool
+    public function comicUserMatch(?User $user, Comic $comic): bool
     {
-
+        if ($user === null) {
+            return false;
+        }
 //        $admins = $comic->getAdmin();
         $owner = $comic->getOwner();
         /**

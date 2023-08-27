@@ -1,30 +1,38 @@
 <ul class="nav nav-tabs text-end" id="c4-comic-management-tabs">
     <li class="nav-item me-1">
-        <a class="nav-link {% if active == 'edit' %}active{% endif %}" href="/comic/{{ comic.slug }}/edit"><i class="fas fa-edit"></i> Edit</a>
+        <a class="nav-link {% if active == 'edit' %}active{% endif %} {% if comic.slug is empty %}disabled text-disabled{% endif %}" href="/comic/{{ comic.slug }}/edit"><i class="fas fa-edit"></i> {% if comic.slug is empty %}Create{% else %}Edit{% endif %}</a>
     </li>
     <li class="nav-item me-1">
-        <a class="nav-link {% if active == 'pages' %}active{% endif %}" href="/page/{{ comic.slug }}"><i class="fas fa-file"></i> Pages</a>
+        <a class="nav-link {% if active == 'pages' %}active{% endif %} {% if comic.slug is empty %}disabled{% endif %}" href="/page/{{ comic.slug }}"><i class="fas fa-file"></i> Pages</a>
     </li>
     <li class="nav-item me-1">
-        <a class="nav-link  {% if active == 'cast' %}active{% endif %}" href="/cast/{{ comic.slug }}"><i class="fas fa-users"></i> Cast</a>
+        <a class="nav-link  {% if active == 'cast' %}active{% endif %} {% if comic.slug is empty %}disabled{% endif %}" href="/cast/{{ comic.slug }}"><i class="fas fa-users"></i> Cast</a>
     </li>
     <li class="nav-item me-1">
-        <a class="nav-link {% if active == 'chapters' %}active{% endif %}" href="/chapter/{{ comic.slug }}"><i class="fas fa-book"></i> Chapters</a>
+        <a class="nav-link {% if active == 'chapters' %}active{% endif %} {% if comic.slug is empty %}disabled{% endif %}" href="/chapter/{{ comic.slug }}"><i class="fas fa-book"></i> Chapters</a>
     </li>
     <li class="nav-item me-1">
-        <a class="nav-link {% if active == 'layout' %}active{% endif %}" href="/layout/{{ comic.slug }}"><i class="fas fa-gear"></i> Layout</a>
+        <a class="nav-link {% if active == 'layout' %}active{% endif %} {% if comic.slug is empty %}disabled{% endif %}" href="/layout/{{ comic.slug }}"><i class="fas fa-gear"></i> Layout</a>
     </li>
-    {% if active == 'pages' %}
-        <li class="nav-item ms-auto active">
-            <a class="nav-link bg-white text-success" href="/page/{{ comic.slug }}/add"><i class="fas fa-file-circle-plus"></i> Add New Page</a>
+    {% if settings.get.allow_custom_themes %}
+        <li class="nav-item me-1">
+            <a class="nav-link {% if active == 'themes' %}active{% endif %} {% if comic.slug is empty %}disabled{% endif %}" href="/themes/{{ comic.slug }}"><i class="fas fa-swatchbook"></i> Themes</a>
         </li>
-    {% elseif active == 'cast' %}
-        <li class="nav-item ms-auto active">
-            <a class="nav-link bg-white text-success" href="/cast/{{ comic.slug }}/add"><i class="fas fa-user-plus"></i> Add Cast Profile</a>
-        </li>
-    {% elseif active == 'chapters' %}
-        <li class="nav-item ms-auto active">
-            <a class="nav-link bg-white text-success" href="/chapter/{{ comic.slug }}/add"><i class="fas fa-book-bookmark"></i> Add Chapter</a>
-        </li>
+    {% endif %}
+
+    {% if comic.slug is not empty %}
+        {% if active == 'pages' %}
+            <li class="nav-item ms-auto active">
+                <a class="nav-link bg-white text-success" href="/page/{{ comic.slug }}/add"><i class="fas fa-file-circle-plus"></i> Add New Page</a>
+            </li>
+        {% elseif active == 'cast' %}
+            <li class="nav-item ms-auto active">
+                <a class="nav-link bg-white text-success" href="/cast/{{ comic.slug }}/add"><i class="fas fa-user-plus"></i> Add Cast Profile</a>
+            </li>
+        {% elseif active == 'chapters' %}
+            <li class="nav-item ms-auto active">
+                <a class="nav-link bg-white text-success" href="/chapter/{{ comic.slug }}/add"><i class="fas fa-book-bookmark"></i> Add Chapter</a>
+            </li>
+        {% endif %}
     {% endif %}
 </ul>

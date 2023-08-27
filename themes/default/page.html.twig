@@ -1,21 +1,8 @@
-{% extends 'public.html.twig' %}
+{% extends '@theme/base.html.twig' %}
 
 {% block title %}{{ comic.name }}{% endblock %}
 
 {% block body %}
-
-    <div class="container">
-        <div class="row">
-            <div class="col-10 offset-1 pb-3 gx-0" id="c4-page-container">
-                {% if comic.layout.headerimage is not empty %}
-                    <div class="row mb-3" id="c4-page-header-row">
-                        <div class=" col text-center">
-                            <a href="/@{{ comic.slug }}" id="c4-header-image"><img src="/media/{{ comic.slug }}/{{ comic.layout.headerimage }}" class="img-fluid" alt="{{ comic.name }}"></a>
-                        </div>
-                    </div>
-                {% endif %}
-
-                <div class="row px-3">
                     <div class="col">
                         <div class="row mb-3">
                             <div class="col text-center">
@@ -75,8 +62,4 @@
                             </div>
                         {% endif %}
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
 {% endblock %}

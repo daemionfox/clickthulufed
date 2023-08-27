@@ -62,7 +62,7 @@ class EditComicType extends AbstractType
                         'class' => 'col-3 col-form-label text-end'
                     ],
                     'attr' => [
-                        'class' => 'form-control'
+                        'class' => 'form-select'
                     ],
                     'required' => true,
                     'multiple' => false,

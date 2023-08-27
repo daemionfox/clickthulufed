@@ -11,7 +11,7 @@
         <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
             <div class="row mb-3">
                 <div class="col">
-                    <h1>Editing {{ comic.name }}</h1>
+                    <h1>{% if comic.slug is empty %}Create a New Comic{% else %}Editing {{ comic.name }}{% endif %}</h1>
                 </div>
             </div>
             <div class="row mb-3">

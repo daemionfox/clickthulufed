@@ -1,0 +1,59 @@
+{% extends 'public.html.twig' %}
+
+{% block title %}All about {{ user.username }}{% endblock %}
+
+{% block mainbody %}
+
+<div class="container">
+
+    <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+        <div class="row mb-3  pb-3  border-bottom">
+            <div class="col-4">
+                {% if user.image is not empty %}
+                    <img src="{{user.image }}" alt="{{user.username }}" class="img-fluid"/><br/>
+                {% else %}
+                    <img src="https://gravatar.com/avatar/{{user.username|md5 }}?s=256&d=robohash" alt="{{user.username }}" class="img-fluid"/><br/>
+                {% endif %}
+            </div>
+            <div class="col">
+                <div class="row mb-3">
+                    <div class="col">
+                        {% if user.name %}
+                            <h1>{{user.name }}</h1>
+                        {% else %}
+                            <h1>{{user.username }}</h1>
+                        {% endif %}
+                        <small>@{{user.username }}@{{ settings.get.server_url }}</small>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="col">
+                        {{ user.biography }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% for comic in user.comics %}
+            {% if comic.pages|length > 0 %}
+                <div class="row"><h1>{{ comic.name }}</h1></div>
+                <div class="row mb-3 pb-3 border-bottom">
+                    <div class="col-3">
+                        <img class="img-fluid" src="/pageimage/{{ comic.slug }}/{{ comic.pages[0].image }}">
+                    </div>
+                    <div class="col">
+                        <div class="row">
+                            <div class="col">
+                                {{ comic.description|raw }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col"><a href="/@{{ comic.slug }}">Latest Page</a></div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

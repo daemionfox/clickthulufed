@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comic.name }} Page Management{% endblock %}
+
+{% block body %}
+    {% if settings.get.allow_custom_themes %}
+        <div class="container">
+            <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+                <div class="row mb-3">
+                    <div class="col">
+                        <h1>{{ comic.name }}: Theme Management</h1>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    {% include "common/comicmanagementnav.html.twig" with { "active": "themes"} %}
+                </div>
+                <div class="row mb-3">
+                    <h3>System Themes</h3>
+                </div>
+                {% for theme in themes.system %}
+                    <div class="row mb-3 theme-row">
+                        <div class="col-1 text-end"><i class="fas fa-swatchbook"></i></div>
+                        <div class="col">{{ theme.display }}</div>
+                        <div class="col-3 btn-group">
+                            <a href="/themes/{{ comic.slug }}/copy/{{ theme.type }}/{{ theme.slug }}" class="btn btn-info {% if not settings.get.allow_custom_themes %}disabled{% endif %}" title="Duplicate system theme {{ theme.path }}"><i class="fas fa-copy"></i></a>
+                            <button class="btn btn-primary disabled" title="System themes cannot be edited"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-danger disabled" title="System themes cannot be deleted"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% if settings.get.allow_custom_themes %}
+                    <div class="row mb-3">
+                        <h3>Custom Themes</h3>
+                    </div>
+                    {% for theme in themes.custom %}
+                        <div class="row mb-3 theme-row">
+                            <div class="col-1 text-end"><i class="fas fa-user"></i></div>
+                            <div class="col">{{ theme.display }}</div>
+                            <div class="col-3 btn-group">
+                                <a href="/themes/{{ comic.slug }}/copy/{{ theme.type }}/{{ theme.slug }}" class="btn btn-info" title="Duplicate custom theme {{ theme.path }}"><i class="fas fa-copy"></i></a>
+                                <a href="/themes/{{ comic.slug }}/edit/{{ theme.type }}/{{ theme.slug }}" class="btn btn-primary" title="Edit custom theme {{ theme.path }}"><i class="fas fa-edit"></i></a>
+                                <a href="/themes/{{ comic.slug }}/delete/{{ theme.type }}/{{ theme.slug }}" class="btn btn-danger" title="Delete custom theme {{ theme.path }}"><i class="fas fa-trash"></i></a>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="container">
+            <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+                <div class="row mb-3">
+                    <div class="col">
+                        <h1>{{ comic.name }}: Theme Management</h1>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <h3>Custom themes are not allowed on this instance</h3>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <h5>Please see the Instance Owner to enable custom themes</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -51,6 +51,7 @@ class SettingsItemType extends AbstractType
                     'Yes' => 1,
                     'No' => 0
                 ];
+                $options['attr'] = ['class' => 'form-select'];
                 $options['choice_attr'] = [
                     'class' => 'col'
                 ];

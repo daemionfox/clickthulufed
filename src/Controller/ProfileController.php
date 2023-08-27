@@ -29,6 +29,16 @@ class ProfileController extends AbstractController
     }
 
 
+    #[Route('/profile', name: 'app_editprofile')]
+    public function editProfile(EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        return $this->render('profile/edit_profile.html.twig', []);
+
+    }
+
+
     #[Route('/profile/requestrole/creator', name: 'app_requestrolecreator')]
     public function requestRoleCreator(EntityManagerInterface $entityManager): Response
     {

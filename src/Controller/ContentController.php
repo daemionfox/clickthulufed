@@ -12,6 +12,7 @@ use App\Exceptions\PageException;
 use App\Exceptions\SettingNotFoundException;
 use App\Helpers\NavigationHelper;
 use App\Helpers\SettingsHelper;
+use App\Traits\MediaPathTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -24,7 +25,14 @@ use Twig\Loader\LoaderInterface;
 
 class ContentController extends AbstractController
 {
+    use MediaPathTrait;
 
+    private SettingsHelper $systemSettings;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->systemSettings = SettingsHelper::init($entityManager);
+    }
 
     #[Route('/@{ident}', name: 'app_content')]
     public function index(EntityManagerInterface $entityManager, string $ident, ?string $pageslug): Response
@@ -48,22 +56,26 @@ class ContentController extends AbstractController
         }
 
         if (!empty($user)) {
-            return $this->userIndex($user);
+            return $this->userIndex($entityManager, $user);
         }
 
 
-        return $this->render('content/not_found.html.twig', []);
+        return $this->render('@theme/not_found.html.twig', []);
     }
 
     #[Route('/@{ident}/page/{pageslug}', name: 'app_comicpage')]
     public function page(EntityManagerInterface $entityManager, string $ident, string $pageslug): Response
     {
-        /**
-         * @var Comic $comic
-         */
-        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $ident]);
-
-        return $this->comicPage($entityManager, $comic, $pageslug);
+        try {
+            /**
+             * @var Comic $comic
+             */
+            $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $ident]);
+            $this->setupCustomTemplate($comic);
+            return $this->comicPage($entityManager, $comic, $pageslug);
+        } catch (PageException) {
+        }
+        return $this->render('@theme/not_found.html.twig', []);
     }
 
 
@@ -139,7 +151,11 @@ class ContentController extends AbstractController
         return $this->render('@theme/page.html.twig', ['comic' => $comic, 'navigation' => $navigation]);
     }
 
+    protected function userIndex(EntityManagerInterface $entityManager, User $user): Response
+    {
 
+        return $this->render('content/profile.html.twig', ['user' => $user]);
+    }
 
     #[Route('/@{slug}/css/style.css', name: 'app_customcomiccss')]
     public function customStyle(string $slug, EntityManagerInterface $entityManager):Response
@@ -189,7 +205,7 @@ class ContentController extends AbstractController
     }
 
 
-    public function setupCustomTemplate(Comic $comic)
+    public function setupCustomTemplate(?Comic $comic)
     {
         /**
          * @var Environment $env
@@ -200,15 +216,20 @@ class ContentController extends AbstractController
          */
         $loader = $env->getLoader();
 
-        $default = __DIR__ . "/../../themes/default";
-        $theme = $comic->getLayout()->getTheme();
+        $default = "@system/default";
+        if (!empty($comic)) {
+            $theme = $comic->getLayout()->getTheme();
+        }
 
         if (empty($theme)) {
             $theme = $default;
         }
 
-        $loader->addPath($theme, 'theme');
+        $themePath = $this->getThemePath($this->systemSettings, $theme, $comic);
+
+        $loader->addPath($themePath, 'theme');
         $env->setLoader($loader);
     }
+
 
 }

@@ -10,7 +10,9 @@
             {{ encore_entry_link_tags('app') }}
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" integrity="sha512-jU/7UFiaW5UBGODEopEqnbIAHOI8fO6T99m7Tsmqs2gkdujByJfkCbbfPSN4Wlqlb9TGnsuC0YgUgWkRBK7B9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
             <link href="/css/clickthulufed-public.css" rel="stylesheet">
-            <link href="/@{{ comic.slug }}/css/style.css" rel="stylesheet">
+            {% if comic|default %}
+                <link href="/@{{ comic.slug }}/css/style.css" rel="stylesheet">
+            {% endif %}
         {% endblock %}
 
         {% block javascripts %}
@@ -25,7 +27,7 @@
         <div class="row mt-5">
 
             <div class="col">
-                {% block body %}{% endblock %}
+                {% block mainbody %}{% endblock %}
             </div>
 
         </div>

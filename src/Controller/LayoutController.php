@@ -52,8 +52,8 @@ class LayoutController extends AbstractController
                 "/** Custom CSS for **{$comic->getName()}** */\n"
                 );
         }
-
-        $form = $this->createForm(LayoutType::class, $layout);
+        $settings = SettingsHelper::init($entityManager);
+        $form = $this->createForm(LayoutType::class, $layout, ['settings' => $settings, 'comic' => $comic]);
         $form->handleRequest($request);
 
         try {

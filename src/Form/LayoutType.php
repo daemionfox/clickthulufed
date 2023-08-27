@@ -2,7 +2,10 @@
 
 namespace App\Form;
 
+use App\Entity\Comic;
 use App\Entity\Layout;
+use App\Helpers\SettingsHelper;
+use App\Traits\MediaPathTrait;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -14,31 +17,47 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LayoutType extends AbstractType
 {
+    use MediaPathTrait;
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add(
-                'sidebarposition',
-                ChoiceType::class,
-                [
-                    'multiple' => false,
-                    'expanded' => false,
-                    'required' => false,
-                    'attr' => [
-                        'class' => 'form-control col'
-                    ],
-                    'label_attr' => [
-                        'class' => 'col-form-label col-3 text-end'
-                    ],
-                    'label' => "Sidebar:",
-                    'choices' => [
-                        "Hide Sidebar" => "",
-                        "Left" => "LEFT",
-                        "Right" => "RIGHT"
-                    ]
+        /**
+         * @var SettingsHelper $settings
+         */
+        $settings = $options['settings'];
+        /**
+         * @var Comic $comic
+         */
+        $comic = $options['comic'];
 
-                ]
-            )
+        $customPath = $this->getMediaPath($settings, $comic->getOwner()->getUsername(), $comic->getSlug(), 'themes');
+
+
+
+
+        $builder
+//            ->add(
+//                'sidebarposition',
+//                ChoiceType::class,
+//                [
+//                    'multiple' => false,
+//                    'expanded' => false,
+//                    'required' => false,
+//                    'attr' => [
+//                        'class' => 'form-select col'
+//                    ],
+//                    'label_attr' => [
+//                        'class' => 'col-form-label col-3 text-end'
+//                    ],
+//                    'label' => "Sidebar:",
+//                    'choices' => [
+//                        "Hide Sidebar" => "",
+//                        "Left" => "LEFT",
+//                        "Right" => "RIGHT"
+//                    ]
+//
+//                ]
+//            )
             ->add(
                 'showinfo',
                 CheckboxType::class,
@@ -111,6 +130,18 @@ class LayoutType extends AbstractType
                 ]
             )
             ->add(
+                'theme',
+                ChoiceType::class,
+                [
+                    'choices' => $this->getThemes($settings, $comic->getOwner()->getUsername(), $comic->getSlug()),
+                    'attr' => ['class' => 'form-select'],
+                    'label' => 'Theme:',
+                    'label_attr' => [
+                        'class' => 'col-form-label col-3 text-end'
+                    ]
+                ]
+            )
+            ->add(
                 'css',
                 TextareaType::class,
                 [
@@ -136,9 +167,14 @@ class LayoutType extends AbstractType
         ;
     }
 
+
+
+
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
+        $resolver
+            ->setRequired(['settings', 'comic'])
+            ->setDefaults([
             'data_class' => Layout::class,
         ]);
     }

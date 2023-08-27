@@ -20,42 +20,42 @@
     </div>
     <div class="col-2">This Month</div>
     <div class="col-3">
-        <div class="row mb-1">
-            <div class="col">
-                <a href="/page/{{ comic.slug }}" class="btn btn-block btn-success"><i class="fas fa-toolbox"></i> Manage</a>
-            </div>
-        </div>
-        <div class="row mb-1">
-            <div class="col">
-                <a  type="button" class="btn btn-block btn-primary" href="/comic/{{ comic.slug }}/edit"><i class="fas fa-edit"></i> Edit</a>
-            </div>
-        </div>
+
         {% if comic.isactive == true and comic.isdeleted == false %}
-            <div class="row mb-1">
-                <div class="col">
-                    <a class="btn btn-block btn-outline-danger" href="/comic/{{ comic.slug }}/deactivate"><i class="fas fa-unlock"></i> Deactivate</a>
+        <div class="row">
+            <div class="col">
+                <div class="d-grid">
+                    <a href="/page/{{ comic.slug }}/add" class="btn btn-light text-success"><i class="fas fa-file-circle-plus"></i> Add New Page</a>
                 </div>
             </div>
-        {% else %}
-            {% if comic.isactive == false and comic.isdeleted == false and ('ROLE_ADMIN' in app.user.getRoles() or settings.require_comic_approval == false)%}
-                <div class="row mb-1">
-                    <div class="col">
-                        <a class="btn btn-block btn-outline-success" href="/comic/{{ comic.slug }}/activate"><i class="fas fa-lock-open"></i> Activate</a>
-                    </div>
-                </div>
-                <div class="row mb-1">
-                    <div class="col">
-                        <a class="btn btn-block btn-outline-danger" href="/comic/{{ comic.slug }}/delete"><i class="fas fa-trash"></i> Delete</a>
-                    </div>
-                </div>
-            {% else %}
-                <div class="row mb-1">
-                    <div class="col">
-                        <button class="btn btn-block btn-outline-dark" disabled><i class="fas fa-lock"></i> Inactive</button>
-                    </div>
-                </div>
-            {% endif %}
+        </div>
         {% endif %}
+        {% if comic.isactive == false and comic.isdeleted == false and ('ROLE_ADMIN' in app.user.getRoles() or settings.require_comic_approval == false)%}
+            <div class="row">
+                <div class="col">
+                    <div class="d-grid">
+                        <a class="btn btn-block btn-danger" href="/comic/{{ comic.slug }}/delete"><i class="fas fa-trash"></i> Delete {{ comic.name }}</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="row mb-1">
+            <div class="col btn-group">
+                <a href="/page/{{ comic.slug }}" class="btn btn-success" title="Manage {{ comic.name }}"><i class="fas fa-toolbox"></i></a>
+                <a href="/comic/{{ comic.slug }}/edit" type="button" class="btn btn-primary" title="Edit {{ comic.name }}"><i class="fas fa-edit"></i></a>
+                <a href="/comic/{{ comic.slug }}/layout" type="button" class="btn btn-info" title="Edit Layout for {{ comic.name }}"><i class="fas fa-gear"></i></a>
+                {% if comic.isactive == true and comic.isdeleted == false %}
+                    <a class="btn btn-warning" href="/comic/{{ comic.slug }}/deactivate" title="Deactivate {{ comic.name }}"><i class="fas fa-unlock"></i></a>
+                {% else %}
+                    {% if comic.isactive == false and comic.isdeleted == false and ('ROLE_ADMIN' in app.user.getRoles() or settings.require_comic_approval == false)%}
+                        <a class="btn btn-light text-dark" href="/comic/{{ comic.slug }}/activate" title="Activate {{ comic.name }}"><i class="fas fa-lock-open"></i></a>
+                    {% else %}
+                        <button class="btn btn-block btn-dark" disabled title="Inactive"><i class="fas fa-lock"></i> Inactive</button>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
 
     </div>
 

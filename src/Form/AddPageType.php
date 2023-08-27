@@ -121,7 +121,7 @@ class AddPageType extends AbstractType
                     'expanded' => false,
                     'required' => false,
                     'attr' => [
-                        'class' => 'col form-control',
+                        'class' => 'col form-select',
                     ],
                     'choice_attr' => [
                         'class' => 'row'

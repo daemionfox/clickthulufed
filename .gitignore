@@ -32,3 +32,4 @@ yarn-error.log
 comicpages/*
 storage/*
 /src/Controller/PrivateController.php
+TODO.md

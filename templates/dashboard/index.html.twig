@@ -15,22 +15,30 @@
         Eventually, this will have a display of all the latest pages of currently active comics on the instance.
         Until then, it's best to:
         </p>
-        <div class="row">
-            <div class="col-4 offset-4 text-center">
-                <a href="/login" class="btn btn-outline-primary btn-block">Login</a>
+        {% if app.user %}
+            <div class="row">
+                <div class="col-4 offset-4 text-center">
+                    <a href="/profile" class="btn btn-outline-primary btn-block">Go to your profile</a>
+                </div>
             </div>
-        </div>
-        {% if settings.get.allow_user_signup %}
-        <div class="row">
-            <div class="col-4 offset-4 text-center">
-                or
+        {% else %}
+            <div class="row">
+                <div class="col-4 offset-4 text-center">
+                    <a href="/login" class="btn btn-outline-primary btn-block">Login</a>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-4 offset-4 text-center">
-                <a href="/register" class="btn btn-outline-success btn-block">Register</a>
+            {% if settings.get.allow_user_signup %}
+            <div class="row">
+                <div class="col-4 offset-4 text-center">
+                    or
+                </div>
             </div>
-        </div>
+            <div class="row">
+                <div class="col-4 offset-4 text-center">
+                    <a href="/register" class="btn btn-outline-success btn-block">Register</a>
+                </div>
+            </div>
+            {% endif%}
         {% endif%}
     </div>
 </div>
