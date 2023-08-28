@@ -34,7 +34,7 @@ trait MediaPathTrait
         $canUseCustom = $settingsHelper->get('allow_custom_themes');
 
         if ($canUseCustom && strtoupper($type) === '@CUSTOM') {
-            $path = $this->getMediaPath($this->systemSettings, $comic->getOwner()->getUsername(), $comic->getSlug(), 'themes');
+            $path = $this->getMediaPath($settingsHelper, $comic->getOwner()->getUsername(), $comic->getSlug(), 'themes');
         }
 
         if (is_dir("{$path}/{$theme}")) {

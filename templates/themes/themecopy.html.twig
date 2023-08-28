@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comic.name }} Page Management{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+        <div class="row mb-3">
+            <div class="col">
+                <h1>{{ comic.name }}: Theme Management</h1>
+            </div>
+        </div>
+        <div class="row mb-3">
+            {% include "common/comicmanagementnav.html.twig" with { "active": "themes"} %}
+        </div>
+        <div class="row mb-3">
+            <h3>Copy Theme</h3>
+        </div>
+
+        {{ form_errors(themeForm) }}
+        {{ form_start(themeForm) }}
+        {{ form_row(themeForm._token) }}
+        <div class="row mb-3">
+            {{ form_label(themeForm.targetname) }}
+            <div class="col">
+                {{ form_widget(themeForm.targetname) }}
+            </div>
+        </div>
+        <div class="row mb-3">
+            {{ form_label(themeForm.sourcetheme) }}
+            <div class="col">
+                {{ form_widget(themeForm.sourcetheme) }}
+            </div>
+        </div>
+
+        <div class="row mb-1">
+            {{ form_label(themeForm.targettheme) }}
+            <div class="col">
+                <div class="input-group">
+                    <span class="input-group-text text-default" id="theme-alert">
+                        @custom/
+                    </span>
+                    {{ form_widget(themeForm.targettheme) }}
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col offset-3 text-danger" id="theme-slug-errors"></div>
+        </div>
+        <div class="row mb-3">
+            <div class="col offset-3">
+                    {{ form_widget(themeForm.submit) }}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "common/user-sidebar.html.twig" %}
+{% endblock %}

@@ -30,11 +30,6 @@ class LayoutType extends AbstractType
          */
         $comic = $options['comic'];
 
-        $customPath = $this->getMediaPath($settings, $comic->getOwner()->getUsername(), $comic->getSlug(), 'themes');
-
-
-
-
         $builder
 //            ->add(
 //                'sidebarposition',

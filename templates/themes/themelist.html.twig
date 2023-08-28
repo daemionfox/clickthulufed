@@ -38,8 +38,8 @@
                             <div class="col">{{ theme.display }}</div>
                             <div class="col-3 btn-group">
                                 <a href="/themes/{{ comic.slug }}/copy/{{ theme.type }}/{{ theme.slug }}" class="btn btn-info" title="Duplicate custom theme {{ theme.path }}"><i class="fas fa-copy"></i></a>
-                                <a href="/themes/{{ comic.slug }}/edit/{{ theme.type }}/{{ theme.slug }}" class="btn btn-primary" title="Edit custom theme {{ theme.path }}"><i class="fas fa-edit"></i></a>
-                                <a href="/themes/{{ comic.slug }}/delete/{{ theme.type }}/{{ theme.slug }}" class="btn btn-danger" title="Delete custom theme {{ theme.path }}"><i class="fas fa-trash"></i></a>
+                                <a href="/themes/{{ comic.slug }}/edit/{{ theme.slug }}" class="btn btn-primary" title="Edit custom theme {{ theme.path }}"><i class="fas fa-edit"></i></a>
+                                <a href="/themes/{{ comic.slug }}/delete/{{ theme.slug }}" class="btn btn-danger" title="Delete custom theme {{ theme.path }}"><i class="fas fa-trash"></i></a>
                             </div>
                         </div>
                     {% endfor %}
@@ -68,4 +68,8 @@
             </div>
         </div>
     {% endif %}
+{% endblock %}
+
+{% block sidebar %}
+    {% include "common/user-sidebar.html.twig" %}
 {% endblock %}
