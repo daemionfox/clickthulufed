@@ -2,26 +2,23 @@
 
 namespace App\Controller;
 
+use App\Entity\Cast;
 use App\Entity\Comic;
 use App\Entity\Page;
-use App\Entity\Settings;
 use App\Entity\User;
 use App\Enumerations\NavigationTypeEnumeration;
 use App\Exceptions\ClickthuluException;
 use App\Exceptions\PageException;
-use App\Exceptions\SettingNotFoundException;
 use App\Helpers\NavigationHelper;
 use App\Helpers\SettingsHelper;
 use App\Traits\MediaPathTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
-use Twig\Loader\LoaderInterface;
 
 class ContentController extends AbstractController
 {
@@ -29,15 +26,32 @@ class ContentController extends AbstractController
 
     private SettingsHelper $systemSettings;
 
+    /**
+     * Okay, so, the Content controller is our main public facing code.  It handles all of the non-administrative
+     * details for reading comic content.  Page collection, navigation, ancilliary pages, etc.  Unlike the administrative
+     * functions, this is all running from the /@NAME/* route.
+     *
+     *
+     * @param EntityManagerInterface $entityManager
+     */
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->systemSettings = SettingsHelper::init($entityManager);
     }
 
+    /**
+     * So, essential landing page.  Has two possible plays depending on the incoming slug.  If the slug matches a
+     * comic slug, it presents the front page of the comic, alternatively, the slug could match a username, in which
+     * case, it will present a user info page.
+     *
+     * @param EntityManagerInterface $entityManager
+     * @param string $ident
+     * @return Response
+     * @throws PageException
+     */
     #[Route('/@{ident}', name: 'app_content')]
-    public function index(EntityManagerInterface $entityManager, string $ident, ?string $pageslug): Response
+    public function index(EntityManagerInterface $entityManager, string $ident): Response
     {
-        // TODO - Remove once we build the feed
         // Determines whether or not it's a comic or a user and either presents the appropriate comic page, or the user profile
 
         /**
@@ -63,6 +77,17 @@ class ContentController extends AbstractController
         return $this->render('@theme/not_found.html.twig', []);
     }
 
+    /**
+     * So, pulls details from a comic page based on the page's slug.  The slug can be in a number of formats, dictated
+     * by the dropdown on the comic settings page.  Most common will be the date style slug (2023-08-24), however it could
+     * also be either id (346) or by text string (this-page-is-first).  Slug style can be changed whenever without affecting
+     * the navigation.
+     *
+     * @param EntityManagerInterface $entityManager
+     * @param string $ident
+     * @param string $pageslug
+     * @return Response
+     */
     #[Route('/@{ident}/page/{pageslug}', name: 'app_comicpage')]
     public function page(EntityManagerInterface $entityManager, string $ident, string $pageslug): Response
     {
@@ -79,6 +104,16 @@ class ContentController extends AbstractController
     }
 
 
+    /**
+     * This is the actual piece that pulls the page out of the DB and assembles it for both the index and the page
+     * methods.  It handles building out the Navigation Entity depending on which slug type is used.
+     *
+     * @param EntityManagerInterface $entityManager
+     * @param Comic $comic
+     * @param string|null $pageslug
+     * @return Response
+     * @throws PageException
+     */
     protected function comicPage(EntityManagerInterface $entityManager, Comic $comic, ?string $pageslug = null)
     {
         if(empty($pageslug)) {
@@ -151,12 +186,27 @@ class ContentController extends AbstractController
         return $this->render('@theme/page.html.twig', ['comic' => $comic, 'navigation' => $navigation]);
     }
 
+    /**
+     * User index handler for the /@NAME route
+     *
+     * @param EntityManagerInterface $entityManager
+     * @param User $user
+     * @return Response
+     */
     protected function userIndex(EntityManagerInterface $entityManager, User $user): Response
     {
 
         return $this->render('content/profile.html.twig', ['user' => $user]);
     }
 
+    /**
+     * Builds the custom CSS page from the Comic's Layout section
+     *
+     * @param string $slug
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     * @throws ClickthuluException
+     */
     #[Route('/@{slug}/css/style.css', name: 'app_customcomiccss')]
     public function customStyle(string $slug, EntityManagerInterface $entityManager):Response
     {
@@ -168,29 +218,21 @@ class ContentController extends AbstractController
             throw new ClickthuluException("No such comic");
         }
 
-
-
-
         $output = $this->render('public/comic.css.twig', ['comic' => $comic]);
         $output->headers->set('Content-type', 'text/css');
 
         return $output;
-
-
     }
 
 
-    #[Route('/@{slug}/{page}', name: 'app_contentnaviation')]
-    public function navigation(string $slug, string $page): Response
-    {
-        // Determines whether or not it's a comic or a user and either presents the appropriate comic page, or the user profile
-
-
-        return $this->render('content/index.html.twig', [
-            'controller_name' => 'ContentController - Navigation',
-        ]);
-    }
-
+    /**
+     * TODO - Manage Feed after Federation
+     *
+     * This is the placeholder for the future feed command.  /feed will return a list of all comics for a logged in
+     * user's watch list.  That mechanism has yet to be determined, as it could include comics from other instances.
+     *
+     * @return Response
+     */
     #[Route('/feed', name: 'app_feed')]
     public function feed(): Response
     {
@@ -205,6 +247,15 @@ class ContentController extends AbstractController
     }
 
 
+    /**
+     * Method to determine selected theme for a comic and add that path to Twig's loader under the @theme namespace
+     *
+     * @param Comic|null $comic
+     * @return void
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws \Twig\Error\LoaderError
+     */
     public function setupCustomTemplate(?Comic $comic)
     {
         /**
@@ -231,5 +282,59 @@ class ContentController extends AbstractController
         $env->setLoader($loader);
     }
 
+    /**
+     * Produces the archive page.
+     *
+     * @param EntityManagerInterface $entityManager
+     * @param string $slug
+     * @return Response
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws \Twig\Error\LoaderError
+     */
+    #[Route('/@{slug}/archive', name: 'app_archive')]
+    public function archive(EntityManagerInterface $entityManager, string $slug): Response
+    {
+        /**
+         * @var Comic $comic
+         */
+        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
+        $this->setupCustomTemplate($comic);
+        $comic->pagesTillToday();
 
+
+        return $this->render('@theme/archive.html.twig', ['comic' => $comic, 'pages' => $comic->getPages()]);
+    }
+
+    #[Route('/@{slug}/archive/cast/{id}', name: 'app_castarchive')]
+    public function castarchive(EntityManagerInterface $entityManager, string $slug, string $id): Response
+    {
+        /**
+         * @var Comic $comic
+         */
+        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
+        $this->setupCustomTemplate($comic);
+        $comic->pagesTillToday();
+        /**
+         * @var Cast $cast
+         */
+        $cast = $entityManager->getRepository(Cast::class)->find($id);
+
+
+        return $this->render('@theme/archive.html.twig', ['comic' => $comic, 'pages' => $cast->getPages()]);
+    }
+
+    #[Route('/@{slug}/cast', name: 'app_cast')]
+    public function cast(EntityManagerInterface $entityManager, string $slug): Response
+    {
+        /**
+         * @var Comic $comic
+         */
+        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
+        $this->setupCustomTemplate($comic);
+        $comic->pagesTillToday();
+
+
+        return $this->render('@theme/cast.html.twig', ['comic' => $comic]);
+    }
 }

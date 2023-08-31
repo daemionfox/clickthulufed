@@ -112,6 +112,13 @@ class Chapter
         return $firstpage;
     }
 
+    public function getlastpage(): null|Page
+    {
+        $pages = $this->getsortedpages();
+        $lastpage = array_pop($pages);
+        return $lastpage;
+    }
+
     public function getfirstpublishdate(): null|\DateTimeInterface
     {
         $firstpage = $this->getfirstpage();

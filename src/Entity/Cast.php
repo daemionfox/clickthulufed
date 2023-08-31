@@ -147,6 +147,47 @@ class Cast
         return $this;
     }
 
+    /**
+     * @return Page
+     * @throws \Exception
+     */
+    public function getFirstPage(): Page
+    {
+        $pages = (array)$this->pages->getIterator();
+        /**
+         * @var Page $a
+         * @var Page $b
+         */
+        usort($pages, function($a, $b){
+            return $a->getPublishDate() >= $b->getPublishDate() ? 1 : -1;
+        });
+        /**
+         * @var Page $firstPage
+         */
+        $firstPage = array_shift($pages);
+        return $firstPage;
+    }
+
+    /**
+     * @return Page
+     * @throws \Exception
+     */
+    public function getLastPage(): Page
+    {
+        $pages = (array)$this->pages->getIterator();
+        /**
+         * @var Page $a
+         * @var Page $b
+         */
+        usort($pages, function($a, $b){
+            return $a->getPublishDate() >= $b->getPublishDate() ? 1 : -1;
+        });
+        /**
+         * @var Page $lastPage
+         */
+        $lastPage = array_pop($pages);
+        return $lastPage;
+    }
 
 
     public function getChoiceLabel(): string

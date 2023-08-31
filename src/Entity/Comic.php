@@ -363,6 +363,12 @@ class Comic
         return $this;
     }
 
+    public function setPages(ArrayCollection $pages): self
+    {
+        $this->pages = $pages;
+        return $this;
+    }
+
     /**
      * @return Page|null
      */
@@ -414,7 +420,31 @@ class Comic
         return $this;
     }
 
+    public function pagesTillToday()
+    {
+        $now = new \DateTime('now');
 
+        /**
+         * @var Page $page
+         */
+        foreach ($this->pages as $page) {
+            if ($page->getPublishdate() > $now) {
+                $this->pages->removeElement($page);
+            }
+        }
 
+        $iterator = $this->pages->getIterator();
+        /**
+         * @var Page $a
+         * @var Page $b
+         */
+        $iterator->uasort(function($a, $b){
+            return $a->getPublishDate() > $b->getPublishDate() ? -1 : 1;
+        });
 
+        $this->setPages(new ArrayCollection(iterator_to_array($iterator)));
+        $this->currentpage = $this->pages->last();
+
+        return $this;
+    }
 }

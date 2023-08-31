@@ -38,3 +38,12 @@ body {
 }
 
 
+.archive-list {
+    list-style: none;
+}
+
+a.archive {
+    color: var(--white);
+    text-decoration: none;
+}
+

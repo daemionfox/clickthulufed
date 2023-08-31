@@ -1,0 +1,23 @@
+{#There are three archive files, copy/paste the contents of the one you want into this file or create your own.#}
+{% extends '@theme/base.html.twig' %}
+
+{% block title %}{{ comic.name }} Archive{% endblock %}
+
+{% block body %}
+        {% for page in pages| sort((a,b) => a.publishdate|date('Y-m-d H:i:s') >= b.publishdate|date('Y-m-d H:i:s'))  %}
+            {% set chapterfirst = page.getchapter.getfirstpage %}
+            {% set chapterlast = page.getchapter.getlastpage %}
+            {% if chapterfirst.id == page.id %}
+                <div class="row"><h3>{{ page.chapter.title }}</h3></div>
+                <div class="row">
+            {% endif %}
+                <div class="col-3 mb-3 archive-cell">
+                    <div class="row text-center"><a class="archive" href="/@{{ comic.slug }}/page/{{ page.slug }}"><img src="/pageimage/{{ comic.slug }}/{{ page.image }}" alt="{{ page.title }}" class="img-fluid"></a></div>
+                    <div class="row text-center"><a class="archive" href="/@{{ comic.slug }}/page/{{ page.slug }}">{{ page.title }}</a></div>
+                    <div class="row text-center"><a class="archive" href="/@{{ comic.slug }}/page/{{ page.slug }}">{{ page.publishdate|date('Y-m-d') }}</a></div>
+                </div>
+            {% if chapterlast.id == page.id %}
+                </div>
+            {% endif %}
+        {% endfor %}
+{% endblock %}
