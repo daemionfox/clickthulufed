@@ -61,6 +61,9 @@ class Page
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $titleslug = null;
 
+    #[ORM\Column(options: ["default" => false])]
+    private bool $pageAnnounced = false;
+
     public function __construct()
     {
         $this->createdon = new \DateTime();
@@ -323,6 +326,18 @@ class Page
     public function setTitleslug(?string $titleslug): static
     {
         $this->titleslug = $titleslug;
+
+        return $this;
+    }
+
+    public function isPageAnnounced(): ?bool
+    {
+        return $this->pageAnnounced;
+    }
+
+    public function setPageAnnounced(bool $pageAnnounced): static
+    {
+        $this->pageAnnounced = $pageAnnounced;
 
         return $this;
     }
