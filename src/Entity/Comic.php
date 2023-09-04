@@ -50,7 +50,7 @@ class Comic
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $deletedon = null;
 
-    #[ORM\ManyToOne(inversedBy: 'ownedComics')]
+    #[ORM\ManyToOne(inversedBy: 'comics')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $Owner = null;
 

@@ -4,8 +4,15 @@
 {% block title %}{{ comic.name }} Archive{% endblock %}
 
 {% block body %}
+    {% set castcount = 0 %}
     {% for cast in comic.casts %}
-        <div class="row mb-3 border-bottom">
+        {% set castcount = castcount+1 %}
+        {% if castcount > 1 %}
+            <div class="row mb-3 pb-3 cast-row">
+                <div class="col-8 offset-2"><hr/></div>
+            </div>
+        {% endif %}
+        <div class="row mb-3 pb-3 cast-row">
             <div class="col-3">
                 <img src="/castimage/{{ comic.slug }}/{{ cast.image }}" alt="cast.name" class="img-fluid">
             </div>
@@ -21,14 +28,15 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-6 offset-6 btn-group">
-                        <a class="btn btn-light" href="/@{{ comic.slug }}/page/{{ cast.getfirstpage.slug }}"><i class="fas fa-backward-step"></i> {{ cast.getfirstpage.publishdate|date('Y-m-d') }}</a>
-                        <a class="btn btn-light" href="/@{{ comic.slug }}/page/{{ cast.getlastpage.slug }}"><i class="fas fa-forward-step"></i> {{ cast.getlastpage.publishdate|date('Y-m-d') }}</a>
-                        <a class="btn btn-light" href="/@{{ comic.slug }}/archive/cast/{{ cast.id }}"><i class="fas fa-address-book"></i> List</a>
+                    <div class="col-4 offset-8 btn-group">
+                        <a class="btn btn-light" href="/@{{ comic.slug }}/page/{{ cast.getfirstpage.slug }}"><i class="fas fa-backward-step"></i> First</a>
+                        <a class="btn btn-light" href="/@{{ comic.slug }}/page/{{ cast.getlastpage.slug }}">Last <i class="fas fa-forward-step"></i></a>
+                        <a class="btn btn-light" href="/@{{ comic.slug }}/archive/cast/{{ cast.id }}"><i class="fas fa-address-book"></i> All</a>
                     </div>
                 </div>
             </div>
 
         </div>
+
     {% endfor %}
 {% endblock %}

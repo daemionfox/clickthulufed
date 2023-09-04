@@ -1,52 +1,80 @@
-<div class="col mt-5 panel p-3">
-    <ul class="nav flex-column">
-        <h5>Welcome {{ app.user.username }}</h5>
-        <li class="nav-item"><a href="/" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
-        <li class="nav-item"><a href="/profile" class="nav-link"><i class="fas fa-user"></i> Profile</a></li>
-        <li class="nav-item"><a href="/feed" class="nav-link"><i class="fas fa-book-bookmark"></i> Feed</a></li>
-        {% if is_granted('ROLE_CREATOR') %}
-            <li class="nav-item"><a href="{{ url('app_comiccreate') }}" class="nav-link"><i class="fas fa-book"></i> Create New Comic</a></li>
-        {% endif %}
+<div class="col mt-5 panel p-3" id="user-sidebar">
+    <div class="row">
+        <div class="col nav-expanded"><h5>Welcome {{ app.user.username }}</h5></div>
+        <div class="col-1 ms-2 me-4">
+            <button class="btn btn-link text-light" id="sidebar-collapse-button"><i class="fas" id="sidebar-collapse-button-icon"></i></button>
+        </div>
+    </div>
+    <div class="row ps-3 mb-2">
+        <div class="col-1 ms-2 me-4"><a href="/" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Home"><i class="fas fa-home"></i></a></div>
+        <div class="col nav-expanded"><a href="/" class="nav-link">Home</a></div>
+    </div>
 
-        {% if is_granted('ROLE_OWNER') %}
-            <hr/>
-            <h5>Server Management</h5>
-            <li class="nav-item"><a href="/admin/settings" class="nav-link"><i class="fas fa-gear"></i> Server Settings</a> </li>
-        {% endif %}
+    <div class="row ps-3 mb-2">
+        <div class="col-1 ms-2 me-4"><a href="/profile" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Profile"><i class="fas fa-user"></i></a></div>
+        <div class="col nav-expanded"><a href="/profile" class="nav-link">Profile</a></div>
+    </div>
+    <div class="row ps-3 mb-2">
+        <div class="col-1 ms-2 me-4"><a href="/feed" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Feed"><i class="fas fa-book-bookmark"></i></a></div>
+        <div class="col nav-expanded"><a href="/feed" class="nav-link">Feed</a></div>
+    </div>
 
-        {% if is_granted('ROLE_OWNER') or is_granted('ROLE_ADMIN') %}
-            <hr/>
-            <h5>Administration</h5>
-            <li class="nav-item"><a href="/admin/comics" class="nav-link">
-                <span class="fa-layers fa-fw">
+    {% if is_granted('ROLE_CREATOR') %}
+        <div class="row ps-3 mb-2">
+            <div class="col-1 ms-2 me-4"><a href="{{ url('app_comiccreate') }}" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Create New Comic"><i class="fas fa-book"></i></a></div>
+            <div class="col nav-expanded"><a href="{{ url('app_comiccreate') }}" class="nav-link">Create New Comic</a></div>
+        </div>
+    {% endif %}
+
+    {% if is_granted('ROLE_OWNER') %}
+        <div class="row border-top mt-3 pt-3 "></div>
+        <div class="row nav-expanded"><h5>Server Management</h5></div>
+        <div class="row ps-3 mb-2">
+            <div class="col-1 ms-2 me-4"><a href="/admin/settings" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Server Settings"><i class="fas fa-gear"></i></a></div>
+            <div class="col nav-expanded"><a href="/admin/settings" class="nav-link">Server Settings</a></div>
+        </div>
+    {% endif %}
+
+    {% if is_granted('ROLE_OWNER') or is_granted('ROLE_ADMIN') %}
+        <div class="row border-top mt-3 pt-3 "></div>
+        <div class="row nav-expanded"><h5>Administration</h5></div>
+        <div class="row ps-3 mb-2">
+            <div class="col-1 ms-2 me-4">
+                <a href="/admin/comics" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Comics"><span class="fa-layers fa-fw">
                     <i class="fas fa-stamp"></i>
                     {% if adminalerts.getComicAlertCount > 0 %}
                         <span class="bg-danger fa-layers-text badge" data-fa-transform="shrink-4 up-6 left-12">{{ adminalerts.getComicAlertCount }}</span>
                     {% endif %}
-                </span>
-                Comics</a> </li>
-            <li class="nav-item"><a href="/admin/users" class="nav-link">
-                <span class="fa-layers fa-fw">
-                    <i class="fas fa-users"></i>
-                    {% if adminalerts.getUserAlertCount > 0 %}
-                        <span class="bg-danger fa-layers-text badge" data-fa-transform="shrink-4 up-6 left-12">{{ adminalerts.getUserAlertCount }}</span>
-                    {% endif %}
-                </span>
-                    Users</a> </li>
-        {% endif %}
+                    </span></a>
+            </div>
+            <div class="col nav-expanded"><a href="/admin/comics" class="nav-link">Comics</a></div>
+        </div>
+        <div class="row ps-3 mb-2">
+            <div class="col-1 ms-2 me-4">
+                <a href="/admin/users" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Users"><span class="fa-layers fa-fw">
+                        <i class="fas fa-users"></i>
+                        {% if adminalerts.getUserAlertCount > 0 %}
+                            <span class="bg-danger fa-layers-text badge" data-fa-transform="shrink-4 up-6 left-12">{{ adminalerts.getUserAlertCount }}</span>
+                        {% endif %}
+                        </span></a>
+            </div>
+            <div class="col nav-expanded"><a href="/admin/users" class="nav-link">Users</a></div>
+        </div>
+    {% endif %}
 
-
-        {% if is_granted('ROLE_CREATOR') %}
-            <hr/>
-            <h5>Comic Management</h5>
-            {% for comic in app.user.comics %}
-                <li class="nav-item"><a href="/page/{{ comic.slug }}" class="nav-link"><i class="fas fa-toolbox"></i> Manage {{ comic.name }}</a></li>
-            {% endfor %}
-        {% endif %}
-
-
-        <hr/>
-        <li class="nav-item"><a href="/logout" class="nav-link"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
-
-    </ul>
+    {% if is_granted('ROLE_CREATOR') %}
+        <div class="row border-top mt-3 pt-3 "></div>
+        <div class="row nav-expanded"><h5>Comic Management</h5></div>
+        {% for comic in app.user.comics %}
+            <div class="row ps-3 mb-2">
+                <div class="col-1 ms-2 me-4"><a href="/page/{{ comic.slug }}" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Manage {{ comic.name }}"><i class="fas fa-toolbox"></i></a>
+                </div>
+                <div class="col nav-expanded"><a href="/page/{{ comic.slug }}" class="nav-link">Manage {{ comic.name }}</a></div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="row border-top mt-3 pt-3 ps-3 mb-2">
+        <div class="col-1 ms-2 me-4"><a href="/logout" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Logout"><i class="fas fa-right-from-bracket"></i></a></div>
+        <div class="col nav-expanded"><a href="/logout" class="nav-link">Logout</a></div>
+    </div>
 </div>

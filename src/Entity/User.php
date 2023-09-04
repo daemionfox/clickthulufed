@@ -67,10 +67,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'uploadedby', targetEntity: Page::class, orphanRemoval: true)]
     private Collection $pages;
 
+    #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
+    private ?\DateTimeInterface $createdon = null;
+
     public function __construct()
     {
         $this->comics = new ArrayCollection();
         $this->pages = new ArrayCollection();
+        $this->createdon = new \DateTime();
     }
 
 
@@ -360,6 +364,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $page->setUploadedby(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedon(): ?\DateTimeInterface
+    {
+        return $this->createdon;
+    }
+
+    public function setCreatedon(\DateTimeInterface $createdon): static
+    {
+        $this->createdon = $createdon;
 
         return $this;
     }

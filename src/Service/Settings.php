@@ -13,6 +13,8 @@ class Settings
     {
         $settingsHelper = SettingsHelper::init($entityManager);
         $this->settings = $settingsHelper->all();
+        $sidebarCollapsed = isset($_COOKIE['clickthuluSidebarCollapsed']) ? (int)$_COOKIE['clickthuluSidebarCollapsed'] > 0 : false;
+        $this->settings['user_sidebar_collapsed'] = $sidebarCollapsed;
     }
 
     public function get(): array

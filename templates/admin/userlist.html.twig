@@ -5,7 +5,7 @@
 {% block body %}
 
     <div class="container">
-        <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+        <div class="card col p-3 mt-5 panel" id="c4-comic-admin">
             <div class="row mb-3">
                 <div class="col">
                     <h1>User Management</h1>
@@ -20,57 +20,70 @@
                     {% set isAdmin = true %}
                     {% set isCreator = true %}
                 {% endif %}
-                <div class="row c4-user-admin-row {% if user.deleted  %}text-secondary{% endif %}">
-                    <div class="col-4">
-                        <a href="/profile/{{ user.username }}" {{ ownerDisabled }}>
-                        <span class="fa-layers fa-fw fa-2x">
-                            <i class="fas {{ user.getIcon }}"></i>
+                <div class="row c4-user-admin-row {% if user.deleted  %}text-secondary{% endif %} mb-3" data-user="{{ user.username }}">
+                    <div class="col-1 text-end">
+                        <span class="fa-stack fa-fw">
+                            <i class="fas {{ user.getIcon }} fa-stack-2x"></i>
                             {% if user.requestRole == 'creator' %}
-                                <i class="fas fa-circle-exclamation badge text-warning fa-bounce" data-fa-transform="shrink-2 up-6 left-12"></i>
+                                <i class="fas fa-circle-exclamation badge text-warning fa-bounce fa-stack-1x"></i>
                             {% endif %}
                             {% if user.deleted  %}
-                                <i class="fas fa-trash badge text-danger" data-fa-transform="shrink-2 down-6 right-8"></i>
+                                <i class="fas fa-trash badge text-danger fa-stack-1x"></i>
                             {% endif %}
                         </span>
-                        {{ user.username }}</a>
+                    </div>
+                    <div class="col-3">
+                        <a href="/profile/{{ user.username }}">{{ user.username }}</a>
+                    </div>
+                    <div class="col-3">
+                        {{ user.createdon|date("Y-m-d") }}
                     </div>
                     <div class="col">
                         <div class="btn-group" role="group">
                         {% if isOwner %}
-                            <div class="btn btn-link text-light" title="Owner status cannot be changed">
-                                <span class="fa-layers fa-fw fa-2x">
-                                    <i class="fas fa-palette"></i>
-                                    <i class="fas fa-crown text-warning" data-fa-transform="shrink-4 up-4 right-4"></i>
+                            <button class="btn btn-light" title="Owner status cannot be changed" disabled>
+                                <span class="fa-stack">
+                                    <i class="fas fa-palette fa-stack-2x"></i>
+                                    <i class="fas fa-crown fa-stack-1x text-warning"></i>
                                 </span>
-                            </div>
-                            <div class="btn btn-link text-light" title="Owner status cannot be changed">
-                                <span class="fa-layers fa-fw fa-2x">
-                                    <i class="fas fa-screwdriver-wrench"></i>
-                                    <i class="fas fa-crown text-warning" data-fa-transform="shrink-4 up-4 right-4"></i>
+                            </button>
+                            <button class="btn btn-light" title="Owner status cannot be changed" disabled>
+                                <span class="fa-stack">
+                                    <i class="fas fa-screwdriver-wrench fa-stack-2x"></i>
+                                    <i class="fas fa-crown text-warning fa-stack-1x "></i>
                                 </span>
-                            </div>
+                            </button>
+                            <button class="btn btn-light" title="Owner status cannot be deleted" disabled>
+                                <span class="fa-stack">
+                                    <i class="fas fa-trash fa-stack-2x"></i>
+                                    <i class="fas fa-crown text-warning fa-stack-1x "></i>
+                                </span>
+                            </button>
                         {% else %}
-                                <a href="/admin/{% if isCreator %}removerole{% else %}addrole{% endif %}/{{ user.username }}/creator" type="button" class="btn btn-link">
-                                    <span class="fa-layers fa-fw fa-2x">
-                                        <i class="fas fa-palette"></i>
-                                        {% if not isCreator %}
-                                            <i class="fas fa-ban text-danger" data-fa-transform="shrink-4 up-4 right-4"></i>
-                                        {% endif %}
-                                    </span>
-                                </a>
-                                <a href="/admin/{% if isAdmin %}removerole{% else %}addrole{% endif %}/{{ user.username }}/admin" type="button" class="btn btn-link">
-                                    <span class="fa-layers fa-fw fa-2x">
-                                        <i class="fas fa-screwdriver-wrench"></i>
-                                        {% if not isAdmin %}
-                                            <i class="fas fa-ban text-danger" data-fa-transform="shrink-4 up-4 right-4"></i>
-                                        {% endif %}
-                                    </span>
-                                </a>
-                                <a href="/admin/deleteuser/{{ user.username }}" type="button" class="btn btn-link text-light">
-                                    <span class="fa-layers fa-fw fa-2x">
-                                        <i class="fas fa-trash"></i>
-                                    </span>
-                                </a>
+                            <a href="/admin/{% if isCreator %}removerole{% else %}addrole{% endif %}/{{ user.username }}/creator" type="button" class="btn btn-light">
+                                <span class="fa-stack">
+                                    <i class="fas fa-palette fa-stack-2x"></i>
+                                    {% if not isCreator %}
+                                        <i class="fas fa-ban text-danger fa-stack-1x"></i>
+                                    {% endif %}
+                                </span>
+                            </a>
+                            <a href="/admin/{% if isAdmin %}removerole{% else %}addrole{% endif %}/{{ user.username }}/admin" type="button" class="btn btn-light">
+                                <span class="fa-stack">
+                                    <i class="fas fa-screwdriver-wrench fa-stack-2x"></i>
+                                    {% if not isAdmin %}
+                                        <i class="fas fa-ban text-danger fa-stack-1x"></i>
+                                    {% endif %}
+                                </span>
+                            </a>
+                            <a href="/admin/{% if user.deleted %}undeleteuser{% else %}deleteuser{% endif %}/{{ user.username }}" type="button" class="btn btn-light">
+                                <span class="fa-stack">
+                                    <i class="fas fa-trash fa-stack-2x"></i>
+                                    {% if user.deleted %}
+                                        <i class="fas fa-ban text-danger fa-stack-1x"></i>
+                                    {% endif %}
+                                </span>
+                            </a>
                         {% endif %}
                         </div>
 

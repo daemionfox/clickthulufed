@@ -104,6 +104,7 @@ class ComicController extends AbstractController
     public function activateComic(string $slug, Request $request, EntityManagerInterface $entityManager, Settings $settings): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $route = $request->headers->get('referer');
 
         /**
          * @var User $user
@@ -127,17 +128,18 @@ class ComicController extends AbstractController
             $comic->setActivatedon(new DateTime());
             $entityManager->persist($comic);
             $entityManager->flush();
-            return new RedirectResponse($this->generateUrl("app_profile"));
+            return $this->redirect($route);
         }
 
         $this->addFlash('error', 'You do not have the permission to activate this comic.  Please see an administrator.');
-        return new RedirectResponse($this->generateUrl("app_profile"), 400);
+        return $this->redirect($route, 400);
     }
 
     #[Route('/comic/{slug}/deactivate', name: 'app_comicdeactivate')]
     public function deactivateComic(string $slug, Request $request, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $route = $request->headers->get('referer');
         /**
          * @var User $user
          */
@@ -152,11 +154,11 @@ class ComicController extends AbstractController
             $comic->setIsactive(false);
             $entityManager->persist($comic);
             $entityManager->flush();
-            return new RedirectResponse($this->generateUrl("app_profile"));
+            return $this->redirect($route);
         }
 
         $this->addFlash('error', 'You do not have the permission to deactivate this comic.  Please see an administrator.');
-        return new RedirectResponse($this->generateUrl("app_profile"), 400);
+        return $this->redirect($route, 400);
 
     }
 
@@ -166,6 +168,7 @@ class ComicController extends AbstractController
     public function deleteComic(string $slug, Request $request, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $route = $request->headers->get('referer');
         /**
          * @var User $user
          */
@@ -178,13 +181,13 @@ class ComicController extends AbstractController
 
         if (!$canDelete) {
             $this->addFlash('error', "You do not have permission to delete this record");
-            return new RedirectResponse($this->generateUrl("app_profile"), 403);
+            return $this->redirect($route, 403);
         }
 
         $entityManager->remove($comic);
         $entityManager->flush();
 
-        return new RedirectResponse($this->generateUrl("app_profile"));
+        return $this->redirect($route);
 
     }
 

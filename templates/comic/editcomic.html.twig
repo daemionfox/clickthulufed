@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit {{ comic.name }}{% endblock %}
+{% block title %}{% if comic.slug is empty %}Create a New Comic{% else %}Edit {{ comic.name }}{% endif %}{% endblock %}
 
 {% block body %}
     {% for flash_error in app.flashes('error') %}
@@ -8,7 +8,7 @@
     {% endfor %}
 
     <div class="container">
-        <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+        <div class="card col p-3 mt-5 panel" id="c4-comic-admin">
             <div class="row mb-3">
                 <div class="col">
                     <h1>{% if comic.slug is empty %}Create a New Comic{% else %}Editing {{ comic.name }}{% endif %}</h1>

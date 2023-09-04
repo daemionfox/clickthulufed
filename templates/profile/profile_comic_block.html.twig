@@ -34,7 +34,7 @@
             <div class="row">
                 <div class="col">
                     <div class="d-grid">
-                        <a class="btn btn-block btn-danger" href="/comic/{{ comic.slug }}/delete"><i class="fas fa-trash"></i> Delete {{ comic.name }}</a>
+                        <button class="btn btn-block btn-danger comic-delete" data-comic="{{ comic.slug }}" data-comicname="{{ comic.name }}"><i class="fas fa-trash"></i> Delete {{ comic.name }}</button>
                     </div>
                 </div>
             </div>

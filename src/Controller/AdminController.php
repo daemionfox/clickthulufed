@@ -184,6 +184,33 @@ class AdminController extends AbstractController
     }
 
 
+    #[Route('/admin/undeleteuser/{username}', name: 'app_undeleteuser')]
+    public function undeleteUser(string $username, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        if (!in_array("ROLE_OWNER", $user->getRoles()) && !in_array("ROLE_ADMIN", $user->getRoles())) {
+            $this->addFlash('error', 'You do not have permission to perform this action');
+            return new RedirectResponse($this->generateUrl("/profile"), 403);
+        }
+
+        /**
+         * @var User $delUser
+         */
+        $delUser = $entityManager->getRepository(User::class)->findOneBy(['username' => $username]);
+
+        $delUser->setDeleted(false);
+        $delUser->setRoles([]);
+        $entityManager->persist($delUser);
+        $entityManager->flush();;
+
+        return new RedirectResponse($this->generateUrl('app_adminusers'));
+    }
+
+
     #[Route('/admin/settings', name: 'app_settings')]
     public function getSettings(EntityManagerInterface $entityManager, Request $request): Response
     {

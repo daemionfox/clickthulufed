@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ comic.name }} Page Management{% endblock %}
+{% block title %}{{ comic.name }} Theme Management{% endblock %}
 
 {% block body %}
     {% if settings.get.allow_custom_themes %}
         <div class="container">
-            <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
+            <div class="card col p-3 mt-5 panel" id="c4-comic-admin">
                 <div class="row mb-3">
                     <div class="col">
                         <h1>{{ comic.name }}: Theme Management</h1>
@@ -39,7 +39,7 @@
                             <div class="col-3 btn-group">
                                 <a href="/themes/{{ comic.slug }}/copy/{{ theme.type }}/{{ theme.slug }}" class="btn btn-info" title="Duplicate custom theme {{ theme.path }}"><i class="fas fa-copy"></i></a>
                                 <a href="/themes/{{ comic.slug }}/edit/{{ theme.slug }}" class="btn btn-primary" title="Edit custom theme {{ theme.path }}"><i class="fas fa-edit"></i></a>
-                                <a href="/themes/{{ comic.slug }}/delete/{{ theme.slug }}" class="btn btn-danger" title="Delete custom theme {{ theme.path }}"><i class="fas fa-trash"></i></a>
+                                <a class="btn btn-danger theme-delete" data-slug="{{ theme.slug }}" data-comic="{{ comic.slug }}" data-theme="{{ theme.display }}" title="Delete custom theme {{ theme.path }}"><i class="fas fa-trash"></i></a>
                             </div>
                         </div>
                     {% endfor %}
@@ -48,26 +48,9 @@
             </div>
         </div>
     {% else %}
-        <div class="container">
-            <div class="card col-10 offset-1 p-3 mt-5 panel" id="c4-comic-admin">
-                <div class="row mb-3">
-                    <div class="col">
-                        <h1>{{ comic.name }}: Theme Management</h1>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col">
-                        <h3>Custom themes are not allowed on this instance</h3>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col">
-                        <h5>Please see the Instance Owner to enable custom themes</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include "themes/themesnotallowed.html.twig" %}
     {% endif %}
+    {% include "common/deletethememodal.html.twig" %}
 {% endblock %}
 
 {% block sidebar %}

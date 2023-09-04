@@ -21,22 +21,21 @@ class EditComicType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add(
-                'name',
-                TextType::class,
-                [
-                    'label' => 'Comic Name:',
-                    'required' => true,
-                    'attr' => [
-                        'class' => 'form-control',
-                        'readonly' => true
-                    ],
-                    'label_attr' => [
-                        'class' => 'col-form-label col-3 text-end'
-                    ]
-                ]
-
-            )
+//            ->add(
+//                'name',
+//                TextType::class,
+//                [
+//                    'label' => 'Comic Name:',
+//                    'required' => true,
+//                    'attr' => [
+//                        'class' => 'form-control'
+//                    ],
+//                    'label_attr' => [
+//                        'class' => 'col-form-label col-3 text-end'
+//                    ]
+//                ]
+//
+//            )
 
             ->add(
                 'description',
@@ -79,6 +78,10 @@ class EditComicType extends AbstractType
             ->addEventListener(
                 FormEvents::POST_SET_DATA,
                 [$this, 'postSetSlugField']
+            )
+            ->addEventListener(
+                FormEvents::POST_SET_DATA,
+                [$this,'postSetNameField']
             )
 
 //            ->add(
@@ -151,21 +154,51 @@ class EditComicType extends AbstractType
         $data = $event->getData();
         $readonly = !empty($data->getId());
         $form->add(
-        'slug',
-        TextType::class,
-        [
-            'label' => 'Unique Identifier:',
-            'required' => true,
-            'attr' => [
-                'class' => 'form-control',
-                'readonly' => $readonly
-            ],
-            'label_attr' => [
-                'class' => 'col-form-label col-3 text-end'
+            'slug',
+            TextType::class,
+            [
+                'label' => 'Unique Identifier:',
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-control',
+                    'readonly' => $readonly
+                ],
+                'label_attr' => [
+                    'class' => 'col-form-label col-3 text-end'
+                ]
             ]
-        ]
-    );
+        );
 
+    }
+
+    public function postSetNameField(FormEvent $event)
+    {
+
+
+
+
+        $form = $event->getForm();
+        /**
+         * @var Comic $data
+         */
+        $data = $event->getData();
+        $readonly = !empty($data->getId());
+        $form->add(
+            'name',
+            TextType::class,
+            [
+                'label' => 'Comic Name:',
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-control',
+                    'readonly' => $readonly
+                ],
+                'label_attr' => [
+                    'class' => 'col-form-label col-3 text-end'
+                ]
+            ]
+
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver): void

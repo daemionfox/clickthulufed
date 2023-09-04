@@ -233,7 +233,7 @@ class ContentController extends AbstractController
      *
      * @return Response
      */
-    #[Route('/feed', name: 'app_feed')]
+    #[Route('/feed', name: 'app_contentfeed')]
     public function feed(): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
@@ -292,7 +292,7 @@ class ContentController extends AbstractController
      * @throws \Psr\Container\NotFoundExceptionInterface
      * @throws \Twig\Error\LoaderError
      */
-    #[Route('/@{slug}/archive', name: 'app_archive')]
+    #[Route('/@{slug}/archive', name: 'app_contentarchive')]
     public function archive(EntityManagerInterface $entityManager, string $slug): Response
     {
         /**
@@ -306,7 +306,7 @@ class ContentController extends AbstractController
         return $this->render('@theme/archive.html.twig', ['comic' => $comic, 'pages' => $comic->getPages()]);
     }
 
-    #[Route('/@{slug}/archive/cast/{id}', name: 'app_castarchive')]
+    #[Route('/@{slug}/archive/cast/{id}', name: 'app_contentcastarchive')]
     public function castarchive(EntityManagerInterface $entityManager, string $slug, string $id): Response
     {
         /**
@@ -324,7 +324,7 @@ class ContentController extends AbstractController
         return $this->render('@theme/archive.html.twig', ['comic' => $comic, 'pages' => $cast->getPages()]);
     }
 
-    #[Route('/@{slug}/cast', name: 'app_cast')]
+    #[Route('/@{slug}/cast', name: 'app_contentcast')]
     public function cast(EntityManagerInterface $entityManager, string $slug): Response
     {
         /**
@@ -337,4 +337,17 @@ class ContentController extends AbstractController
 
         return $this->render('@theme/cast.html.twig', ['comic' => $comic]);
     }
+
+    #[Route('/@{slug}/css/theme.css', name: 'app_contentstyle')]
+    public function stylesheet(): Response
+    {
+        return $this->render('@theme/theme.css.twig', []);
+    }
+
+    #[Route('/@{slug}/js/theme.js', name: 'app_contentscript')]
+    public function javascript(): Response
+    {
+        return $this->render('@theme/theme.js.twig', []);
+    }
+
 }

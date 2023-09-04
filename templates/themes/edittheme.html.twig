@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comic.name }} Theme Management{% endblock %}
+
+{% block body %}
+    {% if settings.get.allow_custom_themes %}
+    <div class="container">
+        <div class="card col p-3 mt-5 panel" id="c4-comic-admin">
+            <div class="row mb-3">
+                <div class="col">
+                    <h1>Edit Theme : {{ comic.name }}/{{ theme.theme }}</h1>
+                </div>
+            </div>
+            <div class="row mb-3">
+                {% include "common/comicmanagementnav.html.twig" with { "active": "themes"} %}
+            </div>
+            <div class="row mb-3">
+                <h3>{{ theme.theme }} : {{ file }}</h3>
+            </div>
+            <div class="row mb-3">
+                <div class="col-3">
+                    <div class="row mb-3">
+                        <div class="col"><h3>Files:</h3></div>
+                    </div>
+                    {% for f in themefiles %}
+                        <div class="row mb-3">
+                            <div class="col-1 me-3">
+                                <a href="/themes/{{ comic.slug }}/editfile/{{ theme.slug }}/{{ f }}" class="btn btn-sm {% if file==f %}btn-primary{% else %}btn-outline-light{% endif %}"><i class="fas fa-edit"></i></a>
+                            </div>
+                            <div class="col"><a href="/themes/{{ comic.slug }}/editfile/{{ theme.slug }}/{{ f }}">{{ f }}</a></div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+                <div class="col offset-1">
+                    {{ form_start(themeForm) }}
+                    {{ form_end(themeForm) }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {% else %}
+        {% include "themes/themesnotallowed.html.twig" %}
+    {% endif %}
+{% endblock %}
+
+
+{% block sidebar %}
+    {% include "common/user-sidebar.html.twig" %}
+{% endblock %}

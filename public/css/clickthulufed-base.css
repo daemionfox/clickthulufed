@@ -142,3 +142,44 @@ a.btn.btn-link:hover {
     content: '\f205';
     color: var(--bs-green);
 }
+
+a.btn-light {
+    color: initial;
+}
+
+#sidebar-container.collapsed .nav-expanded {
+    display:none;
+}
+
+#sidebar-container #sidebar-collapse-button-icon:before {
+    content: "\f066";
+}
+
+#sidebar-container.collapsed #sidebar-collapse-button-icon:before {
+    content: "\f065";
+}
+
+.pop-list {
+    position: fixed;
+    top: 50px;
+    right: 50px;
+    width: 350px;
+    z-index: 9999;
+}
+
+.pop {
+    position: relative;
+    border: 2px solid var(--white);
+    border-radius: 16px;
+}
+
+.info-pop {
+    background-color: rgba(38,146,0,75%) !important;
+    color: #FFFFFF !important;
+}
+
+.error-pop {
+    background-color: #ff0000 !important;
+    color: #FFFFFF !important;
+}
+

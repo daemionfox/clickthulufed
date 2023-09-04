@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Comic;
+use App\Entity\ThemeFile;
 use App\Entity\User;
 use App\Form\LayoutType;
 use App\Form\ThemeDuplicationType;
+use App\Form\ThemeFileType;
 use App\Helpers\SettingsHelper;
 use App\Traits\ComicOwnerTrait;
 use App\Traits\MediaPathTrait;
@@ -89,9 +91,9 @@ class ThemeController extends AbstractController
                 $this->recurseCopy($sourcePath, $targetPath);
                 // Generate a new data.json
 
+                $data = json_decode(file_get_contents("{$targetPath}/data.json"));
                 unlink("{$targetPath}/data.json");
 
-                $data = new \stdClass();
                 $data->theme = $name;
                 $data->slug = $target;
                 $data->author = $user->getName() ?? $user->getUsername();
@@ -151,9 +153,8 @@ class ThemeController extends AbstractController
     #[Route('/themes/{slug}/delete/{theme}', name: 'app_themedelete')]
     public function deleteTheme(EntityManagerInterface $entityManager, Request $request, string $slug, string $theme): Response
     {
-        $settings = SettingsHelper::init($entityManager);
-
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $settings = SettingsHelper::init($entityManager);
 
         /**
          * @var User $user
@@ -173,9 +174,76 @@ class ThemeController extends AbstractController
         $this->recurseDelete($target);
 
         $this->addFlash('info', "Theme deleted");
+
         return new RedirectResponse($this->generateUrl('app_themelist', ['slug' => $comic->getSlug()]));
 
     }
 
+
+    #[Route('/themes/{slug}/edit/{theme}', name: 'app_editthemefile1')]
+    #[Route('/themes/{slug}/editfile/{theme}/{file}', name: 'app_editthemefile')]
+    public function editTheme(EntityManagerInterface $entityManager, Request $request, string $slug, string $theme, ?string $file): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $settings = SettingsHelper::init($entityManager);
+
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        /**
+         * @var Comic $comic
+         */
+        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug] );
+
+        if (!$this->comicUserMatch($user, $comic)) {
+            $this->addFlash("error", "You do not have permission to manage themes for this comic");
+        }
+
+        $target = $this->getThemePath($settings, "@custom/{$theme}", $comic);
+        $files = glob("{$target}/*.twig");
+        $files = array_map('basename', $files);
+        $themedata = json_decode(file_get_contents("{$target}/data.json"));
+        $themeent = new ThemeFile();
+        $themeent->setTheme($theme);
+
+        if ($file) {
+            $data = file_get_contents("{$target}/{$file}");
+            $themeent->setFilename($file)->setData($data);
+        }
+
+        $form = $this->createForm(ThemeFileType::class, $themeent);
+        $form->handleRequest($request);
+
+        try {
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $data = $form->getData();
+
+                $filename = $data->getFilename();
+                $contents = $data->getData();
+                file_put_contents("{$target}/{$filename}", $contents);
+
+
+
+                $this->addFlash('info', "{$filename} saved at " . date("H:i", time()));
+
+
+            }
+        } catch (\Exception $e){
+            $err = new FormError($e->getMessage());
+            $form->addError($err);
+        }
+
+        return $this->render('themes/edittheme.html.twig', [
+            'comic' => $comic,
+            'theme' => $themedata,
+            'file' => $file,
+            'themefiles' => $files,
+            'themeForm' => $form->createView()
+        ]);
+
+
+    }
 
 }
