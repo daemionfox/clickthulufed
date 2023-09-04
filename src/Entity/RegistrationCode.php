@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\RegistrationCodeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 
 #[ORM\Entity(repositoryClass: RegistrationCodeRepository::class)]
 class RegistrationCode
@@ -91,6 +92,12 @@ class RegistrationCode
     {
         $this->activated = $activated;
 
+        return $this;
+    }
+
+    public function generate(): static
+    {
+        $this->code = Uuid::uuid4();
         return $this;
     }
 }

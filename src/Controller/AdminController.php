@@ -3,19 +3,28 @@
 namespace App\Controller;
 
 use App\Entity\Comic;
+use App\Entity\InviteUser;
+use App\Entity\RegistrationCode;
 use App\Entity\Settings;
 use App\Entity\SettingsCollection;
 use App\Entity\User;
+use App\Exceptions\ClickthuluException;
+use App\Form\InviteUsersType;
 use App\Form\SettingsType;
+use App\Helpers\SettingsHelper;
+use App\Security\EmailVerifier;
 use App\Traits\BooleanTrait;
 use App\Traits\ComicOwnerTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends AbstractController
@@ -263,7 +272,60 @@ class AdminController extends AbstractController
         );
     }
 
+    #[Route('/admin/users/invite', name: 'app_admininviteusers')]
+    public function inviteUsers(MailerInterface $mailer, EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $settings = SettingsHelper::init($entityManager);
 
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        $invite = new InviteUser();
+
+        $form = $this->createForm(InviteUsersType::class, $invite);
+        $form->handleRequest($request);
+
+        try {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $data = $form->getData();
+
+                $emails = $data->getUserArray();
+
+                foreach ($emails as $email) {
+                    $regcode = new RegistrationCode();
+                    $regcode->setEmail($email)->generate();
+
+
+                    $emailfrom = $settings->get('email_from_address');
+                    if (empty($emailfrom)) {
+                        throw new ClickthuluException("Email From address is not configured.");
+                    }
+                    // generate a signed url and email it to the user
+//                    $emailVerifier->sendEmailConfirmation('app_verify_invite', $user,
+//                        (new TemplatedEmail())
+//                            ->from(new Address($emailfrom, $settings->get('email_from_name', $emailfrom)))
+//                            ->to($email)
+//                            ->subject("Welcome to {$settings->get('server_name')}")
+//                            ->htmlTemplate('registration/userinvite_email.html.twig')
+//                    );
+
+//                    $email = new Email
+
+
+                }
+
+            }
+        } catch (\Exception $e){
+            $err = new FormError($e->getMessage());
+            $form->addError($err);
+        }
+
+        return $this->render('admin/inviteusers.html.twig', [
+            'inviteForm' => $form->createView()
+        ]);
+    }
 
     /**
      * @param string $string

@@ -10,6 +10,7 @@
                 <div class="col">
                     <h1>User Management</h1>
                 </div>
+                <div class="col-2"><a href="/admin/users/invite" class="btn btn-outline-light"><i class="fas fa-user-plus"></i> Invite Users</a></div>
             </div>
             {% for user in users %}
                 {% set isOwner = 'ROLE_OWNER' in user.roles %}

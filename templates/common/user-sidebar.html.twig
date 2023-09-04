@@ -60,6 +60,13 @@
             </div>
             <div class="col nav-expanded"><a href="/admin/users" class="nav-link">Users</a></div>
         </div>
+        <div class="row ps-3 mb-2">
+            <div class="col-1 ms-2 me-4">
+                <a href="/admin/users/invite" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Invite Users"><i class="fas fa-user-plus"></i></a>
+            </div>
+            <div class="col nav-expanded"><a href="/admin/users/invite" class="nav-link">Invite Users</a></div>
+        </div>
+
     {% endif %}
 
     {% if is_granted('ROLE_CREATOR') %}

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Exceptions\ClickthuluException;
 use App\Form\RegistrationFormType;
 use App\Helpers\SettingsHelper;
 use App\Security\EmailVerifier;
@@ -54,10 +55,15 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
+            $emailfrom = $settings->get('email_from_address');
+            if (empty($emailfrom)) {
+                throw new ClickthuluException("Email From address is not configured.");
+            }
+
             // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
                 (new TemplatedEmail())
-                    ->from(new Address('matt@rcsipublishing.com', 'Acme Mail Bot'))
+                    ->from(new Address($emailfrom, $settings->get('email_from_name', $emailfrom)))
                     ->to($user->getEmail())
                     ->subject('Please Confirm your Email')
                     ->htmlTemplate('registration/confirmation_email.html.twig')
@@ -75,6 +81,14 @@ class RegistrationController extends AbstractController
             'registrationForm' => $form->createView(),
         ]);
     }
+
+    #[Route('/verify/email', name: 'app_verify_invite')]
+    public function verifyUserInvite(Request $request, TranslatorInterface $translator): Response
+    {
+
+
+    }
+
 
     #[Route('/verify/email', name: 'app_verify_email')]
     public function verifyUserEmail(Request $request, TranslatorInterface $translator): Response
