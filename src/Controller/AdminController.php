@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends AbstractController
@@ -254,7 +255,7 @@ class AdminController extends AbstractController
                     $entityManager->persist($item);
                 }
                 $entityManager->flush();
-                $this->addFlash('message', 'Settings have been updated');
+                $this->addFlash('info', 'Settings have been updated');
                 return new RedirectResponse($this->generateUrl('app_settings'));
             }
         } catch (\Exception $e){
@@ -296,26 +297,25 @@ class AdminController extends AbstractController
                 foreach ($emails as $email) {
                     $regcode = new RegistrationCode();
                     $regcode->setEmail($email)->generate();
-
+                    $entityManager->persist($regcode);
 
                     $emailfrom = $settings->get('email_from_address');
                     if (empty($emailfrom)) {
                         throw new ClickthuluException("Email From address is not configured.");
                     }
-                    // generate a signed url and email it to the user
-//                    $emailVerifier->sendEmailConfirmation('app_verify_invite', $user,
-//                        (new TemplatedEmail())
-//                            ->from(new Address($emailfrom, $settings->get('email_from_name', $emailfrom)))
-//                            ->to($email)
-//                            ->subject("Welcome to {$settings->get('server_name')}")
-//                            ->htmlTemplate('registration/userinvite_email.html.twig')
-//                    );
 
-//                    $email = new Email
 
+                    $message = (new Email())
+                        ->from($emailfrom)
+                        ->to($email)
+                        ->subject("You have been invited to {$settings->get('server_name')}")
+                        ->html($this->render("registration/userinvite_email.html.twig", [ "user" => $user,  "reg" => $regcode ])->getContent());
+                    $mailer->send($message);
+
+                    $this->addFlash('info', "{$email} invited");
 
                 }
-
+                $entityManager->flush();
             }
         } catch (\Exception $e){
             $err = new FormError($e->getMessage());

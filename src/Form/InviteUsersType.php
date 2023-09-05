@@ -14,13 +14,13 @@ class InviteUsersType extends AbstractType
     {
         $builder
             ->add(
-                'users',
+                'userlist',
                 TextareaType::class,
                 [
                     'attr' => [
                         'required' =>true,
                         'class' => 'form-control mb-3',
-                        'rows' => 30,
+                        'rows' => 10,
                     ],
                     'label' => "Email Addresses:",
                     'label_attr' => [
@@ -35,7 +35,7 @@ class InviteUsersType extends AbstractType
                     'attr' => [
                         'class' => 'btn btn-success',
                     ],
-                    'label' => 'Save File'
+                    'label' => 'Send Invites'
                 ]
             )
         ;

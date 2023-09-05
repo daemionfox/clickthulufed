@@ -1,5 +1,5 @@
 <h3>You have been invited!</h3>
-<p>{{ user.name }} has invited you to join {{ settings.get.server_name }}!</p>
+<p>{% if user.name is not empty %}{{ user.name }}{% else %}{{ user.username}}{% endif %} has invited you to join {{ settings.get.server_name }}!</p>
 <p>Please use the following link (or copy/paste it into your browser) to activate your new account:</p>
 <p>&nbsp;</p>
 <p><a href="{{ settings.get.server_url }}/acceptinvite/{{ reg.code }}">{{ settings.get.server_url }}/acceptinvite/{{ reg.code }}</a></p>

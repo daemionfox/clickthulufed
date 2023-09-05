@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}There has been a problem{% endblock %}
+
+{% block body %}
+    <div class="row m-5">
+        <div class="col-8 offset-2 panel p-3">
+            <div class="row">
+                <div class="col">
+                    <h1>We're sorry, there seems to be an error.</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{ message }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

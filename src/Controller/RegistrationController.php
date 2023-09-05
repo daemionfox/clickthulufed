@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\RegistrationCode;
 use App\Entity\User;
 use App\Exceptions\ClickthuluException;
 use App\Form\RegistrationFormType;
@@ -11,6 +12,7 @@ use App\Security\LoginAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
@@ -30,9 +32,40 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, LoginAuthenticator $authenticator, EntityManagerInterface $entityManager): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, LoginAuthenticator $authenticator, EntityManagerInterface $entityManager, ?string $email): Response
     {
+        $settings = SettingsHelper::init($entityManager);
         $user = new User();
+        $email = $request->query->get('email');
+        $code = $request->query->get('code');
+        $autoActivate = (int)$settings->get('allow_user_signup');
+        $autoActivate = $autoActivate > 0;
+
+        if (!empty($email) && !empty($code)) {
+
+            /**
+             * @var RegistrationCode $regcode
+             */
+            $regcode = $entityManager->getRepository(RegistrationCode::class)->findOneBy(['code' => $code]);
+            if ($regcode->isActivated() === false && $regcode->getExpireson() >= new \DateTime() && $regcode->getEmail() === $email) {
+                $regcode->setActivated(true);
+                $entityManager->persist($regcode);
+                $entityManager->flush();
+                $autoActivate = true; // Check bool
+            }
+
+        }
+
+        if(!$autoActivate) {
+            return $this->render('error.html.twig', [
+                'message' => 'Registration is closed to the public.'
+            ]);
+        }
+
+
+        if (!empty($email)) {
+            $user->setEmail($email);
+        }
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
@@ -45,9 +78,7 @@ class RegistrationController extends AbstractController
                 )
             );
 
-            $settings = SettingsHelper::init($entityManager);
-            $autoActivate = $settings->get('allow_user_signup');
-            $autoActivate = $autoActivate > 0;
+
 
             $user->setRoles(['ROLE_USER']);
             $user->setActive($autoActivate);
@@ -82,11 +113,21 @@ class RegistrationController extends AbstractController
         ]);
     }
 
-    #[Route('/verify/email', name: 'app_verify_invite')]
-    public function verifyUserInvite(Request $request, TranslatorInterface $translator): Response
+    #[Route('/acceptinvite/{code}', name: 'app_verify_invite')]
+    public function verifyUserInvite(string $code, Request $request, EntityManagerInterface $entityManager): Response
     {
+        /**
+         * @var RegistrationCode $regcode
+         */
+        $regcode = $entityManager->getRepository(RegistrationCode::class)->findOneBy(['code' => $code]);
+        if ($regcode->isActivated() === false && $regcode->getExpireson() >= new \DateTime()) {
+            $regcode->setActivated(true);
+            $entityManager->persist($regcode);
+            $entityManager->flush();
+            return new RedirectResponse($this->generateUrl('app_register', ['email' => $regcode->getEmail(), 'code' => $code]));
+        }
 
-
+        return $this->render('error.html.twig', ['message' => "We're sorry.  The invite code you used is either invalid or expired."]);
     }
 
 

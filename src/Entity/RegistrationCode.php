@@ -27,8 +27,14 @@ class RegistrationCode
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
     private ?\DateTimeInterface $expireson = null;
 
-    #[ORM\Column]
-    private ?bool $activated = null;
+    #[ORM\Column(options: ["default" => false])]
+    private bool $activated = false;
+
+    public function __construct()
+    {
+        $this->createdon = new \DateTime();
+        $this->expireson = (new \DateTime())->add(\DateInterval::createFromDateString('1 week'));
+    }
 
     public function getId(): ?int
     {
