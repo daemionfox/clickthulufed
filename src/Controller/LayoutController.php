@@ -77,7 +77,7 @@ class LayoutController extends AbstractController
 
 
     #[Route('/layout/{slug}/upload', name: 'app_comicuploadheader')]
-    public function uploadCastImage(string $slug, EntityManagerInterface $entityManager): Response
+    public function uploadHeaderImage(string $slug, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 

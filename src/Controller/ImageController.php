@@ -153,6 +153,50 @@ class ImageController extends AbstractController
 
     }
 
+    #[Route('/usericon/@{username}/{file?}', name: 'app_usericon')]
+    public function getUserIcon(EntityManagerInterface $entityManager, string $username, ?string $file) : Response
+    {
+        /**
+         * @var User $user
+         */
+        $user = $entityManager->getRepository(User::class)->findOneBy(['username' => $username]);
+
+        $settings = SettingsHelper::init($entityManager);
+
+        $userPath = $this->getUserPath($settings, $user->getUsername());
+        if(empty($file)) {
+            $file = $user->getImage();
+        }
+        $filepath = "{$userPath}/_media/{$file}";
+
+        if (!is_file($filepath)) {
+            throw new ImageException("File not found");
+        }
+        return new BinaryFileResponse($filepath);
+    }
+
+    #[Route('/userbanner/@{user}/{file?}', name: 'app_userheader')]
+    public function getUserHeader(EntityManagerInterface $entityManager, string $user, ?string $file) : Response
+    {
+        /**
+         * @var User $user
+         */
+        $user = $entityManager->getRepository(User::class)->findOneBy(['username' => $user]);
+
+        $settings = SettingsHelper::init($entityManager);
+
+        $userPath = $this->getUserPath($settings, $user->getUsername());
+
+        if(empty($file)) {
+            $file = $user->getHeaderImage();
+        }
+        $filepath = "{$userPath}/_media/{$file}";
+
+        if (!is_file($filepath)) {
+            throw new ImageException("File not found");
+        }
+        return new BinaryFileResponse($filepath);
+    }
 
     protected function getImage(string $user, string $slug, string $file, string $type, EntityManagerInterface $entityManager)
     {
@@ -186,12 +230,6 @@ class ImageController extends AbstractController
             // This is where we have the server default failure image.
             return $this->getFileNotFound($entityManager);
         }
-
-
-
-
-
-
 
         return new JsonResponse();
     }

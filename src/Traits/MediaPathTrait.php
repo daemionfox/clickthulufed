@@ -11,13 +11,8 @@ trait MediaPathTrait
 
     protected function getMediaPath(SettingsHelper $settingsHelper, string $user, string $comic, ?string $type): string
     {
-        $start = $settingsHelper->get('user_storage_path', 'storage');
-        if (!str_starts_with($start, '/')) {
-            // Path is a relative path from the /app directory, prepend the app path to it
-            $startpath = __DIR__ . "/../../{$start}";
-            $startpath = realpath($startpath);
-        }
-        $base = "{$startpath}/{$user}/{$comic}";
+        $userPath = $this->getUserPath($settingsHelper, $user);
+        $base = "{$userPath}/{$comic}";
         $final = "{$base}/{$type}";
         if (!is_dir($final)) {
             @mkdir($final, 0775, true);
@@ -26,6 +21,24 @@ trait MediaPathTrait
         return $final;
     }
 
+
+    protected function getUserPath(SettingsHelper $settingsHelper, string $user): string
+    {
+        $startPath = $this->getStartPath($settingsHelper);
+        $userPath = "{$startPath}/{$user}";
+        return $userPath;
+    }
+
+    protected function getStartPath(SettingsHelper $settingsHelper): string
+    {
+        $startpath = $start = $settingsHelper->get('user_storage_path', 'storage');
+        if (!str_starts_with($start, '/')) {
+            // Path is a relative path from the /app directory, prepend the app path to it
+            $startpath = __DIR__ . "/../../{$start}";
+            $startpath = realpath($startpath);
+        }
+        return $startpath;
+    }
 
     protected function getThemePath(SettingsHelper $settingsHelper, string $theme, ?Comic $comic): string
     {

@@ -6,19 +6,9 @@
             </div>
         </div>
         <div class="row mb-1">
-            <div class="col-4 offset-1">Next Scheduled Page:</div>
-            <div class="col">DATA</div>
-        </div>
-        <div class="row mb-1">
-            <div class="col-4 offset-1">Latest Page:</div>
-            <div class="col">DATA</div>
-        </div>
-        <div class="row mb-1">
-            <div class="col-4 offset-1">New Comments:</div>
-            <div class="col">DATA</div>
+            <div class="col offset-1"><a href="{{ settings.get.server_url }}/@{{ comic.slug }}">Latest Page</a></div>
         </div>
     </div>
-    <div class="col-2">This Month</div>
     <div class="col-3">
 
         {% if comic.isactive == true and comic.isdeleted == false %}

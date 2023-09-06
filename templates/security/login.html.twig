@@ -32,7 +32,10 @@
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
             <div class="row mb-3">
                 <div class="col offset-3">
-                    <button class="btn btn-lg btn-primary" type="submit"><i class="fas fa-right-to-bracket"></i> Sign in</button>
+                    <button class="btn btn-success" type="submit"><i class="fas fa-right-to-bracket"></i> Sign In</button>
+                </div>
+                <div class="col text-end">
+                    <a href="/reset-password" class="btn btn-outline-light"><i class="fas fa-key"></i> Forgot Password</a>
                 </div>
             </div>
         </form>

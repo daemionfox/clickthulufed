@@ -21,22 +21,6 @@ class EditComicType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-//            ->add(
-//                'name',
-//                TextType::class,
-//                [
-//                    'label' => 'Comic Name:',
-//                    'required' => true,
-//                    'attr' => [
-//                        'class' => 'form-control'
-//                    ],
-//                    'label_attr' => [
-//                        'class' => 'col-form-label col-3 text-end'
-//                    ]
-//                ]
-//
-//            )
-
             ->add(
                 'description',
                 TextareaType::class,
@@ -83,21 +67,6 @@ class EditComicType extends AbstractType
                 FormEvents::POST_SET_DATA,
                 [$this,'postSetNameField']
             )
-
-//            ->add(
-//                'admin',
-//                CollectionType::class,
-//                [
-//                    'label' => 'Administrators:',
-//                    'entry_type' => UserType::class,
-//                    'attr' => [
-//                        'class' => 'form-control'
-//                    ],
-//                    'label_attr' => [
-//                        'class' => 'col-form-label col-3 text-end'
-//                    ]
-//                ]
-//            )
         ;
     }
 
