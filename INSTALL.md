@@ -1,8 +1,7 @@
 # Installing Clickthulu Fed
 
 1) Download this repo into your target directory
-2) Create a MySQL/MariaDB database on your server
-3) Run setup.php
-   1) Add database credentials
-   2) Add SMTP credentials (Currently ClickthuluFed is setup for gmail, other SMTP bundles can be added if needed)
-4) 
+2) Create a MySQL/MariaDB database
+3) Run ***php setup.php***
+4) Configure your webserver to point to the **public/** directory for your new Clickthulu Instance
+5) Report problems, but don't expect miracles, I'm only one guy right now.
