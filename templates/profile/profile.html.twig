@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ app.user.username }}'s Profile'{% endblock %}
+{% block title %}{{ app.user.username }}'s Profile{% endblock %}
 
 {% block body %}
 
@@ -13,21 +13,22 @@
                 <div class="row border-bottom mb-3 pb-2">
                     <div class="col-3 text-center">
                         {% if app.user.image is not empty %}
-                            <img src="{{ app.user.image }}" alt="{{ app.user.username }}" class="img-fluid"/><br/>
+                            <img src='/usericon/@{{ app.user.username }}' alt="{{ app.user.username }}" class="img-fluid img-icon"/><br/>
                         {% else %}
-                            <img src="https://gravatar.com/avatar/{{ app.user.username|md5 }}?s=256&d=robohash" alt="{{ app.user.username }}" class="img-fluid"/><br/>
+                            <img src="https://gravatar.com/avatar/{{ app.user.username|md5 }}?s=256&d=robohash" alt="{{ app.user.username }}" class="img-fluid img-icon"/><br/>
                         {% endif %}
                         {% if app.user.name %}
                             <strong>{{ app.user.name }}</strong><br/>
                         {% else %}
                             <strong>{{ app.user.username }}</strong><br/>
                         {% endif %}
-                        <small>@{{ app.user.username }}@{{ settings.get.server_url }}</small>
+                        {% set locbits = settings.get.server_url|split('://') %}
+                        <small>@{{ app.user.username }}@{{ locbits[1] }}</small>
                     </div>
                     <div class="col">
                         <div class="row mb-3">
                             <div class="col">
-                                {{ app.user.biography }}
+                                {{ app.user.biography|raw }}
                             </div>
                         </div>
 

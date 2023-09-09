@@ -75,7 +75,16 @@ a.btn.btn-link:hover {
 .dropzone-target {
     border: 2px solid var(--white);
     border-radius: 16px;
-    min-height: 200px;
+    min-height: 120px;
+}
+
+#user-banner {
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    margin: 0;
+
 }
 
 .dropzone-target img {
@@ -98,9 +107,8 @@ a.btn.btn-link:hover {
 }
 
 .img-icon {
-    width: 50px !important;
     min-width: 50px !important;
-    max-width: 50px !important;
+    max-width: 150px !important;
     height: auto;
     border-radius: 16px;
 }

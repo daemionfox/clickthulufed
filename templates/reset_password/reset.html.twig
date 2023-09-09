@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reset your password{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div class="card col-8 offset-2 p-3 mt-5 panel" id="c4-comic-admin">
+
+        {% for flash_error in app.flashes('reset_password_error') %}
+            <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+        {% endfor %}
+
+    <h3>Reset your password</h3>
+
+    {{ form_start(resetForm) }}
+        <div class="row mb-3">
+            {{ form_label(resetForm.plainPassword.first) }}
+            <div class="col">
+                {{ form_widget(resetForm.plainPassword.first) }}
+            </div>
+        </div>
+        <div class="row mb-3">
+            {{ form_label(resetForm.plainPassword.second) }}
+            <div class="col">
+                {{ form_widget(resetForm.plainPassword.second) }}
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col offset-3">
+                {{ form_widget(resetForm.submit) }}
+            </div>
+        </div>
+
+    {{ form_end(resetForm) }}
+    </div>
+</div>
+
+        {% endblock %}

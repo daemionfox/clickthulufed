@@ -3,19 +3,29 @@
 namespace App\Controller;
 
 use App\Entity\Comic;
+use App\Entity\InviteUser;
+use App\Entity\RegistrationCode;
 use App\Entity\Settings;
 use App\Entity\SettingsCollection;
 use App\Entity\User;
+use App\Exceptions\ClickthuluException;
+use App\Form\InviteUsersType;
 use App\Form\SettingsType;
+use App\Helpers\SettingsHelper;
+use App\Security\EmailVerifier;
 use App\Traits\BooleanTrait;
 use App\Traits\ComicOwnerTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends AbstractController
@@ -245,7 +255,7 @@ class AdminController extends AbstractController
                     $entityManager->persist($item);
                 }
                 $entityManager->flush();
-                $this->addFlash('message', 'Settings have been updated');
+                $this->addFlash('info', 'Settings have been updated');
                 return new RedirectResponse($this->generateUrl('app_settings'));
             }
         } catch (\Exception $e){
@@ -263,7 +273,59 @@ class AdminController extends AbstractController
         );
     }
 
+    #[Route('/admin/users/invite', name: 'app_admininviteusers')]
+    public function inviteUsers(MailerInterface $mailer, EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $settings = SettingsHelper::init($entityManager);
 
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        $invite = new InviteUser();
+
+        $form = $this->createForm(InviteUsersType::class, $invite);
+        $form->handleRequest($request);
+
+        try {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $data = $form->getData();
+
+                $emails = $data->getUserArray();
+
+                foreach ($emails as $email) {
+                    $regcode = new RegistrationCode();
+                    $regcode->setEmail($email)->generate();
+                    $entityManager->persist($regcode);
+
+                    $emailfrom = $settings->get('email_from_address');
+                    if (empty($emailfrom)) {
+                        throw new ClickthuluException("Email From address is not configured.");
+                    }
+
+
+                    $message = (new Email())
+                        ->from($emailfrom)
+                        ->to($email)
+                        ->subject("You have been invited to {$settings->get('server_name')}")
+                        ->html($this->render("registration/userinvite_email.html.twig", [ "user" => $user,  "reg" => $regcode ])->getContent());
+                    $mailer->send($message);
+
+                    $this->addFlash('info', "{$email} invited");
+
+                }
+                $entityManager->flush();
+            }
+        } catch (\Exception $e){
+            $err = new FormError($e->getMessage());
+            $form->addError($err);
+        }
+
+        return $this->render('admin/inviteusers.html.twig', [
+            'inviteForm' => $form->createView()
+        ]);
+    }
 
     /**
      * @param string $string

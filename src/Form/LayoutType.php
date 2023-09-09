@@ -31,28 +31,6 @@ class LayoutType extends AbstractType
         $comic = $options['comic'];
 
         $builder
-//            ->add(
-//                'sidebarposition',
-//                ChoiceType::class,
-//                [
-//                    'multiple' => false,
-//                    'expanded' => false,
-//                    'required' => false,
-//                    'attr' => [
-//                        'class' => 'form-select col'
-//                    ],
-//                    'label_attr' => [
-//                        'class' => 'col-form-label col-3 text-end'
-//                    ],
-//                    'label' => "Sidebar:",
-//                    'choices' => [
-//                        "Hide Sidebar" => "",
-//                        "Left" => "LEFT",
-//                        "Right" => "RIGHT"
-//                    ]
-//
-//                ]
-//            )
             ->add(
                 'showinfo',
                 CheckboxType::class,

@@ -34,7 +34,7 @@ class SettingsHelper
          * @var Settings $s
          */
         foreach ($settings as $s) {
-            $this->settings[$s->getSetting()] = !empty($s->getValue()) ? $s->getValue() : $s->getDefaultValue();
+            $this->settings[$s->getSetting()] = $s->getValue() !== null ? $s->getValue() : $s->getDefaultValue();
         }
     }
 

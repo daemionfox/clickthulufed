@@ -10,9 +10,9 @@
         <div class="row mb-3  pb-3  border-bottom">
             <div class="col-4">
                 {% if user.image is not empty %}
-                    <img src="{{user.image }}" alt="{{user.username }}" class="img-fluid"/><br/>
+                    <img src="/usericon/@{{ user.username }}" alt="{{ user.username }}" class="img-fluid img-icon"/><br/>
                 {% else %}
-                    <img src="https://gravatar.com/avatar/{{user.username|md5 }}?s=256&d=robohash" alt="{{user.username }}" class="img-fluid"/><br/>
+                    <img src="https://gravatar.com/avatar/{{user.username|md5 }}?s=256&d=robohash" alt="{{user.username }}" class="img-fluid img-icon"/><br/>
                 {% endif %}
             </div>
             <div class="col">
@@ -23,12 +23,13 @@
                         {% else %}
                             <h1>{{user.username }}</h1>
                         {% endif %}
-                        <small>@{{user.username }}@{{ settings.get.server_url }}</small>
+                        {% set locbits = settings.get.server_url|split('://') %}
+                        <small>@{{ user.username }}@{{ locbits[1] }}</small>
                     </div>
                 </div>
                 <div class="row ">
                     <div class="col">
-                        {{ user.biography }}
+                        {{ user.biography|raw }}
                     </div>
                 </div>
             </div>
@@ -38,7 +39,7 @@
                 <div class="row"><h1>{{ comic.name }}</h1></div>
                 <div class="row mb-3 pb-3 border-bottom">
                     <div class="col-3">
-                        <img class="img-fluid" src="/pageimage/{{ comic.slug }}/{{ comic.pages[0].image }}">
+                        <img class="img-fluid" src="/pageimage/{{ comic.slug }}/{{ comic.pages[0].image }}" alt="Latest page of {{ comic.name }}">
                     </div>
                     <div class="col">
                         <div class="row">

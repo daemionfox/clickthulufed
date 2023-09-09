@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\RegistrationCodeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 
 #[ORM\Entity(repositoryClass: RegistrationCodeRepository::class)]
 class RegistrationCode
@@ -26,8 +27,14 @@ class RegistrationCode
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
     private ?\DateTimeInterface $expireson = null;
 
-    #[ORM\Column]
-    private ?bool $activated = null;
+    #[ORM\Column(options: ["default" => false])]
+    private bool $activated = false;
+
+    public function __construct()
+    {
+        $this->createdon = new \DateTime();
+        $this->expireson = (new \DateTime())->add(\DateInterval::createFromDateString('1 week'));
+    }
 
     public function getId(): ?int
     {
@@ -91,6 +98,12 @@ class RegistrationCode
     {
         $this->activated = $activated;
 
+        return $this;
+    }
+
+    public function generate(): static
+    {
+        $this->code = Uuid::uuid4();
         return $this;
     }
 }
