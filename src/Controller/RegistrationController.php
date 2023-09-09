@@ -41,6 +41,11 @@ class RegistrationController extends AbstractController
         $autoActivate = (int)$settings->get('allow_user_signup');
         $autoActivate = $autoActivate > 0;
 
+        $user = $this->getUser();
+
+        if (!empty($user)) {
+            return new RedirectResponse($this->generateUrl("app_profile"));
+        }
         if (!empty($email) && !empty($code)) {
 
             /**

@@ -72,6 +72,17 @@ final class Version20230908025742 extends AbstractMigration
         );
 
         $this->addSql('CREATE TABLE settings (id INT AUTO_INCREMENT NOT NULL, setting VARCHAR(255) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, value VARCHAR(255) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, modifiedon DATETIME NOT NULL, defaultvalue VARCHAR(255) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, type VARCHAR(255) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, help LONGTEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, display_name VARCHAR(255) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, UNIQUE INDEX UNIQ_E545A0C59F74B898 (setting), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB COMMENT = \'\' ');
+        $this->addSql("INSERT INTO settings (setting, value, defaultvalue, modifiedon, type, help, display_name) values
+            ('allow_user_signup', '1', '1', NOW(), 'bool', 'Allow users to register without approval.', 'Open user registration'),
+            ('require_comic_approval', '0', '0', NOW(), 'bool', 'Require approval from admins to activate a comic.', 'Require approval for new comics'),
+            ('server_name', null, null, NOW(), 'string', 'Name of this Server', 'Server Name'),
+            ('server_url', null, null, NOW(), 'string', 'Server\'s URL', 'Server URL'),
+            ('user_storage_path', 'storage', 'storage', NOW(), 'string', 'Path for user storage', 'User Storage Path'),
+            ('generate_thumbnails', '1' ,'1', NOW(), 'bool', 'Auto generate thumbnails of uploaded pages.', 'Generate page thumbnails'),
+            ('allow_custom_themes', '1', '1', NOW(), 'bool', 'Allow users to generate custom themes for their comics.', 'Allow custom themes'),
+            ('email_from_name', null, null, NOW(), 'string', 'Name used to send mail', 'From Name:'),
+            ('email_from_address', null, null, NOW(), 'string', 'Email address used to send mail', 'From Address:')"
+        );
         $this->abortIf(
             !$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MariaDb1027Platform,
             "Migration can only be executed safely on '\Doctrine\DBAL\Platforms\MariaDb1027Platform'."
