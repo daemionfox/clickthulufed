@@ -34,9 +34,9 @@ APP_SECRET={$secret}
 
 MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
 
-MAILER_DSN={$smtptype}+smtp://{$smtpuser}:{$smtppass}@default
-MAILER_FROMADDR={$emailfrom}
-MAILERFROMNAME={$emailname}
+MAILER_DSN=\"{$smtptype}+smtp://{$smtpuser}:{$smtppass}@default\"
+MAILER_FROMADDR=\"{$emailfrom}\"
+MAILERFROMNAME=\"{$emailname}\"
 ";
 
 file_put_contents("./.env", $out);
