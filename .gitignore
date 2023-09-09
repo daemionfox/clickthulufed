@@ -33,3 +33,4 @@ comicpages/*
 storage/*
 /src/Controller/PrivateController.php
 TODO.md
+migrations-old/*
