@@ -1,9 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-//if (file_exists("./.env")) {
-//    die(".env file exists.  Delete this file before running setup.php");
-//}
+if (file_exists("./.env")) {
+    die(".env file exists.  Delete this file before running setup.php");
+}
 
 $a = '0123456789abcdef';
 $secret = '';
@@ -39,7 +39,7 @@ MAILER_FROMADDR={$emailfrom}
 MAILERFROMNAME={$emailname}
 ";
 
-file_put_contents("./ENV.TEST", $out);
+file_put_contents("./.env", $out);
 
 
 
@@ -58,6 +58,22 @@ if ($retval !==0 ) {
 }
 
 echo "Creating initial user account.";
+
+$owner = prompt("Owner username");
+$ownpass = prompt('Owner password', null, true);
+$ownemail = prompt("Owner email");
+
+@exec("./bin/console app:add-user {$owner} {$ownpass} {$ownemail} OWNER,CREATOR", $return, $retval);
+
+if ($retval !==0 ) {
+    die("Error.  Did not create initial user.");
+}
+
+$hostname = prompt("Server URL (please include http(s):// in your url)");
+
+@exec("./bin/console app:set-hostname $hostname");
+
+echo "Setup is complete\n";
 
 
 
