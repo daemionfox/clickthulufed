@@ -43,7 +43,7 @@ file_put_contents("./.env", $out);
 
 
 
-@exec("composer install", $return, $retval);
+@exec("composer install --no-scripts", $return, $retval);
 
 if ($retval !==0 ) {
     die("Composer did not run properly.  Please run composer install");
@@ -51,29 +51,29 @@ if ($retval !==0 ) {
 
 echo "Installing database";
 
-@exec("./bin/console doctrine:migrations:migrate", $return, $retval);
+@exec("./bin/console doctrine:migrations:migrate -n", $return, $retval);
 
 if ($retval !==0 ) {
     die("Database did not install correctly.");
 }
 
-echo "Creating initial user account.";
+echo "Creating initial user account.\n";
 
 $owner = prompt("Owner username");
 $ownpass = prompt('Owner password', null, true);
 $ownemail = prompt("Owner email");
 
-@exec("./bin/console app:add-user {$owner} {$ownpass} {$ownemail} OWNER,CREATOR", $return, $retval);
+@exec("./bin/console app:new-user {$owner} {$ownpass} {$ownemail} OWNER,CREATOR", $return, $retval);
 
 if ($retval !==0 ) {
-    die("Error.  Did not create initial user.");
+    die("Error.  Did not create initial user.\n");
 }
 
 $hostname = prompt("Server URL (please include http(s):// in your url)");
 
 @exec("./bin/console app:set-hostname $hostname");
 
-echo "Setup is complete\n";
+echo "\nSetup is complete\n";
 
 
 
