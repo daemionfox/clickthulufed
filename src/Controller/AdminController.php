@@ -54,7 +54,7 @@ class AdminController extends AbstractController
          */
         $user = $this->getUser();
         if (!in_array('ROLE_OWNER', $user->getRoles()) || !in_array('ROLE_ADMIN', $user->getRoles())) {
-            return new RedirectResponse($this->generateUrl("/profile"), 400);
+            return new RedirectResponse($this->generateUrl("app_profile"), 400);
         }
 
         $comics = $entityManager->getRepository(Comic::class)->findAll();
@@ -76,7 +76,7 @@ class AdminController extends AbstractController
          */
         $user = $this->getUser();
         if (!in_array('ROLE_OWNER', $user->getRoles()) || !in_array('ROLE_ADMIN', $user->getRoles())) {
-            return new RedirectResponse($this->generateUrl("/profile"), 400);
+            return new RedirectResponse($this->generateUrl("app_profile"), 400);
         }
 
         $criteria = ['deleted' => false];
@@ -103,7 +103,7 @@ class AdminController extends AbstractController
          */
         $user = $this->getUser();
         if (!in_array("ROLE_OWNER", $user->getRoles()) && !in_array("ROLE_ADMIN", $user->getRoles())) {
-            return new RedirectResponse($this->generateUrl("/profile"), 400);
+            return new RedirectResponse($this->generateUrl("app_profile"), 400);
         }
         try {
 
@@ -134,7 +134,7 @@ class AdminController extends AbstractController
          */
         $user = $this->getUser();
         if (!in_array("ROLE_OWNER", $user->getRoles()) && !in_array("ROLE_ADMIN", $user->getRoles())) {
-            return new RedirectResponse($this->generateUrl("/profile"), 400);
+            return new RedirectResponse($this->generateUrl("app_profile"), 400);
         }
         try {
 
@@ -173,7 +173,7 @@ class AdminController extends AbstractController
         $user = $this->getUser();
         if (!in_array("ROLE_OWNER", $user->getRoles()) && !in_array("ROLE_ADMIN", $user->getRoles())) {
             $this->addFlash('error', 'You do not have permission to perform this action');
-            return new RedirectResponse($this->generateUrl("/profile"), 403);
+            return new RedirectResponse($this->generateUrl("app_profile"), 403);
         }
 
         /**
@@ -204,7 +204,7 @@ class AdminController extends AbstractController
         $user = $this->getUser();
         if (!in_array("ROLE_OWNER", $user->getRoles()) && !in_array("ROLE_ADMIN", $user->getRoles())) {
             $this->addFlash('error', 'You do not have permission to perform this action');
-            return new RedirectResponse($this->generateUrl("/profile"), 403);
+            return new RedirectResponse($this->generateUrl("app_profile"), 403);
         }
 
         /**
@@ -232,7 +232,7 @@ class AdminController extends AbstractController
         $user = $this->getUser();
         if (!in_array("ROLE_OWNER", $user->getRoles()) && !in_array("ROLE_ADMIN", $user->getRoles())) {
             $this->addFlash('error', 'You do not have permission to perform this action');
-            return new RedirectResponse($this->generateUrl("/profile"), 403);
+            return new RedirectResponse($this->generateUrl("app_profile"), 403);
         }
 
         $items = $entityManager->getRepository(\App\Entity\Settings::class)->findAll();

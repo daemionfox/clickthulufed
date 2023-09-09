@@ -35,7 +35,6 @@ class RegistrationController extends AbstractController
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, LoginAuthenticator $authenticator, EntityManagerInterface $entityManager, ?string $email): Response
     {
         $settings = SettingsHelper::init($entityManager);
-        $user = new User();
         $email = $request->query->get('email');
         $code = $request->query->get('code');
         $autoActivate = (int)$settings->get('allow_user_signup');
@@ -46,6 +45,8 @@ class RegistrationController extends AbstractController
         if (!empty($user)) {
             return new RedirectResponse($this->generateUrl("app_profile"));
         }
+        $user = new User();
+
         if (!empty($email) && !empty($code)) {
 
             /**
