@@ -74,7 +74,7 @@ final class AddUserCommand extends Command
         if (null !== $username) {
             $this->io->text(' > <info>Username</info>: '.$username);
         } else {
-            $username = $this->io->ask('Username', null);
+            $username = $this->io->ask('Username');
             $input->setArgument('username', $username);
         }
 
@@ -94,7 +94,7 @@ final class AddUserCommand extends Command
         if (null !== $email) {
             $this->io->text(' > <info>Email</info>: '.$email);
         } else {
-            $email = $this->io->ask('Email', null);
+            $email = $this->io->ask('Email');
             $input->setArgument('email', $email);
         }
 

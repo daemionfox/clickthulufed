@@ -5,17 +5,13 @@ namespace App\Command;
 use Symfony\Component\Console\Command\Command;
 
 use App\Entity\Settings;
-use App\Enumerations\RoleEnumeration;
-use App\Exceptions\RoleNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
-use function Symfony\Component\String\u;
 
 #[AsCommand(
     name: 'app:set-hostname',
@@ -23,6 +19,8 @@ use function Symfony\Component\String\u;
 )]
 class UpdateHostnameCommand extends Command
 {
+
+    private SymfonyStyle $io;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager
@@ -69,7 +67,7 @@ class UpdateHostnameCommand extends Command
         if (null !== $hostname) {
             $this->io->text(' > <info>Hostname</info>: ' . $hostname);
         } else {
-            $hostname = $this->io->ask('Hostname', null);
+            $hostname = $this->io->ask('Hostname');
             $input->setArgument('hostname', $hostname);
         }
     }
@@ -79,7 +77,6 @@ class UpdateHostnameCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int
-     * @throws RoleNotFoundException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
