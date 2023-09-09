@@ -26,7 +26,7 @@ alive by bringing comic pages and comments into the federated feeds of other ser
 
 ## Installation
 
-### ClickthuluFed is built on Symfony 6.2
+### ClickthuluFed is built on Symfony 6.3
 
 
 1) Make sure PHP 8.1, Composer and your favorite webserver are installed (I personally prefer Apache, but nginx has also been tested)
