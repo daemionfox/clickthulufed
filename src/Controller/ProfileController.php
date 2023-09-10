@@ -110,7 +110,7 @@ class ProfileController extends AbstractController
         $mediapath = $this->getUserPath($settings, $user->getUsername());
         $mediapath = "{$mediapath}/_media";
         if (!is_dir($mediapath)) {
-            mkdir($mediapath, 0775);
+            mkdir($mediapath, 0775, true);
         }
         $files = array_pop($_FILES);
         if (empty($files)) {
@@ -118,6 +118,10 @@ class ProfileController extends AbstractController
         }
 
         move_uploaded_file($files['tmp_name'], "{$mediapath}/{$files['name']}");
+
+        if (!is_file("{$mediapath}/{$files['name']}")) {
+            throw new FileNotFoundException("File did not upload.");
+        }
 
 
         return new JsonResponse([
