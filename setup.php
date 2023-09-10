@@ -87,8 +87,27 @@ if (!$skipENV) {
     @exec("./bin/console app:set-config email_from_name $emailname");
     @exec("./bin/console app:set-config email_from_address $emailfrom");
 
+
+
+
 }
 
+echo "\nUpdating permissions on storage and cache directories\n";
+
+// TODO - Permissions need to be writable for the Webserver (apache/nginx/etc)  Best method to do this is?
+// Option 1 - Change entire root to be owned by webserver
+// Option 2 - Change perms for specific directories (storage/caching) to be writable
+// Going with option 2 until a better idea comes up.
+
+if (!is_dir("./var/cache")) {
+    mkdir("./var/cache", 0777, true);
+}
+@exec("chmod -R 777 ./var", $return, $retval);
+
+if (!is_dir("./storage")) {
+    mkdir("./storage", 0777, true);
+}
+@exec("chmod -R 777 ./storage", $return, $retval);
 
 
 echo "\nSetup is complete\n";

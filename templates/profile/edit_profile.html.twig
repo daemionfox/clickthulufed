@@ -67,24 +67,24 @@
                         </div>
 
                     </div>
-                    <div class="col">
-                        <div class=" dropzone-target text-center" id="profile_header_dropzone">
-                            <div  id="image_upload_spinner_banner" class="col text-center d-none">
-                                <i class="fas fa-spinner fa-spin fa-4x"></i>
-                            </div>
-                            <img src="{% if app.user.headerimage is not empty %}/userbanner/@{{ app.user.username }}{% endif %}" class="{% if app.user.image is not empty is empty %}d-none{% endif%} img-fluid" id="userheader_upload_image"  alt="{{ app.user.username }} Header Image"/><br/>
-                            <span>Header Banner</span>
-                        </div>
+{#                    <div class="col">#}
+{#                        <div class=" dropzone-target text-center" id="profile_header_dropzone">#}
+{#                            <div  id="image_upload_spinner_banner" class="col text-center d-none">#}
+{#                                <i class="fas fa-spinner fa-spin fa-4x"></i>#}
+{#                            </div>#}
+{#                            <img src="{% if app.user.headerimage is not empty %}/userbanner/@{{ app.user.username }}{% endif %}" class="{% if app.user.image is not empty is empty %}d-none{% endif%} img-fluid" id="userheader_upload_image"  alt="{{ app.user.username }} Header Image"/><br/>#}
+{#                            <span>Header Banner</span>#}
+{#                        </div>#}
 
-                    </div>
+{#                    </div>#}
                 </div>
                 <div class="row mb-3">
                     <div class="col">
                         <form method="POST" action="/profile/upload" enctype="multipart/form-data" class="dropzone profileicon-upload-dz" id="profileicon_upload_dropzone_form"></form>
                     </div>
-                    <div class="col">
-                        <form method="POST" action="/profile/upload" enctype="multipart/form-data" class="dropzone profilebanner-upload-dz" id="profilebanner_upload_dropzone_form"></form>
-                    </div>
+{#                    <div class="col">#}
+{#                        <form method="POST" action="/profile/upload" enctype="multipart/form-data" class="dropzone profilebanner-upload-dz" id="profilebanner_upload_dropzone_form"></form>#}
+{#                    </div>#}
                 </div>
             </div>
         </div>

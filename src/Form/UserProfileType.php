@@ -57,21 +57,21 @@ class UserProfileType extends AbstractType
                     ]
                 ]
             )
-            ->add(
-                'headerimage',
-                TextType::class,
-                [
-                    'attr' => [
-                        'readonly' => true,
-                        'class' => 'form-control'
-                    ],
-                    'label_attr' => [
-                        'class' => 'col-form-label col-3 text-end'
-                    ],
-                    'label' => 'Banner:',
-                    'help' => 'PNG, GIF or JPG. At most 2 MB. 1600x400 maximum size'
-                ]
-            )
+//            ->add(
+//                'headerimage',
+//                TextType::class,
+//                [
+//                    'attr' => [
+//                        'readonly' => true,
+//                        'class' => 'form-control'
+//                    ],
+//                    'label_attr' => [
+//                        'class' => 'col-form-label col-3 text-end'
+//                    ],
+//                    'label' => 'Banner:',
+//                    'help' => 'PNG, GIF or JPG. At most 2 MB. 1600x400 maximum size'
+//                ]
+//            )
             ->add(
                 'submit',
                 SubmitType::class,
