@@ -11,7 +11,7 @@ trait RecursiveCopyTrait
             return copy($source, $dest);
         }
         if (!is_dir($dest)) {
-            mkdir($dest);
+            mkdir($dest, 0755, true);
         }
         $dir = dir($source);
         while (false !== $entry = $dir->read()) {

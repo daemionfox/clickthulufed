@@ -85,7 +85,7 @@ class ThemeController extends AbstractController
                 $customPath = $this->getMediaPath($settings, $user->getUsername(), $comic->getSlug(), 'themes');
                 $targetPath = "{$customPath}/{$target}";
                 $sourcePath = $this->getThemePath($settings, $source, $comic);
-                mkdir($targetPath);
+                mkdir($targetPath, 0755, true);
 
                 // Make a copy of the source to target
                 $this->recurseCopy($sourcePath, $targetPath);
