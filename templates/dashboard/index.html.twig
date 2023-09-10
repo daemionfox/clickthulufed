@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DashboardController!{% endblock %}
+{% set nametitle = settings.get.server_name %}
+{% if nametitle is empty %}
+    {% set nametitle = settings.get.server_url %}
+{% endif %}
+{% block title %}Comics at {{ nametitle }}{% endblock %}
 
 {% block body %}
 <style>
