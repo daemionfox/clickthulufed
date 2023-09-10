@@ -1,45 +1,53 @@
 #!/usr/bin/env php
 <?php
 
+$skipEnv = false;
+
 if (file_exists("./.env")) {
-    die(".env file exists.  Delete this file before running setup.php");
+    echo "Detected existing ENV file.  Setup has occured before.  Only doing updates.";
+    $skipENV = true;
 }
+$emailfrom = null;
+$emailname = null;
 
-$a = '0123456789abcdef';
-$secret = '';
-for ($i = 0; $i < 32; $i++) {
-    $secret .= $a[rand(0, 15)];
+if (!$skipENV) {
+
+    $a = '0123456789abcdef';
+    $secret = '';
+    for ($i = 0; $i < 32; $i++) {
+        $secret .= $a[rand(0, 15)];
+    }
+
+    $dbuser=prompt("Database User");
+    $dbpass=prompt("Database Password", null, true);
+    $dbhost=prompt("Database Host", "localhost");
+    $dbport=prompt("Database Port", "3306");
+    $dbbase=prompt('Database Name', 'clickthulu');
+    echo "\n";
+    $smtptype=prompt("SMTP Service", "gmail");
+    $smtpuser=urlencode(prompt("SMTP User"));
+    $smtppass=urlencode(prompt("SMTP Password", null, true));
+    echo "\n";
+    $emailfrom=prompt("Email address");
+    $emailname=prompt("From name");
+    echo "\n";
+    echo "Writing .env file";
+
+    $out = "# This is an auto-generated file.  
+    DATABASE_URL=\"mysql://{$dbuser}:{$dbpass}@{$dbhost}:{$dbport}/{$dbbase}?serverVersion=10.11.2-MariaDB&charset=utf8mb4\"
+    
+    APP_ENV=prod
+    APP_SECRET={$secret}
+    
+    MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
+    
+    MAILER_DSN=\"{$smtptype}+smtp://{$smtpuser}:{$smtppass}@default\"
+    MAILER_FROMADDR=\"{$emailfrom}\"
+    MAILERFROMNAME=\"{$emailname}\"
+    ";
+
+    file_put_contents("./.env", $out);
 }
-
-$dbuser=prompt("Database User");
-$dbpass=prompt("Database Password", null, true);
-$dbhost=prompt("Database Host", "localhost");
-$dbport=prompt("Database Port", "3306");
-$dbbase=prompt('Database Name', 'clickthulu');
-echo "\n";
-$smtptype=prompt("SMTP Service", "gmail");
-$smtpuser=urlencode(prompt("SMTP User"));
-$smtppass=urlencode(prompt("SMTP Password", null, true));
-echo "\n";
-$emailfrom=prompt("Email address");
-$emailname=prompt("From name");
-echo "\n";
-echo "Writing .env file";
-
-$out = "# This is an auto-generated file.  
-DATABASE_URL=\"mysql://{$dbuser}:{$dbpass}@{$dbhost}:{$dbport}/{$dbbase}?serverVersion=10.11.2-MariaDB&charset=utf8mb4\"
-
-APP_ENV=prod
-APP_SECRET={$secret}
-
-MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
-
-MAILER_DSN=\"{$smtptype}+smtp://{$smtpuser}:{$smtppass}@default\"
-MAILER_FROMADDR=\"{$emailfrom}\"
-MAILERFROMNAME=\"{$emailname}\"
-";
-
-file_put_contents("./.env", $out);
 
 
 
@@ -49,29 +57,39 @@ if ($retval !==0 ) {
     die("Composer did not run properly.  Please run composer install");
 }
 
-echo "Installing database";
+if ($skipENV) {
+    echo "Updating database\n";
+} else {
+    echo "Installing database\n";
+}
 
 @exec("./bin/console doctrine:migrations:migrate -n", $return, $retval);
 
 if ($retval !==0 ) {
-    die("Database did not install correctly.");
+    die("Database did not install correctly.\n");
 }
 
-echo "Creating initial user account.\n";
+if (!$skipENV) {
+    echo "Creating initial user account.\n";
 
-$owner = prompt("Owner username");
-$ownpass = prompt('Owner password', null, true);
-$ownemail = prompt("Owner email");
+    $owner = prompt("Owner username");
+    $ownpass = prompt('Owner password', null, true);
+    $ownemail = prompt("Owner email");
 
-@exec("./bin/console app:new-user {$owner} {$ownpass} {$ownemail} OWNER,CREATOR", $return, $retval);
+    @exec("./bin/console app:new-user {$owner} {$ownpass} {$ownemail} OWNER,CREATOR", $return, $retval);
 
-if ($retval !==0 ) {
-    die("Error.  Did not create initial user.\n");
+    if ($retval !==0 ) {
+        die("Error.  Did not create initial user.\n");
+    }
+    $hostname = prompt("Server URL (please include http(s):// in your url)");
+
+    @exec("./bin/console app:set-config server_url $hostname");
+    @exec("./bin/console app:set-config email_from_name $emailname");
+    @exec("./bin/console app:set-config email_from_address $emailfrom");
+
 }
 
-$hostname = prompt("Server URL (please include http(s):// in your url)");
 
-@exec("./bin/console app:set-hostname $hostname");
 
 echo "\nSetup is complete\n";
 
