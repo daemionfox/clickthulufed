@@ -14,10 +14,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 #[AsCommand(
-    name: 'app:set-hostname',
+    name: 'app:set-config',
     description: 'Updates the hostname setting in the database'
 )]
-class UpdateHostnameCommand extends Command
+class SetConfigCommand extends Command
 {
 
     private SymfonyStyle $io;
@@ -33,7 +33,8 @@ class UpdateHostnameCommand extends Command
         $this
             // commands can optionally define arguments and/or options (mandatory and optional)
             // see https://symfony.com/doc/current/components/console/console_arguments.html
-            ->addArgument('hostname', InputArgument::OPTIONAL, 'The hostname of the server')
+            ->addArgument('setting', InputArgument::OPTIONAL, 'Setting tag')
+            ->addArgument('value', InputArgument::OPTIONAL, 'Setting value')
         ;
     }
 
@@ -56,20 +57,30 @@ class UpdateHostnameCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
-        if (null !== $input->getArgument('hostname')) {
+        if (null !== $input->getArgument('setting') && null !== $input->getArgument('value')) {
             return;
         }
 
-        $this->io->title('Set Hostname');
+        $this->io->title('Change Settings');
 
-        // Ask for the username if it's not defined
-        $hostname = $input->getArgument('hostname');
-        if (null !== $hostname) {
-            $this->io->text(' > <info>Hostname</info>: ' . $hostname);
+        
+        $setting = $input->getArgument('setting');
+        if (null !== $setting) {
+            $this->io->text(' > <info>Setting Tag</info>: ' . $setting);
         } else {
-            $hostname = $this->io->ask('Hostname');
-            $input->setArgument('hostname', $hostname);
+            $setting = $this->io->ask('Setting Tag');
+            $input->setArgument('setting', $setting);
         }
+
+        $value = $input->getArgument('value');
+        if (null !== $value) {
+            $this->io->text(' > <info>Setting Value</info>: ' . $value);
+        } else {
+            $value = $this->io->ask('Setting Value');
+            $input->setArgument('value', $value);
+        }
+
+
     }
 
 
@@ -81,23 +92,28 @@ class UpdateHostnameCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $stopwatch = new Stopwatch();
-        $stopwatch->start('set-hostname-command');
+        $stopwatch->start('set-config-command');
 
-        /** @var string $hostname */
-        $hostname = $input->getArgument('hostname');
+        /** @var string $setting */
+        $setting = $input->getArgument('setting');
+        $value = $input->getArgument('value');
 
         /**
-         * @var Settings $hostsetting
+         * @var Settings $dbsetting
          */
-        $hostsetting = $this->entityManager->getRepository(Settings::class)->findOneBy(['setting' => 'server_url']);
-        $hostsetting->setValue($hostname);
+        $dbsetting = $this->entityManager->getRepository(Settings::class)->findOneBy(['setting' => $setting]);
+        if (empty($dbsetting)) {
+            $this->io->error("Setting {$setting} not available");
+            return Command::FAILURE;
+        }
+        $dbsetting->setValue($value);
 
-        $this->entityManager->persist($hostsetting);
+        $this->entityManager->persist($dbsetting);
         $this->entityManager->flush();
 
-        $this->io->success(sprintf('Hostname has been updated to: %s', $hostname));
+        $this->io->success(sprintf('Config for %s has been updated to: %s', $setting, $value));
 
-        $event = $stopwatch->stop('set-hostname-command');
+        $event = $stopwatch->stop('set-config-command');
         if ($output->isVerbose()) {
             $this->io->comment(sprintf('Elapsed time: %.2f ms / Consumed memory: %.2f MB', $event->getDuration(), $event->getMemory() / (1024 ** 2)));
         }
