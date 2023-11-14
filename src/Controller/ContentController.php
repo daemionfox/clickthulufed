@@ -8,21 +8,29 @@ use App\Entity\Page;
 use App\Entity\User;
 use App\Enumerations\NavigationTypeEnumeration;
 use App\Exceptions\ClickthuluException;
+use App\Exceptions\NotAllowedException;
 use App\Exceptions\PageException;
 use App\Helpers\NavigationHelper;
 use App\Helpers\SettingsHelper;
+use App\Service\Settings;
 use App\Traits\MediaPathTrait;
+use App\Traits\ResourceTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Tests\Compiler\J;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
 class ContentController extends AbstractController
 {
     use MediaPathTrait;
+    use ResourceTrait;
 
     private SettingsHelper $systemSettings;
 
@@ -50,30 +58,27 @@ class ContentController extends AbstractController
      * @throws PageException
      */
     #[Route('/@{ident}', name: 'app_content')]
-    public function index(EntityManagerInterface $entityManager, string $ident): Response
+    #[Route('/user/{ident}', name: 'app_contentuser')]
+    #[Route('/comic/{ident}', name: 'app_contentcomic')]
+    public function index(Request $request, EntityManagerInterface $entityManager, string $ident): Response
     {
-        // Determines whether or not it's a comic or a user and either presents the appropriate comic page, or the user profile
+        try {
 
-        /**
-         * @var Comic $comic
-         */
-        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $ident]);
-        $this->setupCustomTemplate($comic);
+            $resource = $this->_getResource($entityManager, $ident);
 
-        /**
-         * @var User $user
-         */
-        $user = $entityManager->getRepository(User::class)->findOneBy(['username' => $ident]);
-
-        if (!empty($comic)) {
-            return $this->comicPage($entityManager, $comic);
-        }
-
-        if (!empty($user)) {
-            return $this->userIndex($entityManager, $user);
-        }
-
-
+            if (is_a($resource, Comic::class)) {
+                /**
+                 * @var Comic $resource
+                 */
+                $this->setupCustomTemplate($resource);
+                return $this->comicPage($entityManager, $resource);
+            } elseif (is_a($resource, User::class)) {
+                /**
+                 * @var User $resource
+                 */
+                return $this->userIndex($entityManager, $resource);
+            }
+        } catch (NotFoundResourceException) {}
         return $this->render('@theme/not_found.html.twig', []);
     }
 

@@ -33,7 +33,7 @@
             <div class="col btn-group">
                 <a href="/page/{{ comic.slug }}" class="btn btn-success" title="Manage {{ comic.name }}"><i class="fas fa-toolbox"></i></a>
                 <a href="/comic/{{ comic.slug }}/edit" type="button" class="btn btn-primary" title="Edit {{ comic.name }}"><i class="fas fa-edit"></i></a>
-                <a href="/comic/{{ comic.slug }}/layout" type="button" class="btn btn-info" title="Edit Layout for {{ comic.name }}"><i class="fas fa-gear"></i></a>
+                <a href="/layout/{{ comic.slug }}" type="button" class="btn btn-info" title="Edit Layout for {{ comic.name }}"><i class="fas fa-gear"></i></a>
                 {% if comic.isactive == true and comic.isdeleted == false %}
                     <a class="btn btn-warning" href="/comic/{{ comic.slug }}/deactivate" title="Deactivate {{ comic.name }}"><i class="fas fa-unlock"></i></a>
                 {% else %}

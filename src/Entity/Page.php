@@ -341,4 +341,10 @@ class Page
 
         return $this;
     }
+
+    public function getImageLink()
+    {
+        return "/pageimage/{$this->comic->getSlug()}/{$this->getImage()}";
+
+    }
 }

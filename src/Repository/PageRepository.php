@@ -45,4 +45,17 @@ class PageRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+
+    public function findUnannouncedPages(): ?array
+    {
+        $now = new \DateTime();
+        return $this->createQueryBuilder('p')
+            ->andWhere("p.publishdate <= :val")
+            ->andWhere("p.pageAnnounced = 'false'")
+            ->setParameter("val", $now)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Exceptions\SettingNotFoundException;
 use App\Helpers\SettingsHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -20,5 +21,13 @@ class Settings
     public function get(): array
     {
         return $this->settings;
+    }
+
+    public function setting(string $key)
+    {
+        if (isset($this->settings[$key])) {
+            return $this->settings[$key];
+        }
+        throw new SettingNotFoundException("Setting {$key} not found");
     }
 }
