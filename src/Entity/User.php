@@ -4,11 +4,13 @@ namespace App\Entity;
 
 use App\Enumerations\RoleEnumeration;
 use App\Repository\UserRepository;
+use App\Traits\KeyTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -17,6 +19,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use KeyTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -70,11 +74,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
     private ?\DateTimeInterface $createdon = null;
 
-    public function __construct()
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?CryptKey $publickey = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?CryptKey $privatekey = null;
+
+    public function __construct(ParameterBag $parameterBag)
     {
         $this->comics = new ArrayCollection();
         $this->pages = new ArrayCollection();
         $this->createdon = new \DateTime();
+        $keys = $this->_generateKeyPair();
+        $this->publickey = new CryptKey($parameterBag);
+        $this->publickey->setData($keys['public']);
+        $this->privatekey = new CryptKey($parameterBag);
+        $this->privatekey->setData($keys['public']);
     }
 
 
@@ -376,6 +391,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCreatedon(\DateTimeInterface $createdon): static
     {
         $this->createdon = $createdon;
+
+        return $this;
+    }
+
+    public function getPublickey(): ?CryptKey
+    {
+        return $this->publickey;
+    }
+
+    public function setPublickey(?CryptKey $publickey): static
+    {
+        $this->publickey = $publickey;
+
+        return $this;
+    }
+
+    public function getPrivatekey(): ?CryptKey
+    {
+        return $this->privatekey;
+    }
+
+    public function setPrivatekey(?CryptKey $privatekey): static
+    {
+        $this->privatekey = $privatekey;
 
         return $this;
     }

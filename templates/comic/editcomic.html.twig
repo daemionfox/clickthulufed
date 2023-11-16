@@ -171,8 +171,27 @@
 
             </div>
 
+            <div class="row mb-3">
+                <div class="col">
+                    <h3>Keys</h3>
+                </div>
+                <div class="col-1">
+                    <button class="accordian-button btn btn-outline-light btn-sm pull-end" type="button" data-bs-toggle="collapse" data-bs-target="#comic-keys" aria-controls="comic-tags" aria-expanded="false"><i class="fas fa-caret-down"></i></button>
+                </div>
+            </div>
+            <div id="comic-keys">
+                <div class="row mb-3">
+                    <div class="col-3 text-end">Keys Generated:</div>
+                    <div class="col">{% if comic.publickey.createdon is defined %}{{ comic.publickey.createdon }}{% else %}Never generated{% endif %}</div>
+                    <div class="col-3 text-end"><a class="btn btn-light" href="/comic/{{ comic.slug }}/keygen"><i class="fas fa-key"></i> Regenerate Keys</a></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3 text-end">Public Key:</div>
+                    <div class="col">{% if comic.publickey.data is defined %}{{ comic.publickey.data }}{% else %}No Public Key{% endif %}</div>
+                </div>
+            </div>
 
-            <div class="row mb-2">
+                <div class="row mb-2">
                 <div class="col-4 offset-3">
                     <button type="submit" class="btn btn-success btn-block"><i class="fas fa-book"></i> Update</button>
                 </div>

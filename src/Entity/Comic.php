@@ -4,14 +4,18 @@ namespace App\Entity;
 
 use App\Enumerations\NavigationTypeEnumeration;
 use App\Repository\ComicRepository;
+use App\Traits\KeyTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
 #[ORM\Entity(repositoryClass: ComicRepository::class)]
 class Comic
 {
+    use KeyTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -69,14 +73,31 @@ class Comic
     private ?Page $latestpage;
     private ?Page $currentpage;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?CryptKey $publickey = null;
 
-    public function __construct()
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?CryptKey $privatekey = null;
+
+
+    public function __construct(ParameterBag $parameterBag)
     {
         $this->admin = new ArrayCollection();
         $this->chapters = new ArrayCollection();
         $this->pages = new ArrayCollection();
         $this->casts = new ArrayCollection();
         $this->tags = new ArrayCollection();
+        $this->regenerateKeyPair($parameterBag);
+    }
+
+    public function regenerateKeyPair(): static
+    {
+        $keys = $this->_generateKeyPair();
+        $this->publickey = new CryptKey();
+        $this->publickey->setData($keys['public']);
+        $this->privatekey = new CryptKey();
+        $this->privatekey->setData($keys['public']);
+        return $this;
     }
 
     public function getId(): ?int
@@ -444,6 +465,30 @@ class Comic
 
         $this->setPages(new ArrayCollection(iterator_to_array($iterator)));
         $this->currentpage = $this->pages->last();
+
+        return $this;
+    }
+
+    public function getPublickey(): ?CryptKey
+    {
+        return $this->publickey;
+    }
+
+    public function setPublickey(?CryptKey $publickey): static
+    {
+        $this->publickey = $publickey;
+
+        return $this;
+    }
+
+    public function getPrivatekey(): ?CryptKey
+    {
+        return $this->privatekey;
+    }
+
+    public function setPrivatekey(?CryptKey $privatekey): static
+    {
+        $this->privatekey = $privatekey;
 
         return $this;
     }

@@ -19,6 +19,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -51,6 +52,31 @@ class ComicController extends AbstractController
             return new Response("Unique Identifier is available");
         }
         return new Response("Unique Identifier is currently in use", 400);
+    }
+
+    #[Route('/comic/{slug}/keygen', name: 'app_comickeygen')]
+    public function regeneratePublicAndPrivateKeys(string $slug, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        /**
+         * @var Comic $comic
+         */
+        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
+        $hasPerm = $this->hasPermissions($user, $comic);
+        $route = $request->headers->get('referer');
+
+        if ($hasPerm) {
+            $comic->regenerateKeyPair();
+            $entityManager->persist($comic);
+            $entityManager->flush();
+            return $this->redirect($route);
+        }
+
     }
 
     #[Route('/comic/{slug}/activate', name: 'app_comicactivate')]
