@@ -38,12 +38,25 @@ Well, that gets the first part done.  Now for the part 2.
 
 #### Note:  I plan to put together a nice little install script that will do everything in Part 2.  It's on the to-do list.  It's just not to-done yet.
 
-1) Run **composer install**
-2) Create a new file called .env by copying .env.dist
-3) Update your new .env file with database and smtp details.  **This is very important!**
-4) In your directory, type:  **./bin/console doctrine:migrations:migrate**  This will setup your database.
-5) You will need to initialize your instance's settings.  Do this by running the **initialization/settings_init.sql** against the database
-6) Pick your favoriate webserver and point it at the **/public** folder.  You're done!
+1) Download or Clone ClickthuluFed
+2) Run ***php setup.php***
+3) Configure your webserver to point to the public directory.
+
+If you don't want to run setup.php you can do the following steps:
+
+1) Create a .env file by copying the .env.dist file and putting in the appropriate values 
+2) Run ***composer install --no-scripts*** to download the libraries 
+3) Run ***./bin/console doctrine:migrations:migrate*** to initialize the database
+4) Run ***./bin/console app:new-user <username> <password> <email> OWNER*** to create your initial user and give it the owner role.
+5) Run ***./bin/console app:set-config server_url <url>*** to assign the server's url
+6) Run ***./bin/console app:set-config email_from_name <name>*** To assign the Email From label
+7) Run ***./bin/console app:set-config email_from_address <email>*** To assign the Email From address
+8) Make directory ***./var/cache*** and set permissions for the webserver to write to it
+9) Make directory ***./storage*** and set permissions for the webserver to write to it
+10) Go get a drink, you're done, and it would have just been easier to use the setup script next time.
+
+If you are updating ClickthuluFed to the latest code, you can run setup.php again.  It will skip over the parts you have already done, updating only the composer libraries and making any necessary database changes.
+
 
 ## Licensing etc
 
