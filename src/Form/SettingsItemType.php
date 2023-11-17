@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Settings;
+use App\Enumerations\OptionEnumerationInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -51,6 +52,76 @@ class SettingsItemType extends AbstractType
                     'Yes' => 1,
                     'No' => 0
                 ];
+                $options['attr'] = ['class' => 'form-select'];
+                $options['choice_attr'] = [
+                    'class' => 'col'
+                ];
+                $form->add(
+                    'value',
+                    ChoiceType::class,
+                    $options
+                );
+                break;
+            case Settings::TYPE_ARRAY:
+                $source = $data->getSourceoptions();
+                $source = explode(',', $source);
+                $optionvalues = array_map('trim', $source);
+                $ovals = [
+                    '' => ''
+                ];
+                foreach ($optionvalues as $ov) {
+                    $ovals[$ov] = $ov;
+                }
+                $options['multiple'] = false;
+                $options['expanded'] = false;
+                $options['choices'] = $ovals;
+                $options['attr'] = ['class' => 'form-select'];
+                $options['choice_attr'] = [
+                    'class' => 'col'
+                ];
+                $form->add(
+                    'value',
+                    ChoiceType::class,
+                    $options
+                );
+                break;
+            case Settings::TYPE_FILESELECT:
+                $source = $data->getSourceoptions();
+                $base = __DIR__ . "/../..";
+                $webpath = "{$base}/public";
+                $optionvalues = glob("{$webpath}/{$source}");
+                $ovals = [
+                    'Default' => ' '
+                ];
+                foreach ($optionvalues as $ov) {
+                    $baseov = basename($ov);
+                    $pathov = str_replace($webpath, '', $ov);
+                    $ovals[$baseov] = $pathov;
+                }
+
+                $options['multiple'] = false;
+                $options['expanded'] = false;
+                $options['choices'] = $ovals;
+                $options['attr'] = ['class' => 'form-select'];
+                $options['choice_attr'] = [
+                    'class' => 'col'
+                ];
+                $form->add(
+                    'value',
+                    ChoiceType::class,
+                    $options
+                );
+                break;
+            case Settings::TYPE_ENUMERATION:
+                $source = $data->getSourceoptions();
+                /**
+                 * @var OptionEnumerationInterface $enum
+                 */
+                $enum = new $source;
+                $optionvalues = $enum->toArray();
+                $options['multiple'] = false;
+                $options['expanded'] = false;
+                $options['choices'] = $optionvalues;
                 $options['attr'] = ['class' => 'form-select'];
                 $options['choice_attr'] = [
                     'class' => 'col'

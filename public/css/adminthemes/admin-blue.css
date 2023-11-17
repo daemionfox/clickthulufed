@@ -1,0 +1,9 @@
+:root {
+    --background-color-dark: #191b22;
+    --panel-color-dark: #545869;
+    --bright-active: #2727b9;
+
+    --success-light: #2727b9;
+    --success-medium: #27279B;
+    --success-dark: #27277d;
+}
