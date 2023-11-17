@@ -14,6 +14,8 @@ class Settings
     const TYPE_STRING = 'string';
     const TYPE_INT = 'int';
     const TYPE_INTEGER = 'integer';
+    const TYPE_ARRAY = 'array';
+    const TYPE_FILESELECT = 'fileselect';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -40,6 +42,9 @@ class Settings
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $displayName = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $sourceoptions = null;
 
     public function getId(): ?int
     {
@@ -170,6 +175,17 @@ class Settings
     {
         $this->displayName = $displayName;
 
+        return $this;
+    }
+
+    public function getSourceoptions(): ?string
+    {
+        return $this->sourceoptions;
+    }
+
+    public function setSourceoptions(?string $sourceoptions): static
+    {
+        $this->sourceoptions = $sourceoptions;
         return $this;
     }
 
