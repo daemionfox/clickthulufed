@@ -16,6 +16,7 @@ class Settings
     const TYPE_INTEGER = 'integer';
     const TYPE_ARRAY = 'array';
     const TYPE_FILESELECT = 'fileselect';
+    const TYPE_ENUMERATION = 'enumeration';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
