@@ -1,0 +1,11 @@
+:root {
+    --background-color-dark: #19221b;
+    --panel-color-dark: #546958;
+    --grey-inactive: #879486;
+    --bright-active: #27b927;
+    --white: #ffffff;
+
+    --success-light: #27b927;
+    --success-medium: #279B27;
+    --success-dark: #277d27;
+}
