@@ -64,6 +64,29 @@ class ProfileController extends AbstractController
 
     }
 
+    #[Route('/profile/keygen', name: 'app_profilekeygen')]
+    public function regeneratePublicAndPrivateKeys(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        $oldPublic = $user->getPublickey();
+        $oldPrivate = $user->getPrivatekey();
+        if (!empty($oldPublic)) {
+            $entityManager->remove($oldPublic);
+        }
+        if (!empty($oldPrivate)) {
+            $entityManager->remove($oldPrivate);
+        }
+        $user->regenerateKeyPair();
+        $entityManager->persist($user);
+        $entityManager->flush();
+        $route = $request->headers->get('referer');
+        return $this->redirect($route);
+    }
+
 
     #[Route('/profile/requestrole/creator', name: 'app_requestrolecreator')]
     public function requestRoleCreator(EntityManagerInterface $entityManager): Response

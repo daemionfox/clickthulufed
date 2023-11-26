@@ -80,14 +80,16 @@ class Comic
     private ?CryptKey $privatekey = null;
 
 
-    public function __construct(ParameterBag $parameterBag)
+    public function __construct(?string $piikey)
     {
         $this->admin = new ArrayCollection();
         $this->chapters = new ArrayCollection();
         $this->pages = new ArrayCollection();
         $this->casts = new ArrayCollection();
         $this->tags = new ArrayCollection();
-        $this->regenerateKeyPair($parameterBag);
+        if (!empty($piikey)) {
+            $this->regenerateKeyPair($piikey);
+        }
     }
 
     public function regenerateKeyPair(): static
@@ -96,7 +98,7 @@ class Comic
         $this->publickey = new CryptKey();
         $this->publickey->setData($keys['public']);
         $this->privatekey = new CryptKey();
-        $this->privatekey->setData($keys['public']);
+        $this->privatekey->setData($keys['private']);
         return $this;
     }
 

@@ -32,7 +32,9 @@
                                     <div  id="image_upload_spinner" class="col text-center d-none">
                                         <i class="fas fa-spinner fa-spin fa-4x"></i>
                                     </div>
-                                    <img src="{% if comic.layout is not empty %}/media/{{ comic.slug }}/{{ comic.layout.headerimage }}{% endif %}" class="{% if comic.layout.headerimage is empty %}d-none{% endif%} img-fluid" id="headerimage_upload_image"  alt="Header Image"/>
+                                    {% if comic.layout is not empty %}
+                                        <img src="{% if comic.layout is not empty %}/media/{{ comic.slug }}/{{ comic.layout.headerimage }}{% endif %}" class="{% if comic.layout.headerimage is empty %}d-none{% endif%} img-fluid" id="headerimage_upload_image"  alt="Header Image"/>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>

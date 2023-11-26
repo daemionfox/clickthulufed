@@ -80,16 +80,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?CryptKey $privatekey = null;
 
-    public function __construct(ParameterBag $parameterBag)
+    public function __construct()
     {
         $this->comics = new ArrayCollection();
         $this->pages = new ArrayCollection();
         $this->createdon = new \DateTime();
+        $this->regenerateKeyPair();
+    }
+
+    public function regenerateKeyPair(): static
+    {
         $keys = $this->_generateKeyPair();
-        $this->publickey = new CryptKey($parameterBag);
+        $this->publickey = new CryptKey();
         $this->publickey->setData($keys['public']);
-        $this->privatekey = new CryptKey($parameterBag);
-        $this->privatekey->setData($keys['public']);
+        $this->privatekey = new CryptKey();
+        $this->privatekey->setData($keys['private']);
+        return $this;
     }
 
 

@@ -12,6 +12,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 use function Symfony\Component\String\u;
@@ -27,7 +29,8 @@ final class AddUserCommand extends Command
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly UserPasswordHasherInterface $passwordHasher
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly ParameterBagInterface $parameterBag
     ) {
         parent::__construct();
     }
@@ -131,7 +134,7 @@ final class AddUserCommand extends Command
         }
 
         // create the user and hash its password
-        $user = new User();
+        $user = new User($this->parameterBag->get('piikey'));
         $user->setUsername($username);
         $user->setEmail($email);
         $user->setRoles($roleList);

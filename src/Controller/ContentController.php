@@ -58,8 +58,8 @@ class ContentController extends AbstractController
      * @throws PageException
      */
     #[Route('/@{ident}', name: 'app_content')]
-    #[Route('/user/{ident}', name: 'app_contentuser')]
-    #[Route('/comic/{ident}', name: 'app_contentcomic')]
+//    #[Route('/user/{ident}', name: 'app_contentuser')]
+//    #[Route('/comic/{ident}', name: 'app_contentcomic')]
     public function index(Request $request, EntityManagerInterface $entityManager, string $ident): Response
     {
         try {

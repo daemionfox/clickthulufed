@@ -67,10 +67,20 @@ class ComicController extends AbstractController
          * @var Comic $comic
          */
         $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
+
         $hasPerm = $this->hasPermissions($user, $comic);
         $route = $request->headers->get('referer');
 
         if ($hasPerm) {
+            $oldPublic = $comic->getPublickey();
+            $oldPrivate = $comic->getPrivatekey();
+            if (!empty($oldPublic)) {
+                $entityManager->remove($oldPublic);
+            }
+            if (!empty($oldPrivate)) {
+                $entityManager->remove($oldPrivate);
+            }
+
             $comic->regenerateKeyPair();
             $entityManager->persist($comic);
             $entityManager->flush();
@@ -188,14 +198,13 @@ class ComicController extends AbstractController
          */
         $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
         $tags = $entityManager->getRepository(Tag::class)->findAll();
-
         if (empty($comic)) {
             try {
                 $requireApproval = $settings->get('require_comic_approval');
             } catch (SettingNotFoundException) {
                 $requireApproval = false;
             }
-            $comic = new Comic();
+            $comic = new Comic($this->getParameter('piikey'));
             $comic->setOwner($user)->setIsactive($requireApproval);
         }
 

@@ -45,7 +45,7 @@ class RegistrationController extends AbstractController
         if (!empty($user)) {
             return new RedirectResponse($this->generateUrl("app_profile"));
         }
-        $user = new User();
+        $user = new User($this->getParameter('piikey'));
 
         if (!empty($email) && !empty($code)) {
 
