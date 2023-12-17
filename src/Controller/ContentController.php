@@ -344,15 +344,29 @@ class ContentController extends AbstractController
     }
 
     #[Route('/@{slug}/css/theme.css', name: 'app_contentstyle')]
-    public function stylesheet(): Response
+    public function stylesheet(EntityManagerInterface $entityManager, string $slug): Response
     {
-        return $this->render('@theme/theme.css.twig', []);
+        /**
+         * @var Comic $comic
+         */
+        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
+        $this->setupCustomTemplate($comic);
+        $render = $this->render('@theme/theme.css.twig', []);
+        $render->headers->set('Content-type', 'text/css');
+        return $render;
     }
 
     #[Route('/@{slug}/js/theme.js', name: 'app_contentscript')]
-    public function javascript(): Response
+    public function javascript(EntityManagerInterface $entityManager, string $slug): Response
     {
-        return $this->render('@theme/theme.js.twig', []);
+        /**
+         * @var Comic $comic
+         */
+        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $slug]);
+        $this->setupCustomTemplate($comic);
+        $render = $this->render('@theme/theme.js.twig', []);
+        $render->headers->set('Content-type', 'text/javascript');
+        return $render;
     }
 
 }

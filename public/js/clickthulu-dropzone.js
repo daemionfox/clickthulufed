@@ -39,6 +39,19 @@
     }
 
 
+    Dropzone.options.iconUploadDropzoneForm = {
+        paramName: "file",
+        addedfile: function(file, response){
+            $("#image_upload_spinner_icon").removeClass('d-none');
+        },
+        success: function (file, response) {
+            $("#icon_upload_image").removeClass('d-none').attr('src', '/media/' + response.comic + "/" + response.file).attr('alt', response.file);
+            $("#layout_icon").val(response.file);
+            $("#image_upload_spinner_icon").addClass('d-none');
+            this.removeAllFiles(true);
+        },
+    }
+
     Dropzone.options.profilebannerUploadDropzoneForm = {
         paramName: "file",
         addedfile: function(file, response){

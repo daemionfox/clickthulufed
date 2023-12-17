@@ -103,6 +103,21 @@ class LayoutType extends AbstractType
                 ]
             )
             ->add(
+                'icon',
+                TextType::class,
+                [
+                    'attr' => [
+                        'readonly' => true,
+                        'class' => 'form-control'
+                    ],
+                    'label_attr' => [
+                        'class' => 'col-form-label col-3 text-end'
+                    ],
+                    'label' => 'Icon:',
+                    'help' => 'PNG, GIF or JPG. At most 2 MB. 512x512 suggested size'
+                ]
+            )
+            ->add(
                 'theme',
                 ChoiceType::class,
                 [

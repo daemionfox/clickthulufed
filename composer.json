@@ -50,7 +50,8 @@
         "symfonycasts/verify-email-bundle": "^1.13",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
-      "ext-readline": "*"
+      "ext-readline": "*",
+      "ext-fileinfo": "*"
     },
     "config": {
         "allow-plugins": {

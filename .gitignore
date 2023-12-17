@@ -34,3 +34,6 @@ storage/*
 /src/Controller/PrivateController.php
 TODO.md
 migrations-old/*
+
+.DS_Store
+.rnd

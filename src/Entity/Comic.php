@@ -79,6 +79,9 @@ class Comic
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?CryptKey $privatekey = null;
 
+    #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
+    private ?\DateTimeInterface $createdon = null;
+
 
     public function __construct(?string $piikey)
     {
@@ -87,6 +90,7 @@ class Comic
         $this->pages = new ArrayCollection();
         $this->casts = new ArrayCollection();
         $this->tags = new ArrayCollection();
+        $this->createdon = new \DateTime();
         if (!empty($piikey)) {
             $this->regenerateKeyPair($piikey);
         }
@@ -491,6 +495,34 @@ class Comic
     public function setPrivatekey(?CryptKey $privatekey): static
     {
         $this->privatekey = $privatekey;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        if (is_a($this->layout, Layout::class)) {
+            return $this->layout->getIcon();
+        }
+        return null;
+    }
+
+    public function getIconImageURL(): ?string
+    {
+        if (is_a($this->layout, Layout::class) && !empty($this->layout->getIcon()) ) {
+            return "/media/{$this->slug}/{$this->layout->getIcon()}";
+        }
+        return null;
+    }
+
+    public function getCreatedon(): ?\DateTimeInterface
+    {
+        return $this->createdon;
+    }
+
+    public function setCreatedon(\DateTimeInterface $createdon): static
+    {
+        $this->createdon = $createdon;
 
         return $this;
     }

@@ -42,6 +42,9 @@ class Layout
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $theme = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $icon = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -151,6 +154,18 @@ class Layout
     public function setTheme(?string $theme): static
     {
         $this->theme = $theme;
+
+        return $this;
+    }
+
+    public function getIcon(): ?string
+    {
+        return $this->icon;
+    }
+
+    public function setIcon(?string $icon): static
+    {
+        $this->icon = $icon;
 
         return $this;
     }

@@ -220,6 +220,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Alias for getBiography
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->getBiography();
+    }
 
     public function getBiography(): ?string
     {
@@ -243,6 +251,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->image = $image;
 
         return $this;
+    }
+
+    public function getIconImageURL(): ?string
+    {
+        if (!empty($this->image)) {
+            return "/usericon/@{$this->username}";
+        }
+        return null;
     }
 
     public function getHeaderimage(): ?string
