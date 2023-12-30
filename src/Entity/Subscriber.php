@@ -24,6 +24,10 @@ class Subscriber
     #[ORM\Column]
     private ?bool $isdeleted = false;
 
+    #[ORM\ManyToOne(inversedBy: 'subscribers')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Comic $comic = null;
+
     public function __construct()
     {
         $this->createdon = new DateTime();
@@ -64,6 +68,18 @@ class Subscriber
     public function setIsdeleted(bool $isdeleted): static
     {
         $this->isdeleted = $isdeleted;
+        return $this;
+    }
+
+    public function getComic(): ?Comic
+    {
+        return $this->comic;
+    }
+
+    public function setComic(?Comic $comic): static
+    {
+        $this->comic = $comic;
+
         return $this;
     }
 }

@@ -82,6 +82,9 @@ class Comic
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
     private ?\DateTimeInterface $createdon = null;
 
+    #[ORM\OneToMany(mappedBy: 'comic', targetEntity: Subscriber::class, orphanRemoval: true)]
+    private Collection $subscribers;
+
 
     public function __construct(?string $piikey)
     {
@@ -94,6 +97,7 @@ class Comic
         if (!empty($piikey)) {
             $this->regenerateKeyPair($piikey);
         }
+        $this->subscribers = new ArrayCollection();
     }
 
     public function regenerateKeyPair(): static
@@ -523,6 +527,36 @@ class Comic
     public function setCreatedon(\DateTimeInterface $createdon): static
     {
         $this->createdon = $createdon;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Subscriber>
+     */
+    public function getSubscribers(): Collection
+    {
+        return $this->subscribers;
+    }
+
+    public function addSubscriber(Subscriber $subscriber): static
+    {
+        if (!$this->subscribers->contains($subscriber)) {
+            $this->subscribers->add($subscriber);
+            $subscriber->setComic($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubscriber(Subscriber $subscriber): static
+    {
+        if ($this->subscribers->removeElement($subscriber)) {
+            // set the owning side to null (unless already changed)
+            if ($subscriber->getComic() === $this) {
+                $subscriber->setComic(null);
+            }
+        }
 
         return $this;
     }

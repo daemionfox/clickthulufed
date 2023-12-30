@@ -4,12 +4,21 @@ namespace App\Controller;
 
 
 use ActivityPhp\Server;
+use ActivityPhp\Server\Actor;
 use ActivityPhp\Server\Http\HttpSignature;
+use ActivityPhp\Server\Http\WebFinger;
 use ActivityPhp\Type;
+use ActivityPhp\Type\AbstractObject;
+use ActivityPhp\Type\Core\Collection;
+use ActivityPhp\Type\Extended\Actor\Service;
 use App\Entity\Comic;
+use App\Entity\Subscriber;
 use App\Entity\User;
+use App\Exceptions\ComicNotFoundException;
 use App\Exceptions\NotAllowedException;
+use App\Exceptions\SettingNotFoundException;
 use App\Helpers\SettingsHelper;
+use App\Repository\SubscriberRepository;
 use App\Service\Settings;
 use App\Traits\APServerTrait;
 use App\Traits\MediaPathTrait;
@@ -29,6 +38,8 @@ class ActivityPubServerController extends AbstractController
     use MediaPathTrait;
     use APServerTrait;
 
+    const MAX_IN_LIST = 50;
+
     /**
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -39,6 +50,9 @@ class ActivityPubServerController extends AbstractController
     {
         $ident = $request->query->get('resource');
         $server = $settings->setting('server_url');
+        $headers = [
+            'Content-Type' => 'application/ld+json'
+        ];
         $servername = preg_replace("/https?:\/\//", "", $server);
         list(,$name,) = preg_split('/([:@])/', $ident);
         $resource = $this->_getResource($entityManager, $name);
@@ -47,32 +61,40 @@ class ActivityPubServerController extends AbstractController
             $type = 'comic';
         }
 
-        $data = [
-            'subject' => "acct:{$name}@{$servername}",
-            'aliases' => [
-                "{$server}/{$type}/{$name}"
-            ],
-            'links' => [
-                [
-                    'rel' => 'http://webfinger.net/rel/profile-page',
-                    'type' => 'text-html',
-                    'href' => "{$server}/@{$name}",
+        $webfinger = new WebFinger(
+            [
+                'subject' => "acct:{$name}@{$servername}",
+                'aliases' => [
+                    "{$server}/{$type}/{$name}"
                 ],
-                [
-                    'rel' => 'self',
-                    'type' => 'application/activity+json',
-                    'href' => "{$server}/@{$name}",
+                'links' => [
+                    [
+                        'rel' => 'http://webfinger.net/rel/profile-page',
+                        'type' => 'text-html',
+                        'href' => "{$server}/@{$name}",
+                    ],
+                    [
+                        'rel' => 'self',
+                        'type' => 'application/activity+json',
+                        'href' => "{$server}/@{$name}",
 
+                    ]
                 ]
             ]
-        ];
+        );
 
-        return new JsonResponse($data);
+        return new JsonResponse($webfinger->toArray(), 200, $headers);
     }
 
-
-
-
+    /**
+     * @param Settings $settings
+     * @param EntityManagerInterface $entityManager
+     * @param string $ident
+     * @return Response
+     * @throws NotAllowedException
+     * @throws SettingNotFoundException
+     * @throws \Exception
+     */
     #[Route(
         '/@{ident}',
         name: 'app_apcontent',
@@ -96,18 +118,13 @@ class ActivityPubServerController extends AbstractController
             $iconPath = !empty($resource->getImage()) ? "{$mediaDir}/{$resource->getImage()}" : null;
             $iconMimeType = mime_content_type($iconPath);
 
-            $type = is_a($resource, Comic::class) ? 'Person' : 'Person';
-
-            $aptype = is_a($resource, Comic::class) ? Type::create('Service') : Type::create('Actor');
-
-
-
-
             /**
-             * @var Comic|User $resource
+             * @var Type\Extended\AbstractActor $aptype
              */
-            $data = [
-                "@context" => [
+            $aptype = is_a($resource, Comic::class) ? Type::create('Service') : Type::create('Person');
+
+            $aptype
+                ->set('@context', [
                     "https://www.w3.org/ns/activitystreams",
                     "https://w3id.org/security/v1",
                     [
@@ -115,52 +132,155 @@ class ActivityPubServerController extends AbstractController
                         "PropertyValue" => "schema:PropertyValue",
                         "value" => "schema:value",
                     ]
-                ],
-                "id"=> "{$server}/@{$ident}",
-                "type"=> $type,
-                "following"=> "{$server}/@{$ident}/following",  // Comics have no following, only followers
-                "followers"=> "{$server}/@{$ident}/followers",  // Users have no followers, only following
-                "preferredUsername" => $ident,
-                "inbox"=> "{$server}/@{$ident}/inbox",
-                "outbox"=> "{$server}/@{$ident}/outbox",
-                "name" => $ident,
-                "summary" => strip_tags($resource->getDescription()),
-                "url" => "{$server}/@{$ident}",
-                "manuallyApprovesFollowers" => false,
-            	"discoverable" => true,
-            	"published" => $resource->getCreatedon()->format('c'),
-                "endpoints" => [
-                    "sharedInbox" => "{$server}/@{$ident}/inbox",
-                ],
-                "publicKey" => [
-                    "id" => "{$server}/@{$ident}#main-key",
-                    "owner" => "{$server}/@{$ident}",
-                    "publicKeyPem" => str_replace("\n", "", $resource->getPublickey()->getData())
-                ]
-            ];
+                ])
+                ->set('id', "{$server}/@{$ident}")
+                ->set('following', "{$server}/@{$ident}/following")
+                ->set('followers', "{$server}/@{$ident}/followers")
+                ->set("preferredUsername", $ident)
+                ->set("inbox", "{$server}/@{$ident}/inbox")
+                ->set("outbox", "{$server}/@{$ident}/outbox")
+                ->set("name", $ident)
+                ->set("summary", strip_tags($resource->getDescription()))
+                ->set("url", "{$server}/@{$ident}")
+                ->set("published", $resource->getCreatedon()->format('c'))
+                ->set('publicKey', [
+                        "id" => "{$server}/@{$ident}#main-key",
+                        "owner" => "{$server}/@{$ident}",
+                        "publicKeyPem" => str_replace("\n", "", $resource->getPublickey()->getData())
+                    ]
+                )
+            ;
+
+
 
             if (!empty($resource->getIconImageURL())) {
-                $data["icon"] = [
+                $aptype->set("icon", [
                     "type" => "Image",
                     "mediaType" => $iconMimeType,
                     "url" => "{$server}{$resource->getIconImageURL()}",
-                ];
+                ]);
             }
 
             if (is_a($resource, Comic::class) && !empty($resource->getLayout()->getHeaderimage())) {
                 $headerImagePath = "{$mediaDir}/{$resource->getLayout()->getHeaderimage()}";
                 $headerImageType = mime_content_type($headerImagePath);
-                $data['image'] = [
+                $aptype->set("image", [
                     'type' => 'Image',
                     'mediaType' => $headerImageType,
                     'url' => "{$server}/media/{$ident}/{$resource->getLayout()->getHeaderimage()}"
-                ];
+                ]);
             }
-            return new JsonResponse($data, 200, $headers);
+            return new JsonResponse($aptype->toArray(), 200, $headers);
 
         }
 
         throw new NotAllowedException("Cannot fetch details");
+    }
+
+    #[Route(
+        '/@{ident}/following',
+        name: 'app_apfollowing',
+        condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
+    )]
+    public function following(Settings $settings, EntityManagerInterface $entityManager, string $ident): Response
+    {
+        /**
+         * @var Comic|User $resource
+         */
+        $resource = $this->_getResource($entityManager, $ident);
+        if (is_a($resource, Comic::class)) {
+            return new JsonResponse([]);  // Empty
+        }
+
+        // Users - Will eventually have a feed they follow
+        // TODO - User Follow
+        return new JsonResponse([]);  // Empty
+
+    }
+
+
+    /**
+     * @throws SettingNotFoundException
+     * @throws \Exception
+     */
+    #[Route(
+        '/@{ident}/followers',
+        name: 'app_apfollowers',
+        condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
+    )]
+    public function followers(Request $request, Settings $settings, EntityManagerInterface $entityManager, string $ident): Response
+    {
+        /**
+         * @var Comic $comic
+         */
+        $comic = $entityManager->getRepository(Comic::class)->findOneBy(['slug' => $ident]);
+        if (empty($comic)) {
+            throw new ComicNotFoundException("Could not find a comic with the name {$ident}");
+        }
+        $server = $settings->setting('server_url');
+        $page = $request->get('page');
+
+        if (!is_null($page)) {
+            $aptype = $this->apFollowersPage($comic, $page, $server);
+        } else {
+            $aptype = $this->apFollowers($comic, $server);
+        }
+
+
+
+        $headers = [
+            'Content-Type' => 'application/ld+json'
+        ];
+
+        return new JsonResponse($aptype->toArray(), 200, $headers);  // Empty
+
+    }
+
+    protected function apFollowers(Comic $comic, string $server): AbstractObject
+    {
+        $list = $comic->getSubscribers();
+        $aptype = Type::create('OrderedCollection');
+        $aptype
+            ->set('@context', 'https://www.w3.org/ns/activitystreams')
+            ->set('id', "{$server}/@{$comic->getSlug()}/followers")
+            ->set('totalItems', count($list))
+            ->set('first', "{$server}/@{$comic->getSlug()}/followers?page=1");
+        return $aptype;
+    }
+
+    protected function apFollowersPage(Comic $comic, int $page, string $server): AbstractObject
+    {
+        $list = $comic->getSubscribers()->toArray();
+        $size = count($list);
+        $subset = array_slice($list, self::MAX_IN_LIST * ($page-1), self::MAX_IN_LIST);
+        $orderedItems = [];
+        /**
+         * @var Subscriber $item
+         */
+        foreach ($subset as $item) {
+            $orderedItems[] = $item->getSubscriber();
+        }
+
+        $last = $page * self::MAX_IN_LIST > $size;
+        $next = !$last ? $page + 1 : null;
+        $prev = $page !== 1 ? $page - 1 : null;
+
+        $aptype = Type::create('OrderedCollectionPage');
+        $aptype
+            ->set('@context', 'https://www.w3.org/ns/activitystreams')
+            ->set('id', "{$server}/@{$comic->getSlug()}/followers")
+            ->set('totalItems', $size)
+            ->set('first', "{$server}/@{$comic->getSlug()}/followers?page=1")
+            ->set('partOf', "{$server}/@{$comic->getSlug()}/followers")
+            ->set('orderedItems', $orderedItems)
+        ;
+        if (!empty($next)) {
+            $aptype->set('next', "{$server}/@{$comic->getSlug()}/followers?page={$next}");
+        }
+        if (!empty($prev)) {
+            $aptype->set('prev', "{$server}/@{$comic->getSlug()}/followers?page={$prev}");
+        }
+        return $aptype;
     }
 
     #[Route(
@@ -185,13 +305,14 @@ class ActivityPubServerController extends AbstractController
         $logger->debug(__CLASS__ . "::" . __METHOD__ . " - Received POST to Inbox");
         $server = $this->_buildAPServer($settings);
 
-        $validator = new HttpSignature($server);
-
-        $isValid = $validator->verify($request);
         $body = $request->toArray();
 
+        switch(strtoupper($body['type'])) {
+            case "FOLLOW":
+                $subscriber = $this->activityFollow($entityManager, $body['actor']);
+                break;
+        }
 
-        dd($isValid);
 
 
         // Follow
@@ -210,9 +331,18 @@ class ActivityPubServerController extends AbstractController
     }
 
 
-    protected function activityFollow($address)
+    protected function activityFollow(EntityManagerInterface $entityManager, string $address): Subscriber
     {
+        $sub = $entityManager->getRepository(Subscriber::class)->findOneBy(['subscriber' => $address]);
+        if (!empty($sub)) {
+            return $sub;  //  Figure out what you need to return
+        }
 
+        $sub = new Subscriber();
+        $sub->setSubscriber($address);
+        $entityManager->persist($sub);
+        $entityManager->flush();
+        return $sub;
     }
 
     /**
