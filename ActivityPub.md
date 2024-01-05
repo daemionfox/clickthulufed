@@ -13,7 +13,7 @@ In order for ClickthuluFed to be part of the social media landscape, the followi
 ## Inbox
 
 ### Follow
-1) Add the actor to the subscribed table
+1) ~~Add the actor to the subscribed table~~
 2) generate a response and send it to the actor's inbox
 
 ### Undo Follow

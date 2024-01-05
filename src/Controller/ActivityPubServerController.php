@@ -3,14 +3,9 @@
 namespace App\Controller;
 
 
-use ActivityPhp\Server;
-use ActivityPhp\Server\Actor;
-use ActivityPhp\Server\Http\HttpSignature;
 use ActivityPhp\Server\Http\WebFinger;
 use ActivityPhp\Type;
 use ActivityPhp\Type\AbstractObject;
-use ActivityPhp\Type\Core\Collection;
-use ActivityPhp\Type\Extended\Actor\Service;
 use App\Entity\Comic;
 use App\Entity\Subscriber;
 use App\Entity\User;
@@ -18,16 +13,13 @@ use App\Exceptions\ComicNotFoundException;
 use App\Exceptions\NotAllowedException;
 use App\Exceptions\SettingNotFoundException;
 use App\Helpers\SettingsHelper;
-use App\Repository\SubscriberRepository;
 use App\Service\Settings;
 use App\Traits\APServerTrait;
 use App\Traits\MediaPathTrait;
 use App\Traits\ResourceTrait;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -291,58 +283,7 @@ class ActivityPubServerController extends AbstractController
     public function outbox(Settings $settings, EntityManagerInterface $entityManager, string $ident): Response
     {
 
-
-    }
-
-
-    #[Route(
-        '/@{ident}/inbox',
-        name: 'app_apinbox',
-        condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
-    )]
-    public function inbox(Request $request, EntityManagerInterface $entityManager, Settings $settings, LoggerInterface $logger, string $ident): Response
-    {
-        $logger->debug(__CLASS__ . "::" . __METHOD__ . " - Received POST to Inbox");
-        $server = $this->_buildAPServer($settings);
-
-        $body = $request->toArray();
-
-        switch(strtoupper($body['type'])) {
-            case "FOLLOW":
-                $subscriber = $this->activityFollow($entityManager, $body['actor']);
-                break;
-        }
-
-
-
-        // Follow
-        // Undo Follow
-        // Post Reply
-        // Boost
-        // Reply to Reply
-        // Unboost
-        // delete reply
-
-
-
-
-
-        return new JsonResponse(['status' => 'success']);
-    }
-
-
-    protected function activityFollow(EntityManagerInterface $entityManager, string $address): Subscriber
-    {
-        $sub = $entityManager->getRepository(Subscriber::class)->findOneBy(['subscriber' => $address]);
-        if (!empty($sub)) {
-            return $sub;  //  Figure out what you need to return
-        }
-
-        $sub = new Subscriber();
-        $sub->setSubscriber($address);
-        $entityManager->persist($sub);
-        $entityManager->flush();
-        return $sub;
+        return new JsonResponse(['status' => 'This is not working yet']);
     }
 
     /**
@@ -376,24 +317,5 @@ class ActivityPubServerController extends AbstractController
         return new JsonResponse("Identity @{$ident} not found", 404);
 
     }
-
-
-//    #[Route('/ap', name: 'app_apserver')]
-//    public function server(Request $request, EntityManagerInterface $entityManager): Response
-//    {
-//        $server = new Server([
-//            'logger' => [],
-//            'instance' => [],
-//            'cache' => [],
-//            'http' => [],
-//            'dialects' => [],
-//            'ontologies' => []
-//        ]);
-//
-//
-//
-//
-//
-//    }
 
 }

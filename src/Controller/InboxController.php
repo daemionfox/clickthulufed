@@ -3,27 +3,69 @@
 namespace App\Controller;
 
 use ActivityPhp\Server\Http\HttpSignature;
+use App\Actions\ActivityAbstract;
+use App\Actions\ActivityFactory;
 use App\Service\Settings;
 use App\Traits\APServerTrait;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class InboxController
+class InboxController extends AbstractController
 {
     use APServerTrait;
 
 
 
 
-
-
-    protected function validateSignature($headers)
+    #[Route(
+        '/@{ident}/inbox',
+        name: 'app_apinbox'
+    )]   // condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
+    public function inbox(Request $request, EntityManagerInterface $entityManager, Settings $settings, LoggerInterface $logger, string $ident): Response
     {
-//        dd($headers);
-        return true;
+        $logger->debug(__CLASS__ . "::" . __METHOD__ . " - Received POST to Inbox");
+        $body = $request->toArray();
+
+        // Call the buildAPServer call from the trait to create something to validate the code
+        $server = $this->_buildAPServer($settings);
+        $actor = $server->actor($body['actor']);
+
+        // This piece is failing to verify signatures.  ?????
+
+        $signature = new HttpSignature($server);
+        $isValid = $signature->verify($request);
+
+        $foo = 'bar';
+return new JsonResponse(['status' => 'success']);
+        /**
+         * @var ActivityAbstract $function;
+         */
+        $activityFactory = new ActivityFactory($entityManager, $settings, $ident);
+        $function = $activityFactory->create($body);
+        $function->run($body);
+
+
+
+
+        // x Follow
+        // x Undo Follow
+        // Post Reply
+        // Boost
+        // Reply to Reply
+        // Unboost
+        // delete reply
+
+
+
+
+
+        return new JsonResponse(['status' => 'success']);
     }
+
 
 }
