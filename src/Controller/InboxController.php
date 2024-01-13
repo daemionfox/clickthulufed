@@ -5,6 +5,7 @@ namespace App\Controller;
 use ActivityPhp\Server\Http\HttpSignature;
 use App\Actions\ActivityAbstract;
 use App\Actions\ActivityFactory;
+use App\Helpers\SignatureHelper;
 use App\Service\Settings;
 use App\Traits\APServerTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,7 +39,9 @@ class InboxController extends AbstractController
         // This piece is failing to verify signatures.  ?????
 
         $signature = new HttpSignature($server);
-        $isValid = $signature->verify($request);
+        $isValidLandrok = $signature->verify($request);
+
+        $isValidHome = SignatureHelper::validate($actor->get(), $request);
 
         $foo = 'bar';
 return new JsonResponse(['status' => 'success']);
