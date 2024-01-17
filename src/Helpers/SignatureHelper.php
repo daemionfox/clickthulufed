@@ -38,9 +38,9 @@ class SignatureHelper
         $expectedHeaders = [];
         foreach ($headerlist as $item) {
             if ($item === '(request-target)') {
-                $expectedHeaders[] = "(request-target): post {$keyPath}";
+                $expectedHeaders[] = "(request-target): \"post {$keyPath}\"";
             } else {
-                $expectedHeaders[] = "{$item}: {$headers->get($item)}";
+                $expectedHeaders[] = "{$item}: \"{$headers->get($item)}\"";
             }
         }
 
