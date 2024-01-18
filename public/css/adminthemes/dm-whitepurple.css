@@ -1,3 +1,5 @@
+@property theme { syntax: "White/Purple by Darkmoon" }
+
 :root {
     --background-color-dark: #cecece;
     --panel-color-dark: #a893b2;

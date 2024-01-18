@@ -1,3 +1,5 @@
+@property theme { syntax: "Blue by Clickthulu" }
+
 :root {
     --background-color-dark: #191b22;
     --panel-color-dark: #545869;
