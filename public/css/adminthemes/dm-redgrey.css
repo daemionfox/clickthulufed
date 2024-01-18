@@ -1,0 +1,19 @@
+:root{
+    --background-color-dark: #262626;
+    --panel-color-dark: #7c2f2f;
+    --grey-inactive: #969696;
+    --bright-active: #b92727;
+    --white: #ffffff;
+    --success-light: #df2727;
+    --success-medium: #9B2727;
+    --success-dark: #7d2727;
+}
+
+.btn-success {
+    --bs-btn-bg: #874d19;
+    --bs-btn-border-color: #d49d6c;
+    --bs-btn-hover-bg: #96642e;
+    --bs-btn-hover-border-color: #d49d6c;
+    --bs-btn-active-bg: #96642e;
+    --bs-btn-active-border-color: #d49d6c;
+}

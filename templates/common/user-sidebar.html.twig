@@ -31,7 +31,7 @@
         </div>
     {% endif %}
 
-    {% if is_granted('ROLE_OWNER') %}
+    {% if is_granted('ROLE_OWNER') or is_granted('ROLE_ADMIN') %}
         <div class="row border-top mt-3 pt-3 "></div>
         <div class="row nav-expanded"><h5>Server Management</h5></div>
         <div class="row ps-3 mb-2">
