@@ -1,0 +1,22 @@
+@property theme { syntax: "Blue/Grey by Darkmoon" }
+
+
+:root{
+    --background-color-dark: #262626;
+    --panel-color-dark: #2b3d71;
+    --grey-inactive: #969696;
+    --bright-active: #2750b9;
+    --white: #ffffff;
+    --success-light: #2727df;
+    --success-medium: #27279B;
+    --success-dark: #27277d;
+}
+
+.btn-success {
+    --bs-btn-bg: #1b2477;
+    --bs-btn-border-color: #6c82d4;
+    --bs-btn-hover-bg: #3d6c9e;
+    --bs-btn-hover-border-color: #6c82d4;
+    --bs-btn-active-bg: #3d6c9e;
+    --bs-btn-active-border-color: #6c82d4;
+}

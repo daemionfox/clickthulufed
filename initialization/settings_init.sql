@@ -9,5 +9,5 @@ INSERT INTO settings (setting, value, defaultvalue, modifiedon, type, help, disp
     ('allow_custom_themes', '1', '1', NOW(), 'bool', 'Allow users to generate custom themes for their comics.', 'Allow custom themes', null),
     ('email_from_name', null, null, NOW(), 'string', 'Name used to send mail', 'From Name', null),
     ('email_from_address', null, null, NOW(), 'string', 'Email address used to send mail', 'From Address', null),
-    ('admin_theme', null, null, NOW(), 'fileselect', 'Theme for ClickthuluFed Administration', 'Admin Theme', 'css/adminthemes/*.css')
+    ('admin_theme', null, null, NOW(), 'fileselect', 'Theme for ClickthuluFed Administration', 'Admin Theme:', 'public/css/adminthemes')
 ;

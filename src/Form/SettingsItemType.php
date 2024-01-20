@@ -4,6 +4,9 @@ namespace App\Form;
 
 use App\Entity\Settings;
 use App\Enumerations\OptionEnumerationInterface;
+use Sabberworm\CSS\Parser;
+use Sabberworm\CSS\Rule\Rule;
+use Sabberworm\CSS\RuleSet\AtRuleSet;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -96,6 +99,49 @@ class SettingsItemType extends AbstractType
                 foreach ($optionvalues as $ov) {
                     $baseov = basename($ov);
                     $pathov = str_replace($webpath, '', $ov);
+                    $ovals[$baseov] = $pathov;
+                }
+
+                $options['multiple'] = false;
+                $options['expanded'] = false;
+                $options['choices'] = $ovals;
+                $options['attr'] = ['class' => 'form-select'];
+                $options['choice_attr'] = [
+                    'class' => 'col'
+                ];
+                $form->add(
+                    'value',
+                    ChoiceType::class,
+                    $options
+                );
+                break;
+            case Settings::TYPE_CSSSELECT:
+                $source = $data->getSourceoptions();
+                $base = __DIR__ . "/../..";
+                $webpath = "{$base}/public";
+                $optionvalues = glob("{$webpath}/{$source}");
+                $ovals = [
+                    'Default' => ' '
+                ];
+                foreach ($optionvalues as $ov) {
+                    $baseov = basename($ov);
+                    $pathov = str_replace($webpath, '', $ov);
+                    $cssParser = new Parser(file_get_contents($ov));
+                    $cssDoc = $cssParser->parse();
+                    $rulesets = $cssDoc->getAllRuleSets();
+                    foreach ($rulesets as $ruleset) {
+                        if (is_a($ruleset, AtRuleSet::class)) {
+                            if ($ruleset->atRuleName() === 'property' && $ruleset->atRuleArgs() === 'theme') {
+                                /**
+                                 * @var Rule $rule
+                                 */
+                                $rule = $ruleset->getRules('syntax')[0];
+                                $baseov = trim((string)$rule->getValue(), "\'\"\n\r\t ");
+                                $foo = 'bar';
+                            }
+                        }
+                    }
+
                     $ovals[$baseov] = $pathov;
                 }
 

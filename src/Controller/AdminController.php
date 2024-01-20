@@ -53,8 +53,8 @@ class AdminController extends AbstractController
          * @var User $user
          */
         $user = $this->getUser();
-        if (!in_array('ROLE_OWNER', $user->getRoles()) || !in_array('ROLE_ADMIN', $user->getRoles())) {
-            return new RedirectResponse($this->generateUrl("app_profile"), 400);
+        if (!in_array('ROLE_OWNER', $user->getRoles()) && !in_array('ROLE_ADMIN', $user->getRoles())) {
+            return new RedirectResponse($this->generateUrl("app_profile"), 302);
         }
 
         $comics = $entityManager->getRepository(Comic::class)->findAll();
@@ -75,8 +75,9 @@ class AdminController extends AbstractController
          * @var User $user
          */
         $user = $this->getUser();
-        if (!in_array('ROLE_OWNER', $user->getRoles()) || !in_array('ROLE_ADMIN', $user->getRoles())) {
-            return new RedirectResponse($this->generateUrl("app_profile"), 400);
+
+        if (!in_array('ROLE_OWNER', $user->getRoles()) && !in_array('ROLE_ADMIN', $user->getRoles())) {
+            return new RedirectResponse($this->generateUrl("app_profile"), 302);
         }
 
         $criteria = ['deleted' => false];
