@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use ActivityPhp\Server;
 use ActivityPhp\Server\Http\HttpSignature;
 use App\Actions\ActivityAbstract;
 use App\Actions\ActivityFactory;
@@ -39,8 +40,16 @@ class InboxController extends AbstractController
         // This piece is failing to verify signatures.  ?????
 
         $signature = new HttpSignature($server);
-        $isValidLandrok = $signature->verify($request);
 
+        $newServ = new Server([
+            'instance' => [
+                'types' => 'ignore',
+            ],
+        ]);
+        $sig2 = new HttpSignature($newServ);
+
+        $isValidLandrok = $signature->verify($request);
+        $isValidLandrok2 = $sig2->verify($request);
         $isValidHome = SignatureHelper::validate($actor->get(), $request);
 
         $foo = 'bar';
