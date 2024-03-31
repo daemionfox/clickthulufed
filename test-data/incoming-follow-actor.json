@@ -1,0 +1,122 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    "https://w3id.org/security/v1",
+    {
+      "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+      "toot": "http://joinmastodon.org/ns#",
+      "featured": {
+        "@id": "toot:featured",
+        "@type": "@id"
+      },
+      "featuredTags": {
+        "@id": "toot:featuredTags",
+        "@type": "@id"
+      },
+      "alsoKnownAs": {
+        "@id": "as:alsoKnownAs",
+        "@type": "@id"
+      },
+      "movedTo": {
+        "@id": "as:movedTo",
+        "@type": "@id"
+      },
+      "schema": "http://schema.org#",
+      "PropertyValue": "schema:PropertyValue",
+      "value": "schema:value",
+      "discoverable": "toot:discoverable",
+      "Device": "toot:Device",
+      "Ed25519Signature": "toot:Ed25519Signature",
+      "Ed25519Key": "toot:Ed25519Key",
+      "Curve25519Key": "toot:Curve25519Key",
+      "EncryptedMessage": "toot:EncryptedMessage",
+      "publicKeyBase64": "toot:publicKeyBase64",
+      "deviceId": "toot:deviceId",
+      "claim": {
+        "@type": "@id",
+        "@id": "toot:claim"
+      },
+      "fingerprintKey": {
+        "@type": "@id",
+        "@id": "toot:fingerprintKey"
+      },
+      "identityKey": {
+        "@type": "@id",
+        "@id": "toot:identityKey"
+      },
+      "devices": {
+        "@type": "@id",
+        "@id": "toot:devices"
+      },
+      "messageFranking": "toot:messageFranking",
+      "messageType": "toot:messageType",
+      "cipherText": "toot:cipherText",
+      "suspended": "toot:suspended",
+      "memorial": "toot:memorial",
+      "indexable": "toot:indexable",
+      "focalPoint": {
+        "@container": "@list",
+        "@id": "toot:focalPoint"
+      }
+    }
+  ],
+  "id": "https://redwombat.social/users/daemionfox",
+  "type": "Person",
+  "following": "https://redwombat.social/users/daemionfox/following",
+  "followers": "https://redwombat.social/users/daemionfox/followers",
+  "inbox": "https://redwombat.social/users/daemionfox/inbox",
+  "outbox": "https://redwombat.social/users/daemionfox/outbox",
+  "featured": "https://redwombat.social/users/daemionfox/collections/featured",
+  "featuredTags": "https://redwombat.social/users/daemionfox/collections/tags",
+  "preferredUsername": "daemionfox",
+  "name": "daemionfox  \ud83e\udd8a",
+  "summary": "<p>Banished from twitterhell for making muskrat love jokes</p>",
+  "url": "https://redwombat.social/@daemionfox",
+  "manuallyApprovesFollowers": false,
+  "discoverable": true,
+  "indexable": false,
+  "published": "2022-10-27T00:00:00Z",
+  "memorial": false,
+  "devices": "https://redwombat.social/users/daemionfox/collections/devices",
+  "publicKey": {
+    "id": "https://redwombat.social/users/daemionfox#main-key",
+    "owner": "https://redwombat.social/users/daemionfox",
+    "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5sSh0qVD6F5G5LC3UVFy\nNcrsX0Jefpfk3dtZ7+v3aTSALuVywwdZqnf0Kq7StbZgjm7E1aWHCQ6TzYfB0eyC\na7akPUCV8QWnb2ZeFOGkm1ukbIDTlVnpNHb/uDxufmfPDNavaHGPHtPQXsXvBU+J\nRncG9GR+mMPFK0fY2sUtaiJdZ4lYgMCpSlp5GxYVhh/YSFr2MNpZIaTV/2xeR4hL\n2oWqULuEDU+vGLomkOzexBubqufx++8AuWEmQoTHr405ocsu+ukcPAUpc806hxHO\nxdX+8rH1d4P/u7qsfFkZ6/lHoUkqAgKNyEMLhSFtDwcnGWQySlo93XLUsCsvfIUw\n+QIDAQAB\n-----END PUBLIC KEY-----\n"
+  },
+  "tag": [],
+  "attachment": [
+    {
+      "type": "PropertyValue",
+      "name": "Pronouns",
+      "value": "He/Him/Hey You"
+    },
+    {
+      "type": "PropertyValue",
+      "name": "Bullshit",
+      "value": "On"
+    },
+    {
+      "type": "PropertyValue",
+      "name": "Fucks",
+      "value": "0"
+    },
+    {
+      "type": "PropertyValue",
+      "name": "Alignment",
+      "value": "chaos-gremlin"
+    }
+  ],
+  "endpoints": {
+    "sharedInbox": "https://redwombat.social/inbox"
+  },
+  "icon": {
+    "type": "Image",
+    "mediaType": "image/gif",
+    "url": "https://redwombat.social/system/accounts/avatars/109/241/717/313/773/983/original/c5ada11967a17008.gif"
+  },
+  "image": {
+    "type": "Image",
+    "mediaType": "image/png",
+    "url": "https://redwombat.social/system/accounts/headers/109/241/717/313/773/983/original/071cc7d098610475.png"
+  }
+}

@@ -38,13 +38,13 @@ class SignatureHelper
         $expectedHeaders = [];
         foreach ($headerlist as $item) {
             if ($item === '(request-target)') {
-                $expectedHeaders[] = "(request-target): post {$keyPath}";
+                $expectedHeaders[] = "(request-target):\n host {$keyPath}";
             } else {
                 $expectedHeaders[] = "{$item}: {$headers->get($item)}";
             }
         }
 
-        $encodeStr = trim(implode("\n", $expectedHeaders));
+        $encodeStr = trim(implode("\r\n", $expectedHeaders));
         $verifier = openssl_get_publickey($keyPem);
         $validate = openssl_verify($encodeStr, base64_decode($components['signature']), $verifier);
 

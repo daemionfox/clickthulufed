@@ -1,0 +1,8 @@
+{
+  "User-Agent": "ClickthuluFedAgent",
+  "Signature": "algorithm=\"rsa-sha256\",keyId=\"https://corgi-evident-bear.ngrok-free.app/comic/cutloose\",headers=\"(request-target) host date digest content-type\",signature=\"Ze2uAlflux0brPY4sNSJC5wQBXJ9XlXOvDpuzpLB8a8q7exV4vI6bbXJhz5QnOfjXJ6jyHHAQQvBBCcfFGsQTClB8vplDkvBsl2t2g5UMc3ySnCKusC+zEAv/Til0FqyRJwf1S4WrTWr36vVZ3tqyl5YgU+LcFpK6hdQMgIufAuSR3gqagtrX+m0p/fjaRyjU/LcHVfkxq3u/QtQuWZDFTp4zPhq442P3W5AdLRrSe9298GuypnNUkcpkAoCn3VspgAqn3nuKYu43GHPjF4lxl6UUJE2d7/KBtBKoOG4U19jY+cue7HllIMZINIzmh5bsRAFkBsmPIbrtquAiqzns5hDz89QlayP1Mp3d5U4O+k6nLraGWXhRZPoPhnD5oGZadMK3N0jHaqFylbnkMruxiLu8K8OJuUNZCJEsQiHm86iy6dPV2AFgzMazebXRrzJbaSygcCKxsF98YgCMTTSx9LHFE5ZB+PwJNE3R9eO/mbec7c/r0C3FSMGJ0KK+vpxIbmuPRK1/+G3CF+wQBhWmEtWgHipULcnfRfQ/KkxZztQzm+3M+rw89speVT3Qep2skgmXp14hNasdk9Azcjm+4gKVGgs7CdAUIhoRSYpvGNPoZ6YPTAv/nP5V7nkX87i5gLh9icIepCjn7gZGk6AoccDgZEZlLE4fSsKZerjX+g=\"",
+  "Host": "redwombat.social",
+  "Digest": "SHA-256=ZWY2MTc3ZGNjNzdkNWM3NWJiY2Y1OGU1NmZjYjk3M2Y3YzQ5YTNlMDdjNGRiOWRmODRkNmRmZjNhODQ3MzdkZA==",
+  "Content-Type": "application/activity+json",
+  "Date": "Sun, 31 Mar 2024 20:30:37 GMT"
+}

@@ -41,7 +41,7 @@ class Follow extends ActivityAbstract
         }
 
 
-        //$this->AcceptActivity($data);
+        $this->AcceptActivity($data);
 
 
 

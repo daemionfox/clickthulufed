@@ -1,0 +1,7 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "id": "https://redwombat.social/81227332-6f27-4a2f-a789-5bf9fce8f101",
+  "type": "Follow",
+  "actor": "https://redwombat.social/users/daemionfox",
+  "object": "https://corgi-evident-bear.ngrok-free.app/@cutloose"
+}

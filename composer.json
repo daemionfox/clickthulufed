@@ -52,8 +52,20 @@
         "symfonycasts/reset-password-bundle": "^1.17",
         "symfonycasts/verify-email-bundle": "^1.13",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "clickthulu/activitypub-httpsignature": "dev-main",
+        "clickthulu/activitypub-objects": "dev-complex-types"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/daemionfox/activitypub-signature"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/daemionfox/activitypub-objects"
+        }
+    ],
     "config": {
         "allow-plugins": {
             "php-http/discovery": true,
