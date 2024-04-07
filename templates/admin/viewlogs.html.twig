@@ -11,10 +11,28 @@
                 </div>
             </div>
             {% for log in logs %}
-                <div class="row server-log">
-                    <div class="col-2">{{ log.level }}</div>
-                    <div class="col-2">{{ log.date|date("Y-m-d H:i:s") }}</div>
-                    <div class="col">{{ log.message }}</div>
+                <div class="row server-log mb-2">
+                    <div class="col-3">
+                        <div class="row">
+                            <div class="col"><b>Date:</b></div>
+                            <div class="col">{{ log.createdon|date("Y-m-d H:i:s") }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col"><b>Level:</b></div>
+                            <div class="col">{{ log.level|upper }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col"><b>Route:</b></div>
+                            <div class="col">{{ log.Route }}</div>
+                        </div>
+                    </div>
+                    <div class="col-9">
+                        {% if log.type == 'json' %}
+                            <pre>{{ log.display }}</pre>
+                        {% else %}
+                            {{ log.display }}
+                        {% endif %}
+                    </div>
                 </div>
             {% endfor %}
         </div>

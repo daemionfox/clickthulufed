@@ -110,12 +110,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/daemionfox/activitypub-objects.git",
-                "reference": "66f6106881b3e1c0565b764d7a8f78ca9062068a"
+                "reference": "05b8b57e5c1bc4f1ac6d3801653391a2f0c81089"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/daemionfox/activitypub-objects/zipball/66f6106881b3e1c0565b764d7a8f78ca9062068a",
-                "reference": "66f6106881b3e1c0565b764d7a8f78ca9062068a",
+                "url": "https://api.github.com/repos/daemionfox/activitypub-objects/zipball/05b8b57e5c1bc4f1ac6d3801653391a2f0c81089",
+                "reference": "05b8b57e5c1bc4f1ac6d3801653391a2f0c81089",
                 "shasum": ""
             },
             "require": {
@@ -145,7 +145,7 @@
             "support": {
                 "source": "https://github.com/daemionfox/activitypub-objects/tree/complex-types"
             },
-            "time": "2024-04-07T03:05:14+00:00"
+            "time": "2024-04-07T22:47:16+00:00"
         },
         {
             "name": "colinmollenhour/credis",

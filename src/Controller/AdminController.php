@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Comic;
 use App\Entity\InviteUser;
+use App\Entity\LogEntry;
 use App\Entity\RegistrationCode;
 use App\Entity\Settings;
 use App\Entity\SettingsCollection;
@@ -331,7 +332,7 @@ class AdminController extends AbstractController
     }
 
     #[Route('/admin/logs', name: 'app_adminviewlogs')]
-    public function viewLogs(Request $request): Response
+    public function viewLogs(Request $request, EntityManagerInterface $entityManager): Response
     {
 
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
@@ -343,16 +344,10 @@ class AdminController extends AbstractController
             $this->addFlash('error', 'You do not have permission to perform this action');
             return new RedirectResponse($this->generateUrl("app_profile"), 403);
         }
-        $logfile = __DIR__ . "/../../var/log/dev.log";
-        if (!file_exists($logfile)) {
-            return $this->render("error.html.twig", ['message' => 'Log file not available']);
-        }
-        $parser = new LogReader($logfile);
-        $records = [];
-        foreach ($parser as $i => $log) {
-            $records[] = $log;
-        }
-        return $this->render("admin/viewlogs.html.twig", ['logs' => $records]);
+
+        $logs = $entityManager->getRepository(LogEntry::class)->findBy([], ['id' => 'asc']);
+
+        return $this->render("admin/viewlogs.html.twig", ['logs' => $logs]);
 
 
     }

@@ -14,6 +14,7 @@ use AP\Type\Core\AbstractAPObject;
 use AP\Type\Core\APObject;
 use App\Entity\Comic;
 use App\Entity\Subscriber;
+use App\Service\AuditLog;
 use App\Service\Settings;
 use App\Traits\APServerTrait;
 use App\Traits\ResourceTrait;
@@ -42,15 +43,15 @@ class InboxController extends AbstractController
      */
     #[Route('/@{ident}/inbox', name: 'app_apinbox')]
     // condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
-    public function inbox(Request $request, EntityManagerInterface $entityManager, Settings $settings, LoggerInterface $logger, string $ident): Response
+    public function inbox(Request $request, EntityManagerInterface $entityManager, Settings $settings, AuditLog $logger, string $ident): Response
     {
         $logger->debug(__CLASS__ . "::" . __METHOD__ . " - Received POST to Inbox");
         $body = $request->toArray();
         $logger->notice("INCOMING BODY:");
-        $logger->notice(json_encode($body, JSON_PRETTY_PRINT));
+        $logger->notice($body);
         $this->headers = $request->headers;
         $logger->notice("INCOMING HEADERS:");
-        $logger->notice(json_encode( $request->headers, JSON_PRETTY_PRINT));
+        $logger->notice($request->headers);
         $this->payload = $request->toArray();
         $actorRaw = $this->retrieveActor($body['actor']);
         /**
@@ -153,24 +154,29 @@ class InboxController extends AbstractController
 
             try {
                 $logger->notice("OUTGOING BODY:");
-                $logger->notice($body);
+                $logger->notice($accept->toArray());
                 $logger->notice("OUTGOING HEADERS:");
-                $logger->notice(json_encode($headers, JSON_PRETTY_PRINT));
+                $logger->notice($headers);
                 $query = $guzzle->post(
                     $actor->getInbox(),
                     [
-                        'http_errors' => false,
                         'headers' => $headers,
-                        'json' => $body,
+                        'body' => $body,
                     ]
                 );
+
+                $result = $query->getBody();
+
+                $isJson = is_array(json_decode($result->getContents(), true));
+                $logdata = $isJson ? json_decode($result->getContents(), true) : $result->getContents();
+                $logger->info('Return From Guzzle');
+                $logger->notice($result->getContents());
+                $logger->notice($logdata);
             } catch (GuzzleException $ge) {
                 $logger->notice("Error:");
                 $logger->notice($ge->getMessage());
                 $foo = 'bar';
             }
-            $result = $query->getBody();
-            $logger->notice($result->getContents());
 
 // TODO - Remove - Curl call instead of Guzzle
 //
