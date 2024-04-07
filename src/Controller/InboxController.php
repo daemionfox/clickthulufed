@@ -153,7 +153,7 @@ class InboxController extends AbstractController
 
             try {
                 $logger->notice("OUTGOING BODY:");
-                $logger->notice(json_encode($body, JSON_PRETTY_PRINT));
+                $logger->notice($body);
                 $logger->notice("OUTGOING HEADERS:");
                 $logger->notice(json_encode($headers, JSON_PRETTY_PRINT));
                 $query = $guzzle->post(
