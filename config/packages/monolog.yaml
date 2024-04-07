@@ -8,8 +8,9 @@ when@dev:
             main:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
-                level: debug
+                level: notice
                 channels: ["!event"]
+                formatter: App\Monolog\CustomLineFormatter
             event:
                 type: rotating_file
                 path: '%kernel.logs_dir%/info.log'
@@ -39,9 +40,11 @@ when@test:
                 excluded_http_codes: [404, 405]
                 channels: ["!event"]
             nested:
-                type: stream
+                type: rotating_file
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
+                channels: [ "!event" ]
+                max_files: 10
 
 when@prod:
     monolog:

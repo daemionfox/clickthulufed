@@ -92,6 +92,31 @@ class ActivityPubServerController extends AbstractController
         name: 'app_apcontent',
         condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
     )]
+    #[Route(
+        '/@{ident}',
+        name: 'app_apcontentld',
+        condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",
+    )]
+    #[Route(
+        '/comic/{ident}',
+        name: 'app_apcontentcomic',
+        condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
+    )]
+    #[Route(
+        '/comic/{ident}',
+        name: 'app_apcontentcomicld',
+        condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",
+    )]
+    #[Route(
+        '/user/{ident}',
+        name: 'app_apcontentuser',
+        condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
+    )]
+    #[Route(
+        '/user/{ident}',
+        name: 'app_apcontentuserld',
+        condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",
+    )]
     public function content(Settings $settings, EntityManagerInterface $entityManager, string $ident): Response
     {
         $resource = $this->_getResource($entityManager, $ident);
@@ -174,6 +199,11 @@ class ActivityPubServerController extends AbstractController
         name: 'app_apfollowing',
         condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
     )]
+    #[Route(
+        '/@{ident}/following',
+        name: 'app_apfollowingld',
+        condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",
+    )]
     public function following(Settings $settings, EntityManagerInterface $entityManager, string $ident): Response
     {
         /**
@@ -199,6 +229,11 @@ class ActivityPubServerController extends AbstractController
         '/@{ident}/followers',
         name: 'app_apfollowers',
         condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
+    )]
+    #[Route(
+        '/@{ident}/followers',
+        name: 'app_apfollowersld',
+        condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",
     )]
     public function followers(Request $request, Settings $settings, EntityManagerInterface $entityManager, string $ident): Response
     {
@@ -279,6 +314,11 @@ class ActivityPubServerController extends AbstractController
         '/@{ident}/outbox',
         name: 'app_apoutbox',
         condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
+    )]
+    #[Route(
+        '/@{ident}/outbox',
+        name: 'app_apoutboxld',
+        condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",
     )]
     public function outbox(Settings $settings, EntityManagerInterface $entityManager, string $ident): Response
     {

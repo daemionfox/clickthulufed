@@ -82,7 +82,7 @@ class ThemeController extends AbstractController
                 $target = $formdata['targettheme'];
                 $name = $formdata['targetname'];
                 // Create a new directory in the themes folder.
-                $customPath = $this->getMediaPath($settings, $user->getUsername(), $comic->getSlug(), 'themes');
+                $customPath = $this->getMediaPath($settings, $comic->getOwner()->getUsername(), $comic->getSlug(), 'themes');
                 $targetPath = "{$customPath}/{$target}";
                 $sourcePath = $this->getThemePath($settings, $source, $comic);
                 mkdir($targetPath, 0755, true);

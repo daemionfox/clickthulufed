@@ -19,6 +19,7 @@ use App\Traits\APServerTrait;
 use App\Traits\ResourceTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -45,7 +46,11 @@ class InboxController extends AbstractController
     {
         $logger->debug(__CLASS__ . "::" . __METHOD__ . " - Received POST to Inbox");
         $body = $request->toArray();
+        $logger->notice("INCOMING BODY:");
+        $logger->notice(json_encode($body, JSON_PRETTY_PRINT));
         $this->headers = $request->headers;
+        $logger->notice("INCOMING HEADERS:");
+        $logger->notice(json_encode( $request->headers, JSON_PRETTY_PRINT));
         $this->payload = $request->toArray();
         $actorRaw = $this->retrieveActor($body['actor']);
         /**
@@ -100,7 +105,7 @@ class InboxController extends AbstractController
             $accept = new Accept();
             $accept
                 ->setID("{$server}/@{$comic->getSlug()}#accepts/follows/" . $object->getID())
-                ->setActor("{$server}/@{$comic->getSlug()}")
+                ->setActor("{$server}/comic/{$comic->getSlug()}")
                 ->setObject($object)
                 ;
         }
@@ -109,6 +114,8 @@ class InboxController extends AbstractController
             $now = time();
             $signer = new RequestSigner();
             $body = $accept->toJSON();
+
+            $actorPath = parse_url($actor->getInbox(), PHP_URL_PATH);
 
             $headers = $signer->signRequest(
                 $comic->getPrivatekey()->getData(),
@@ -126,32 +133,55 @@ class InboxController extends AbstractController
             ], $headers);
             $headers = array_unique($headers);
 
-            // For the moment, we're going to check the signature before we send it out, at least attempt to see what's going on.
-            $checkReq = [
-                'method' => 'post',
-                'path' => $actor->getInbox(),
-                'headers' => $headers,
-                'body' => $accept->toJSON()
-            ];
+// TODO - Remove
+// For the moment, we're going to check the signature before we send it out, at least attempt to see what's going on.
+//            $checkReq = [
+//                'method' => 'post',
+//                'path' => "/users/daemionfox/inbox", //$actor->getInbox(),
+//                'headers' => $headers,
+//                'body' => $accept->toJSON()
+//            ];
+//
+//            $cvalidator = new SignatureValidator();
+//            $cgmdate = date_create_from_format(DATE_RFC7231, $headers['Date']);
+//            $ctime = intval($cgmdate->format('U'));
+//            $cpublicKey = $comic->getPublicKey()->getData();
+//
+//            $foo = $cvalidator->verifyRequestSignature($checkReq, $cpublicKey, $ctime);
+// End the temporary signature checking.
 
-            $cvalidator = new SignatureValidator();
-            $cgmdate = date_create_from_format(DATE_RFC7231, $headers['Date']);
-            $ctime = intval($cgmdate->format('U'));
-            $cpublicKey = $comic->getPublicKey()->getData();
 
-            $foo = $cvalidator->verifyRequestSignature($checkReq, $cpublicKey, $ctime);
-            // End the temporary signature checking.
-
-
-
-            $query = $guzzle->post(
-                $actor->getInbox(),
-                [
-                    'headers' => $headers,
-                    'json' => $body,
-                ]
-            );
+            try {
+                $logger->notice("OUTGOING BODY:");
+                $logger->notice(json_encode($body, JSON_PRETTY_PRINT));
+                $logger->notice("OUTGOING HEADERS:");
+                $logger->notice(json_encode($headers, JSON_PRETTY_PRINT));
+                $query = $guzzle->post(
+                    $actor->getInbox(),
+                    [
+                        'http_errors' => false,
+                        'headers' => $headers,
+                        'json' => $body,
+                    ]
+                );
+            } catch (GuzzleException $ge) {
+                $logger->notice("Error:");
+                $logger->notice($ge->getMessage());
+                $foo = 'bar';
+            }
             $result = $query->getBody();
+            $logger->notice($result->getContents());
+
+// TODO - Remove - Curl call instead of Guzzle
+//
+//            $ch = curl_init($actor->getInbox());
+//            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//            curl_setopt($ch, CURLOPT_POST, true);
+//            curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+//            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//            $result = curl_exec($ch);
+
+
             // Okay, in theory this should be done.  Accept sent and everything's happy.
         }
 
@@ -174,7 +204,7 @@ class InboxController extends AbstractController
 
 
 
-    protected function retrieveActor($url)
+    protected function retrieveActor($url): array
     {
         $client = new Client();
         $headers = [
@@ -185,12 +215,10 @@ class InboxController extends AbstractController
         $body = json_decode($response->getBody()->getContents(), true);
         return $body;
     }
-    protected function simplifyRequest(Request $request)
+
+    protected function simplifyRequest(Request $request): array
     {
-        $headers = $request->headers;
-
-
-        $result = [
+        return [
             'method' => $request->getMethod(),
             'path' => $request->getPathInfo(),
             'headers' => [
@@ -202,7 +230,6 @@ class InboxController extends AbstractController
             ],
             'body' => $request->getContent()
         ];
-        return $result;
     }
 
     protected function splitRequestToValidator(Request $request, LoggerInterface $logger): void

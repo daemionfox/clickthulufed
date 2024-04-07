@@ -38,6 +38,10 @@
             <div class="col-1 ms-2 me-4"><a href="/admin/settings" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Server Settings"><i class="fas fa-gear"></i></a></div>
             <div class="col nav-expanded"><a href="/admin/settings" class="nav-link">Server Settings</a></div>
         </div>
+        <div class="row ps-3 mb-2">
+            <div class="col-1 ms-2 me-4"><a href="/admin/logs" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="top" title="Server logs"><i class="fas fa-clipboard"></i></a></div>
+            <div class="col nav-expanded"><a href="/admin/logs" class="nav-link">Server Logs</a></div>
+        </div>
     {% endif %}
 
     {% if is_granted('ROLE_OWNER') or is_granted('ROLE_ADMIN') %}

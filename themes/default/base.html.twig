@@ -7,7 +7,7 @@
     <div class="container">
         <div class="row">
             <div class="col-10 offset-1 pb-3 gx-0" id="c4-page-container">
-                {% if comic.layout.headerimage is not empty %}
+                {% if comic.layout is not empty and comic.layout.headerimage is not empty %}
                     <div class="row mb-1" id="c4-page-header-row">
                         <div class=" col text-center">
                             <a href="/@{{ comic.slug }}" id="c4-header-image"><img src="/media/{{ comic.slug }}/{{ comic.layout.headerimage }}" class="img-fluid" alt="{{ comic.name }}"></a>

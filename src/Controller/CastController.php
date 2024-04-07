@@ -156,14 +156,14 @@ class CastController extends AbstractController
         $maxUpload = $settings->get('upload_max_filesize', $currentMax);
         ini_set('upload_max_filesize', $maxUpload);
 
-        $castpath = $this->getMediaPath($settings, $user, $comic, MediaPathEnumeration::PATH_CAST);
+        $castpath = $this->getMediaPath($settings, $comic->getOwner()->getUsername(), $comic->getSlug(), MediaPathEnumeration::PATH_CAST);
 
         $files = array_pop($_FILES);
         if (empty($files)) {
             throw new FileNotFoundException("No file was uploaded.");
         }
 
-        move_uploaded_file($files['tmp_name'], "{$castpath}/{$files['name']}");
+        $status = move_uploaded_file($files['tmp_name'], "{$castpath}/{$files['name']}");
 
 
         return new JsonResponse([

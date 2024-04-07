@@ -144,7 +144,7 @@ class PageController extends AbstractController
         $maxUpload = $settings->get('upload_max_filesize', $currentMax);
         ini_set('upload_max_filesize', $maxUpload);
 
-        $comicpath = $this->getMediaPath($settings, $user->getUsername(), $comic->getSlug(), MediaPathEnumeration::PATH_COMIC);
+        $comicpath = $this->getMediaPath($settings, $comic->getOwner()->getUsername(), $comic->getSlug(), MediaPathEnumeration::PATH_COMIC);
 
 
 
@@ -158,7 +158,7 @@ class PageController extends AbstractController
         $generateThumbnails = $settings->get('generate_thumbnails', true);
 
         if ($generateThumbnails) {
-            $thumbpath = $this->getMediaPath($settings, $user->getUsername(), $comic->getSlug(), MediaPathEnumeration::PATH_THUMBNAIL);
+            $thumbpath = $this->getMediaPath($settings, $comic->getOwner()->getUsername(), $comic->getSlug(), MediaPathEnumeration::PATH_THUMBNAIL);
 
             $source = imagecreatefromstring(file_get_contents("{$comicpath}/{$files['name']}"));
             $sourcesize = getimagesize("{$comicpath}/{$files['name']}");

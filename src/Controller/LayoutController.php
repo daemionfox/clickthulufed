@@ -101,7 +101,7 @@ class LayoutController extends AbstractController
         $maxUpload = $settings->get('upload_max_filesize', $currentMax);
         ini_set('upload_max_filesize', $maxUpload);
 
-        $mediapath = $this->getMediaPath($settings, $user->getUsername(), $comic->getSlug(), MediaPathEnumeration::PATH_MEDIA);
+        $mediapath = $this->getMediaPath($settings, $comic->getOwner()->getUsername(), $comic->getSlug(), MediaPathEnumeration::PATH_MEDIA);
 
         $files = array_pop($_FILES);
         if (empty($files)) {

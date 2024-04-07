@@ -6,11 +6,14 @@
     "require": {
         "php": ">=8.1",
         "ext-ctype": "*",
+        "ext-curl": "*",
         "ext-fileinfo": "*",
         "ext-gd": "*",
         "ext-iconv": "*",
         "ext-openssl": "*",
         "ext-readline": "*",
+        "clickthulu/activitypub-httpsignature": "dev-main",
+        "clickthulu/activitypub-objects": "dev-complex-types",
         "doctrine/doctrine-bundle": "^2.10",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.15",
@@ -21,6 +24,7 @@
         "phpstan/phpdoc-parser": "^1.22",
         "ramsey/uuid": "^4",
         "resque/php-resque": "^1",
+        "roma-glushko/monolog-parser": "^1.0",
         "sabberworm/php-css-parser": "^8.4",
         "symfony/asset": "6.3.*",
         "symfony/console": "6.3.*",
@@ -52,9 +56,7 @@
         "symfonycasts/reset-password-bundle": "^1.17",
         "symfonycasts/verify-email-bundle": "^1.13",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0",
-        "clickthulu/activitypub-httpsignature": "dev-main",
-        "clickthulu/activitypub-objects": "dev-complex-types"
+        "twig/twig": "^2.12|^3.0"
     },
     "repositories": [
         {

@@ -15,8 +15,10 @@ use App\Helpers\SettingsHelper;
 use App\Security\EmailVerifier;
 use App\Traits\BooleanTrait;
 use App\Traits\ComicOwnerTrait;
+use Devdot\Monolog\Parser;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use MonologParser\Reader\LogReader;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -326,6 +328,33 @@ class AdminController extends AbstractController
         return $this->render('admin/inviteusers.html.twig', [
             'inviteForm' => $form->createView()
         ]);
+    }
+
+    #[Route('/admin/logs', name: 'app_adminviewlogs')]
+    public function viewLogs(Request $request): Response
+    {
+
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        if (!in_array("ROLE_OWNER", $user->getRoles()) && !in_array("ROLE_ADMIN", $user->getRoles())) {
+            $this->addFlash('error', 'You do not have permission to perform this action');
+            return new RedirectResponse($this->generateUrl("app_profile"), 403);
+        }
+        $logfile = __DIR__ . "/../../var/log/dev.log";
+        if (!file_exists($logfile)) {
+            return $this->render("error.html.twig", ['message' => 'Log file not available']);
+        }
+        $parser = new LogReader($logfile);
+        $records = [];
+        foreach ($parser as $i => $log) {
+            $records[] = $log;
+        }
+        return $this->render("admin/viewlogs.html.twig", ['logs' => $records]);
+
+
     }
 
     /**
