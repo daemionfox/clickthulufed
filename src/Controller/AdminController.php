@@ -351,6 +351,29 @@ class AdminController extends AbstractController
 
 
     }
+    #[Route('/admin/cleanlogs', name: 'app_admincleanlogs')]
+    public function cleanLogs(EntityManagerInterface $entityManager)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        if (!in_array("ROLE_OWNER", $user->getRoles()) && !in_array("ROLE_ADMIN", $user->getRoles())) {
+            $this->addFlash('error', 'You do not have permission to perform this action');
+            return new RedirectResponse($this->generateUrl("app_profile"), 403);
+        }
+
+        $logs = $entityManager->getRepository(LogEntry::class)->findAll();
+        /**
+         * @var LogEntry $log
+         */
+        foreach ($logs as $log){
+            $entityManager->remove($log);
+        }
+        $entityManager->flush();
+        return new RedirectResponse("/admin/logs");
+    }
 
     /**
      * @param string $string

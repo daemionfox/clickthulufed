@@ -57,18 +57,19 @@ class ActivityPubServerController extends AbstractController
             [
                 'subject' => "acct:{$name}@{$servername}",
                 'aliases' => [
-                    "{$server}/{$type}/{$name}"
+                    "{$server}/{$type}/{$name}",
+                    "{$server}/@{$name}"
                 ],
                 'links' => [
                     [
                         'rel' => 'http://webfinger.net/rel/profile-page',
                         'type' => 'text-html',
-                        'href' => "{$server}/@{$name}",
+                        'href' => "{$server}/{$type}/{$name}",
                     ],
                     [
                         'rel' => 'self',
                         'type' => 'application/activity+json',
-                        'href' => "{$server}/@{$name}",
+                        'href' => "{$server}/{$type}/{$name}",
 
                     ]
                 ]
@@ -87,42 +88,19 @@ class ActivityPubServerController extends AbstractController
      * @throws SettingNotFoundException
      * @throws \Exception
      */
-    #[Route(
-        '/@{ident}',
-        name: 'app_apcontent',
-        condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
-    )]
-    #[Route(
-        '/@{ident}',
-        name: 'app_apcontentld',
-        condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",
-    )]
-    #[Route(
-        '/comic/{ident}',
-        name: 'app_apcontentcomic',
-        condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
-    )]
-    #[Route(
-        '/comic/{ident}',
-        name: 'app_apcontentcomicld',
-        condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",
-    )]
-    #[Route(
-        '/user/{ident}',
-        name: 'app_apcontentuser',
-        condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
-    )]
-    #[Route(
-        '/user/{ident}',
-        name: 'app_apcontentuserld',
-        condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",
-    )]
+    #[Route('/@{ident}', name: 'app_apcontent', condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'")]
+    #[Route('/@{ident}', name: 'app_apcontentld', condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",)]
+    #[Route('/comic/{ident}', name: 'app_apcontentcomic', condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",)]
+    #[Route('/comic/{ident}', name: 'app_apcontentcomicld', condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",)]
+    #[Route('/user/{ident}', name: 'app_apcontentuser', condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",)]
+    #[Route('/user/{ident}', name: 'app_apcontentuserld', condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",)]
     public function content(Settings $settings, EntityManagerInterface $entityManager, string $ident): Response
     {
         $resource = $this->_getResource($entityManager, $ident);
         $server = $settings->setting('server_url');
         $headers = [
-            'Content-Type' => 'application/ld+json'
+            'Content-Type' => 'application/ld+json',
+            'Accept' => 'application/ld+json',
         ];
 
         if (is_a($resource, Comic::class) || is_a($resource, User::class)) {
@@ -133,13 +111,13 @@ class ActivityPubServerController extends AbstractController
 
 
             $iconPath = !empty($resource->getImage()) ? "{$mediaDir}/{$resource->getImage()}" : null;
-            $iconMimeType = mime_content_type($iconPath);
+            $iconMimeType = !empty($resource->getImage()) ? mime_content_type($iconPath) : null;
 
             /**
              * @var Type\Extended\AbstractActor $aptype
              */
             $aptype = is_a($resource, Comic::class) ? Type::create('Service') : Type::create('Person');
-
+            $type = is_a($resource, Comic::class) ? "comic" : "user";
             $aptype
                 ->set('@context', [
                     "https://www.w3.org/ns/activitystreams",
@@ -150,25 +128,23 @@ class ActivityPubServerController extends AbstractController
                         "value" => "schema:value",
                     ]
                 ])
-                ->set('id', "{$server}/@{$ident}")
-                ->set('following', "{$server}/@{$ident}/following")
-                ->set('followers', "{$server}/@{$ident}/followers")
+                ->set('id', "{$server}/{$type}/{$ident}")
+                ->set('following', "{$server}/{$type}/{$ident}/following")
+                ->set('followers', "{$server}/{$type}/{$ident}/followers")
                 ->set("preferredUsername", $ident)
-                ->set("inbox", "{$server}/@{$ident}/inbox")
-                ->set("outbox", "{$server}/@{$ident}/outbox")
+                ->set("inbox", "{$server}/{$type}/{$ident}/inbox")
+                ->set("outbox", "{$server}/{$type}/{$ident}/outbox")
                 ->set("name", $ident)
                 ->set("summary", strip_tags($resource->getDescription()))
-                ->set("url", "{$server}/@{$ident}")
+                ->set("url", "{$server}/{$type}/{$ident}")
                 ->set("published", $resource->getCreatedon()->format('c'))
                 ->set('publicKey', [
-                        "id" => "{$server}/@{$ident}#main-key",
-                        "owner" => "{$server}/@{$ident}",
+                        "id" => "{$server}/{$type}/{$ident}#main-key",
+                        "owner" => "{$server}/{$type}/{$ident}",
                         "publicKeyPem" => str_replace("\n", "", $resource->getPublickey()->getData())
                     ]
                 )
             ;
-
-
 
             if (!empty($resource->getIconImageURL())) {
                 $aptype->set("icon", [
@@ -178,7 +154,7 @@ class ActivityPubServerController extends AbstractController
                 ]);
             }
 
-            if (is_a($resource, Comic::class) && !empty($resource->getLayout()->getHeaderimage())) {
+            if (is_a($resource, Comic::class) && !empty($resource->getLayout()) && !empty($resource->getLayout()->getHeaderimage())) {
                 $headerImagePath = "{$mediaDir}/{$resource->getLayout()->getHeaderimage()}";
                 $headerImageType = mime_content_type($headerImagePath);
                 $aptype->set("image", [
@@ -194,16 +170,10 @@ class ActivityPubServerController extends AbstractController
         throw new NotAllowedException("Cannot fetch details");
     }
 
-    #[Route(
-        '/@{ident}/following',
-        name: 'app_apfollowing',
-        condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
-    )]
-    #[Route(
-        '/@{ident}/following',
-        name: 'app_apfollowingld',
-        condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",
-    )]
+    #[Route('/@{ident}/following', name: 'app_apfollowing', condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",)]
+    #[Route('/@{ident}/following', name: 'app_apfollowingld', condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",)]
+    #[Route('/user/{ident}/following', name: 'app_apfollowinguser', condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",)]
+    #[Route('/user/{ident}/following', name: 'app_apfollowinguserld', condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",)]
     public function following(Settings $settings, EntityManagerInterface $entityManager, string $ident): Response
     {
         /**
@@ -225,16 +195,10 @@ class ActivityPubServerController extends AbstractController
      * @throws SettingNotFoundException
      * @throws \Exception
      */
-    #[Route(
-        '/@{ident}/followers',
-        name: 'app_apfollowers',
-        condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
-    )]
-    #[Route(
-        '/@{ident}/followers',
-        name: 'app_apfollowersld',
-        condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",
-    )]
+    #[Route('/@{ident}/followers', name: 'app_apfollowers', condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",)]
+    #[Route('/@{ident}/followers', name: 'app_apfollowersld', condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",)]
+    #[Route('/comic/{ident}/followers', name: 'app_apfollowerscomic', condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",)]
+    #[Route('/comic/{ident}/followers', name: 'app_apfollowerscomicld', condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",)]
     public function followers(Request $request, Settings $settings, EntityManagerInterface $entityManager, string $ident): Response
     {
         /**
@@ -269,9 +233,9 @@ class ActivityPubServerController extends AbstractController
         $aptype = Type::create('OrderedCollection');
         $aptype
             ->set('@context', 'https://www.w3.org/ns/activitystreams')
-            ->set('id', "{$server}/@{$comic->getSlug()}/followers")
+            ->set('id', "{$server}/comic/{$comic->getSlug()}/followers")
             ->set('totalItems', count($list))
-            ->set('first', "{$server}/@{$comic->getSlug()}/followers?page=1");
+            ->set('first', "{$server}/comic/{$comic->getSlug()}/followers?page=1");
         return $aptype;
     }
 
@@ -295,31 +259,25 @@ class ActivityPubServerController extends AbstractController
         $aptype = Type::create('OrderedCollectionPage');
         $aptype
             ->set('@context', 'https://www.w3.org/ns/activitystreams')
-            ->set('id', "{$server}/@{$comic->getSlug()}/followers")
+            ->set('id', "{$server}/comic/{$comic->getSlug()}/followers")
             ->set('totalItems', $size)
-            ->set('first', "{$server}/@{$comic->getSlug()}/followers?page=1")
-            ->set('partOf', "{$server}/@{$comic->getSlug()}/followers")
+            ->set('first', "{$server}/comic/{$comic->getSlug()}/followers?page=1")
+            ->set('partOf', "{$server}/comic/{$comic->getSlug()}/followers")
             ->set('orderedItems', $orderedItems)
         ;
         if (!empty($next)) {
-            $aptype->set('next', "{$server}/@{$comic->getSlug()}/followers?page={$next}");
+            $aptype->set('next', "{$server}/comic/{$comic->getSlug()}/followers?page={$next}");
         }
         if (!empty($prev)) {
-            $aptype->set('prev', "{$server}/@{$comic->getSlug()}/followers?page={$prev}");
+            $aptype->set('prev', "{$server}/comic/{$comic->getSlug()}/followers?page={$prev}");
         }
         return $aptype;
     }
 
-    #[Route(
-        '/@{ident}/outbox',
-        name: 'app_apoutbox',
-        condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",
-    )]
-    #[Route(
-        '/@{ident}/outbox',
-        name: 'app_apoutboxld',
-        condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",
-    )]
+    #[Route('/@{ident}/outbox', name: 'app_apoutbox', condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",)]
+    #[Route('/@{ident}/outbox', name: 'app_apoutboxld', condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",)]
+    #[Route('/comic/{ident}/outbox', name: 'app_apoutboxcomic', condition: "request.headers.get('Accept') matches '/application\\\\/activity\\\\+json/i'",)]
+    #[Route('/comic/{ident}/outbox', name: 'app_apoutboxcomicld', condition: "request.headers.get('Accept') matches '/application\\\\/ld\\\\+json/i'",)]
     public function outbox(Settings $settings, EntityManagerInterface $entityManager, string $ident): Response
     {
 
